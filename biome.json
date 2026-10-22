@@ -1,0 +1,99 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.4.5/schema.json",
+	"vcs": {
+		"enabled": false,
+		"clientKind": "git",
+		"useIgnoreFile": false
+	},
+	"files": {
+		"ignoreUnknown": false,
+		"includes": [
+			"**/src/**/*",
+			"**/.vscode/**/*",
+			"**/index.html",
+			"**/vite.config.ts",
+			"**/vitest.config.ts",
+			"**/playwright.config.ts",
+			"**/steiger.config.js",
+			"**/e2e/**/*",
+			"!**/src/app/routeTree.gen.ts",
+			"!**/src/app/styles.css"
+		]
+	},
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "tab"
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true,
+			"correctness": {
+				"noUnusedImports": {
+					"level": "error",
+					"fix": "safe"
+				},
+				"noUnusedVariables": {
+					"level": "error"
+				},
+				"noUnusedFunctionParameters": {
+					"level": "error"
+				},
+				"noUnusedPrivateClassMembers": {
+					"level": "error"
+				}
+			},
+			"nursery": {
+				"useSortedClasses": {
+					"level": "on",
+					"fix": "safe",
+					"options": {
+						"attributes": ["className"],
+						"functions": ["cn", "cva"]
+					}
+				}
+			},
+			"suspicious": {
+				"noConsole": {
+					"level": "on",
+					"options": {
+						"allow": ["assert", "error", "info", "warn"]
+					}
+				}
+			}
+		}
+	},
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "double"
+		}
+	},
+	"assist": {
+		"enabled": true,
+		"actions": {
+			"source": {
+				"organizeImports": {
+					"level": "on",
+					"options": {
+						"groups": [
+							[
+								":URL:",
+								":NODE:",
+								":BUN:",
+								":PACKAGE_WITH_PROTOCOL:",
+								":PACKAGE:"
+							],
+							":BLANK_LINE:",
+							[":ALIAS:", ":PATH:"]
+						]
+					}
+				}
+			}
+		}
+	},
+	"css": {
+		"parser": {
+			"tailwindDirectives": true
+		}
+	}
+}

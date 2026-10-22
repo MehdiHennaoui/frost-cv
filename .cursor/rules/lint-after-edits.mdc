@@ -1,0 +1,1 @@
+../../.agents/rules/lint-after-edits.md
