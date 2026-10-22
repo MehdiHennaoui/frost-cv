@@ -1,0 +1,96 @@
+# Canadian CV builder — user stories
+
+Product framing from the grill session. Implementation tickets live under [`issues/`](./issues/).
+
+## Settled decisions
+
+| Area | Decision |
+| --- | --- |
+| Runtime | Local-only (browser). No auth, no cloud sync. |
+| Persistence | IndexedDB via **Dexie** (MIT). |
+| UI i18n | `en` + `fr-CA` via **i18next** / **react-i18next**. English is the source locale. |
+| CV metadata | Each CV has a **title** and a **locale** (content / PDF label language). |
+| Header (always first) | First name, last name, job title, email, phone, postal code, LinkedIn, GitHub, website, description (WYSIWYG). |
+| v1 sections | Experiences, Education/Formation, Languages, N custom sections. |
+| Out of v1 | Certifications as a separate section; page-length recommendation UI. |
+| Languages entries | Language name + **free-text** level (not an enum). |
+| Custom sections | Each custom block is a **top-level** section in the global order (can sit between Experiences, Education, Languages, etc.). |
+| Section order | Header fixed at top. Other sections reorderable via **drag-and-drop** (@dnd-kit) **and** a position selector. Order persists immediately. |
+| Forms | **TanStack Form**. Explicit Save / Cancel per block. Dirty guard modal (Discard / Keep editing). No global autosave. |
+| Dates | Month + year only, in every dated section. Current job hides end date; PDF shows Present / Présent from CV locale. |
+| WYSIWYG | **TipTap** core OSS only (no Cloud / Pro). Bold, italic, lists, links. Stored as **HTML**. |
+| Preview / PDF | Canadian layout with Tailwind. PDF = browser **print** of the preview. No hard page limit in v1. |
+| JSON | Export and import (create new CV or replace an existing one after confirmation). |
+| Tracker | Local files in this folder — not GitHub Issues. |
+
+## Stack context
+
+Existing app: TanStack Start + React 19 + Vite + FSD + Tailwind / shadcn. Product layers are greenfield.
+
+## User stories (v1)
+
+### US-01 — List CVs
+
+As a user, I can see the list of my locally stored CVs (title, language, last updated) so I can pick one to work on.
+
+### US-02 — Create CV
+
+As a user, I can create a CV by entering a title and language in a modal, then land in the editor for that CV.
+
+### US-03 — Delete CV
+
+As a user, I can delete a CV after confirming in a modal so I do not lose data by accident.
+
+### US-04 — Switch UI language
+
+As a user, I can switch the application UI between English and French (Canada).
+
+### US-05 — Edit header
+
+As a user, I can edit and **save** the header fields (including WYSIWYG description), or cancel; leaving with unsaved changes asks me to discard or keep editing.
+
+### US-06 — Experiences
+
+As a user, I can add, edit, save, delete, and reorder work experiences (job title, company, location, start/end month-year or current role, WYSIWYG description).
+
+### US-07 — Education
+
+As a user, I can add, edit, save, delete, and reorder education entries (school, degree, start/end month-year, city/country).
+
+### US-08 — Languages
+
+As a user, I can add, edit, save, delete, and reorder language entries (language name + free-text level).
+
+### US-09 — Custom sections
+
+As a user, I can add custom sections (title + WYSIWYG description), each appearing as its own top-level section in the CV order.
+
+### US-10 — Reorder sections
+
+As a user, I can reorder non-header sections with drag-and-drop and a position selector; the new order is saved immediately.
+
+### US-11 — Canadian preview
+
+As a user, I see a live Canadian-format preview of **saved** CV data (split view on desktop; Edit / Preview tabs on mobile).
+
+### US-12 — Export PDF
+
+As a user, I can export the CV as a PDF by printing the Canadian preview from the browser.
+
+### US-13 — Export JSON
+
+As a user, I can download the current CV as a JSON file for backup or transfer.
+
+### US-14 — Import JSON
+
+As a user, I can import a CV from a JSON file, creating a new CV or replacing an existing one after confirmation.
+
+## Backlog (not v1 tickets)
+
+### US-15 — Page length recommendation
+
+As a user, I am warned when the CV is likely longer than about two pages (recommendation only; no hard limit).
+
+### Later — Certifications
+
+Separate certifications section (distinct from education), deferred after v1.
