@@ -8,8 +8,8 @@ export default defineConfig([
 		ignores: ["./src/app/routes/**", "./src/app/routeTree.gen.ts"],
 	},
 	{
-		// shadcn drops components as files under shared/ui
-		files: ["./src/shared/**"],
+		// Prefer direct module imports over barrel index.ts (Vite / bundle cost).
+		files: ["./src/shared/**", "./src/entities/**", "./src/pages/**"],
 		rules: {
 			"fsd/public-api": "off",
 		},

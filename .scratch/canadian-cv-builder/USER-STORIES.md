@@ -91,6 +91,10 @@ As a user, I can import a CV from a JSON file, creating a new CV or replacing an
 
 As a user, I am warned when the CV is likely longer than about two pages (recommendation only; no hard limit).
 
+### US-16 — Marketing landing page
+
+As a visitor, I land on a branded home/landing page at `/` that explains Frost CV and links me into the CV list (or create flow). Until this ships, `/` redirects to `/cvs` and `pages/home` stays as a placeholder.
+
 ### Later — Certifications
 
 Separate certifications section (distinct from education), deferred after v1.
