@@ -4,12 +4,12 @@
 
 **Blocked by:** 01 — Resume model + Dexie + list
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Maps to:** US-02
 
-- [ ] Create button opens a modal requiring title and locale
-- [ ] Submitting creates a resume in IndexedDB with sensible empty section defaults
-- [ ] User is navigated to the editor for that resume id
-- [ ] New CV appears on the list after navigating back (updatedAt set)
-- [ ] Cancel / dismiss does not create a resume
+- [x] Create button opens a modal requiring title and locale
+- [x] Submitting creates a resume in IndexedDB with sensible empty section defaults
+- [x] User is navigated to the editor for that resume id
+- [x] New CV appears on the list after navigating back (updatedAt set)
+- [x] Cancel / dismiss does not create a resume

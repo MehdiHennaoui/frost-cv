@@ -1,14 +1,32 @@
-import type { Cv } from "@/entities/cv/model/cv";
+import { useState } from "react";
+
+import { createCv as createCvInDb } from "@/entities/cv/api/cv-repository";
+import type { CreateCvInput, Cv } from "@/entities/cv/model/cv";
+import { CreateCvModal } from "@/features/create-cv/ui/create-cv-modal";
 import { formatUpdatedAt } from "@/shared/lib/timestamp";
+import { Button } from "@/shared/ui/button";
 
 type CvListPageProps = {
 	cvs: Cv[];
+	createCv?: (input: CreateCvInput) => Promise<Cv>;
+	onCreated: (cvId: string) => void;
 };
 
-export function CvListPage({ cvs }: CvListPageProps) {
+export function CvListPage({
+	cvs,
+	createCv = createCvInDb,
+	onCreated,
+}: CvListPageProps) {
+	const [isCreateOpen, setIsCreateOpen] = useState(false);
+
 	return (
 		<>
-			<h1 className="font-semibold text-3xl tracking-tight">Your CVs</h1>
+			<div className="flex items-center justify-between gap-4">
+				<h1 className="font-semibold text-3xl tracking-tight">Your CVs</h1>
+				<Button type="button" onClick={() => setIsCreateOpen(true)}>
+					Create
+				</Button>
+			</div>
 
 			{cvs.length === 0 ? (
 				<p className="mt-6 text-muted-foreground">No CVs yet.</p>
@@ -24,6 +42,13 @@ export function CvListPage({ cvs }: CvListPageProps) {
 					))}
 				</ul>
 			)}
+
+			<CreateCvModal
+				open={isCreateOpen}
+				onOpenChange={setIsCreateOpen}
+				createCv={createCv}
+				onCreated={onCreated}
+			/>
 		</>
 	);
 }

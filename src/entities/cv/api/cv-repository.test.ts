@@ -2,7 +2,7 @@ import "fake-indexeddb/auto";
 
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { listCvs, putCv, resetCvDatabase } from "./cv-repository";
+import { createCv, listCvs, putCv, resetCvDatabase } from "./cv-repository";
 
 describe("listCvs", () => {
 	beforeEach(async () => {
@@ -35,5 +35,39 @@ describe("listCvs", () => {
 
 		expect(cvs.map((cv) => cv.title)).toEqual(["Newer CV", "Older CV"]);
 		expect(cvs[0]?.locale).toBe("fr-CA");
+	});
+});
+
+describe("createCv", () => {
+	beforeEach(async () => {
+		await resetCvDatabase();
+	});
+
+	it("persists a CV with title, locale, empty section defaults, and timestamps", async () => {
+		const cv = await createCv({ title: "  My CV  ", locale: "fr-CA" });
+
+		expect(cv.id).toBeTruthy();
+		expect(cv.title).toBe("My CV");
+		expect(cv.locale).toBe("fr-CA");
+		expect(cv.content).toEqual({
+			identity: {},
+			experiences: [],
+			education: [],
+			languages: [],
+			customSections: [],
+		});
+		expect(cv.createdAt).toBe(cv.updatedAt);
+		expect(cv.createdAt).toBeGreaterThan(0);
+
+		const listed = await listCvs();
+		expect(listed).toHaveLength(1);
+		expect(listed[0]?.id).toBe(cv.id);
+	});
+
+	it("rejects an empty title", async () => {
+		await expect(createCv({ title: "   ", locale: "en" })).rejects.toThrow(
+			/title/i,
+		);
+		await expect(listCvs()).resolves.toEqual([]);
 	});
 });

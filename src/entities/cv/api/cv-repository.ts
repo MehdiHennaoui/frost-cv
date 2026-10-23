@@ -1,6 +1,6 @@
 import Dexie, { type EntityTable } from "dexie";
 
-import type { Cv } from "../model/cv";
+import { type CreateCvInput, type Cv, createEmptyCvContent } from "../model/cv";
 
 const DB_NAME = "frost-cv";
 
@@ -21,6 +21,25 @@ let db: FrostCvDb = createDatabase();
 export async function listCvs(): Promise<Cv[]> {
 	const cvs = await db.cvs.orderBy("updatedAt").reverse().toArray();
 	return cvs;
+}
+
+export async function createCv(input: CreateCvInput): Promise<Cv> {
+	const title = input.title.trim();
+	if (!title) {
+		throw new Error("Title is required");
+	}
+
+	const now = Date.now();
+	const cv: Cv = {
+		id: crypto.randomUUID(),
+		title,
+		locale: input.locale,
+		content: createEmptyCvContent(),
+		createdAt: now,
+		updatedAt: now,
+	};
+	await db.cvs.put(cv);
+	return cv;
 }
 
 /** Test / seed helper — not required for list UI. */

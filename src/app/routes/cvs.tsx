@@ -1,4 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	useNavigate,
+	useRouter,
+} from "@tanstack/react-router";
 
 import { listCvs } from "@/entities/cv/api/cv-repository";
 import { CvListPage } from "@/pages/cv-list/ui/cv-list-page";
@@ -15,5 +19,17 @@ export const Route = createFileRoute("/cvs")({
 
 function CvListRoute() {
 	const { cvs } = Route.useLoaderData();
-	return <CvListPage cvs={cvs} />;
+	const navigate = useNavigate();
+	const router = useRouter();
+
+	return (
+		<CvListPage
+			cvs={cvs}
+			onCreated={(cvId) => {
+				void router
+					.invalidate()
+					.then(() => navigate({ to: "/cvs/$cvId", params: { cvId } }));
+			}}
+		/>
+	);
 }

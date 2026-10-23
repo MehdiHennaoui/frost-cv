@@ -1,7 +1,7 @@
 /** @vitest-environment jsdom */
 
-import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { Cv } from "@/entities/cv/model/cv";
 import { CvListPage } from "./cv-list-page";
@@ -31,17 +31,27 @@ const sampleCvs: Cv[] = [
 
 describe("CvListPage", () => {
 	it("shows an empty state when there are no CVs", () => {
-		render(<CvListPage cvs={[]} />);
+		render(<CvListPage cvs={[]} onCreated={() => {}} />);
 
 		expect(screen.getByText(/no cvs yet/i)).toBeTruthy();
 	});
 
 	it("lists each CV title, locale, and updated time", () => {
-		render(<CvListPage cvs={sampleCvs} />);
+		render(<CvListPage cvs={sampleCvs} onCreated={() => {}} />);
 
 		expect(screen.getByText("Frontend CV")).toBeTruthy();
 		expect(screen.getByText("CV Québec")).toBeTruthy();
 		expect(screen.getByText(/CV locale: en · Updated/i)).toBeTruthy();
 		expect(screen.getByText(/CV locale: fr-CA · Updated/i)).toBeTruthy();
+	});
+
+	it("opens the create modal from the Create button", () => {
+		render(<CvListPage cvs={[]} onCreated={vi.fn()} />);
+
+		fireEvent.click(screen.getByRole("button", { name: /^create$/i }));
+
+		expect(screen.getByRole("heading", { name: /create cv/i })).toBeTruthy();
+		expect(screen.getByLabelText(/title/i)).toBeTruthy();
+		expect(screen.getByLabelText(/cv locale/i)).toBeTruthy();
 	});
 });
