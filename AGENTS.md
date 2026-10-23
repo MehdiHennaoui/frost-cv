@@ -16,4 +16,5 @@ These rules apply on every task, for any agent. Source of truth: `.agents/rules/
 
 - [English only](.agents/rules/english-only.md)
 - [FSD CLI scaffolding](.agents/rules/fsd-cli.md)
+- [Git branch naming](.agents/rules/git-branch-naming.md)
 - [Lint after edits](.agents/rules/lint-after-edits.md)
