@@ -1,9 +1,9 @@
 import { expect, test } from "@playwright/test";
 
-test("home page shows welcome title", async ({ page }) => {
+test("root redirects to CV list empty state", async ({ page }) => {
 	await page.goto("/");
-	await expect(page).toHaveTitle(/TanStack Start Starter/i);
-	await expect(
-		page.getByRole("heading", { name: "Welcome to TanStack Start" }),
-	).toBeVisible();
+	await expect(page).toHaveURL(/\/cvs\/?$/);
+	await expect(page).toHaveTitle(/Frost CV/i);
+	await expect(page.getByRole("heading", { name: "Your CVs" })).toBeVisible();
+	await expect(page.getByText(/no cvs yet/i)).toBeVisible();
 });

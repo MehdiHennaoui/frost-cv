@@ -1,13 +1,14 @@
-import { Button } from "@/shared/ui/button";
-
+/**
+ * Placeholder for the future marketing landing page (US-16).
+ * `/` currently redirects to `/cvs`; this page is kept for that story.
+ */
 export function HomePage() {
 	return (
-		<div className="p-8">
-			<h1 className="font-bold text-4xl">Welcome to TanStack Start</h1>
-			<p className="mt-4 text-lg">
-				Edit <code>src/pages/home/ui/home-page.tsx</code> to get started.
+		<>
+			<h1 className="font-semibold text-3xl tracking-tight">Frost CV</h1>
+			<p className="mt-4 text-muted-foreground">
+				Landing page coming soon. Your CV list lives at /cvs.
 			</p>
-			<Button className="mt-6">Get started</Button>
-		</div>
+		</>
 	);
 }

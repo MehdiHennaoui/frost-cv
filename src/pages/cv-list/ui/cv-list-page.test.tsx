@@ -1,0 +1,47 @@
+/** @vitest-environment jsdom */
+
+import { cleanup, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it } from "vitest";
+
+import type { Cv } from "@/entities/cv/model/cv";
+import { CvListPage } from "./cv-list-page";
+
+afterEach(() => {
+	cleanup();
+});
+
+const sampleCvs: Cv[] = [
+	{
+		id: "1",
+		title: "Frontend CV",
+		locale: "en",
+		content: {},
+		createdAt: 1_000,
+		updatedAt: 1_700_000_000_000,
+	},
+	{
+		id: "2",
+		title: "CV Québec",
+		locale: "fr-CA",
+		content: {},
+		createdAt: 2_000,
+		updatedAt: 1_600_000_000_000,
+	},
+];
+
+describe("CvListPage", () => {
+	it("shows an empty state when there are no CVs", () => {
+		render(<CvListPage cvs={[]} />);
+
+		expect(screen.getByText(/no cvs yet/i)).toBeTruthy();
+	});
+
+	it("lists each CV title, locale, and updated time", () => {
+		render(<CvListPage cvs={sampleCvs} />);
+
+		expect(screen.getByText("Frontend CV")).toBeTruthy();
+		expect(screen.getByText("CV Québec")).toBeTruthy();
+		expect(screen.getByText(/CV locale: en · Updated/i)).toBeTruthy();
+		expect(screen.getByText(/CV locale: fr-CA · Updated/i)).toBeTruthy();
+	});
+});
