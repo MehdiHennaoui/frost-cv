@@ -10,7 +10,13 @@ import { CreateCvModal } from "@/features/create-cv/ui/create-cv-modal";
 import { DeleteCvConfirmModal } from "@/features/delete-cv";
 import { formatUpdatedAt } from "@/shared/lib/timestamp";
 import { Button } from "@/shared/ui/button";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
+import {
+	Card,
+	CardAction,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/shared/ui/card";
 
 type CvListPageProps = {
 	cvs: Cv[];
@@ -26,24 +32,24 @@ function CvCard({ cv, onDelete }: { cv: Cv; onDelete: (cv: Cv) => void }) {
 	}
 
 	return (
-		<Card size="sm">
-			<CardHeader className="flex-row items-start justify-between gap-2">
-				<div className="min-w-0">
-					<CardTitle>{cv.title}</CardTitle>
-					<CardDescription>
-						CV locale: {cv.locale} · Updated {formatUpdatedAt(cv.updatedAt)}
-					</CardDescription>
-				</div>
-				<Button
-					type="button"
-					variant="ghost"
-					size="sm"
-					aria-label={`Delete this CV: ${cv.title}`}
-					onClick={handleDelete}
-				>
-					<Trash2Icon data-icon="inline-start" aria-hidden />
-					Delete this CV
-				</Button>
+		<Card size="sm" className="h-full">
+			<CardHeader>
+				<CardTitle className="min-w-0 break-words">{cv.title}</CardTitle>
+				<CardDescription>
+					CV locale: {cv.locale} · Updated {formatUpdatedAt(cv.updatedAt)}
+				</CardDescription>
+				<CardAction>
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						aria-label={`Delete this CV: ${cv.title}`}
+						onClick={handleDelete}
+					>
+						<Trash2Icon data-icon="inline-start" aria-hidden />
+						Delete this CV
+					</Button>
+				</CardAction>
 			</CardHeader>
 		</Card>
 	);
@@ -88,7 +94,7 @@ export function CvListPage({
 			) : (
 				<ul className="mt-6 grid gap-4 sm:grid-cols-2">
 					{cvs.map((cv) => (
-						<li key={cv.id}>
+						<li key={cv.id} className="min-w-0">
 							<CvCard cv={cv} onDelete={handleRequestDelete} />
 						</li>
 					))}
@@ -102,7 +108,7 @@ export function CvListPage({
 				onCreated={onCreated}
 			/>
 
-			{pendingDelete ? (
+			{pendingDelete && (
 				<DeleteCvConfirmModal
 					open
 					cvId={pendingDelete.id}
@@ -111,7 +117,7 @@ export function CvListPage({
 					deleteCv={deleteCv}
 					onDeleted={onDeleted}
 				/>
-			) : null}
+			)}
 		</>
 	);
 }

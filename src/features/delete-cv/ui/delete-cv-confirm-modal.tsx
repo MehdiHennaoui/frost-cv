@@ -1,8 +1,15 @@
-import { Dialog } from "@base-ui/react/dialog";
 import { Trash2Icon, XIcon } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/shared/ui/button";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@/shared/ui/dialog";
 import { Spinner } from "@/shared/ui/spinner";
 
 type DeleteCvConfirmModalProps = {
@@ -54,47 +61,44 @@ export function DeleteCvConfirmModal({
 	}
 
 	return (
-		<Dialog.Root open={open} onOpenChange={handleOpenChange}>
-			<Dialog.Portal>
-				<Dialog.Backdrop className="fixed inset-0 z-50 bg-black/40" />
-				<Dialog.Popup className="fixed top-1/2 left-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg border border-border bg-background p-6 shadow-lg">
-					<Dialog.Title className="font-semibold text-lg">
-						Delete CV
-					</Dialog.Title>
-					<Dialog.Description className="mt-2 text-muted-foreground text-sm">
+		<Dialog open={open} onOpenChange={handleOpenChange}>
+			<DialogContent showCloseButton={!isDeleting}>
+				<DialogHeader>
+					<DialogTitle>Delete CV</DialogTitle>
+					<DialogDescription>
 						Delete “{cvTitle}”? This cannot be undone.
-					</Dialog.Description>
-					{error ? (
-						<p className="mt-3 text-destructive text-sm" role="alert">
-							{error}
-						</p>
-					) : null}
-					<div className="mt-4 flex justify-end gap-2">
-						<Button
-							type="button"
-							variant="outline"
-							disabled={isDeleting}
-							onClick={handleCancel}
-						>
-							<XIcon data-icon="inline-start" />
-							Cancel
-						</Button>
-						<Button
-							type="button"
-							variant="destructive"
-							disabled={isDeleting}
-							onClick={handleConfirm}
-						>
-							{isDeleting ? (
-								<Spinner data-icon="inline-start" />
-							) : (
-								<Trash2Icon data-icon="inline-start" />
-							)}
-							Delete
-						</Button>
-					</div>
-				</Dialog.Popup>
-			</Dialog.Portal>
-		</Dialog.Root>
+					</DialogDescription>
+				</DialogHeader>
+				{error && (
+					<p className="text-destructive text-sm" role="alert">
+						{error}
+					</p>
+				)}
+				<DialogFooter>
+					<Button
+						type="button"
+						variant="outline"
+						disabled={isDeleting}
+						onClick={handleCancel}
+					>
+						<XIcon data-icon="inline-start" />
+						Cancel
+					</Button>
+					<Button
+						type="button"
+						variant="destructive"
+						disabled={isDeleting}
+						onClick={handleConfirm}
+					>
+						{isDeleting ? (
+							<Spinner data-icon="inline-start" />
+						) : (
+							<Trash2Icon data-icon="inline-start" />
+						)}
+						Delete
+					</Button>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
 	);
 }

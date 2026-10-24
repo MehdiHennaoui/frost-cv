@@ -6,6 +6,7 @@ Always apply the project rules (same source as Cursor / other agents):
 @.agents/rules/fsd-cli.md
 @.agents/rules/git-branch-naming.md
 @.agents/rules/lint-after-edits.md
+@.agents/rules/react-conditional-render.md
 
 Also follow [AGENTS.md](AGENTS.md) (Intent skill loading + rule index).
 

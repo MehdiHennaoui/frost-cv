@@ -18,3 +18,4 @@ These rules apply on every task, for any agent. Source of truth: `.agents/rules/
 - [FSD CLI scaffolding](.agents/rules/fsd-cli.md)
 - [Git branch naming](.agents/rules/git-branch-naming.md)
 - [Lint after edits](.agents/rules/lint-after-edits.md)
+- [React conditional render](.agents/rules/react-conditional-render.md)
