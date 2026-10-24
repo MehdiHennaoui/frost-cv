@@ -37,11 +37,12 @@ function CvCard({ cv, onDelete }: { cv: Cv; onDelete: (cv: Cv) => void }) {
 				<Button
 					type="button"
 					variant="ghost"
-					size="icon-sm"
-					aria-label={`Delete ${cv.title}`}
+					size="sm"
+					aria-label={`Delete this CV: ${cv.title}`}
 					onClick={handleDelete}
 				>
-					<Trash2Icon />
+					<Trash2Icon data-icon="inline-start" aria-hidden />
+					Delete this CV
 				</Button>
 			</CardHeader>
 		</Card>

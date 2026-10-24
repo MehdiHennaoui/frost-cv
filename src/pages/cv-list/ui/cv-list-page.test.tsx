@@ -65,7 +65,7 @@ describe("CvListPage", () => {
 		);
 
 		fireEvent.click(
-			screen.getByRole("button", { name: /delete frontend cv/i }),
+			screen.getByRole("button", { name: /delete this cv: frontend cv/i }),
 		);
 
 		expect(screen.getByRole("heading", { name: /delete cv/i })).toBeTruthy();
