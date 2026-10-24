@@ -3,7 +3,13 @@ import "fake-indexeddb/auto";
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { createEmptyCvContent } from "../model/cv";
-import { createCv, listCvs, putCv, resetCvDatabase } from "./cv-repository";
+import {
+	createCv,
+	deleteCv,
+	listCvs,
+	putCv,
+	resetCvDatabase,
+} from "./cv-repository";
 
 describe("listCvs", () => {
 	beforeEach(async () => {
@@ -64,5 +70,30 @@ describe("createCv", () => {
 			/title/i,
 		);
 		await expect(listCvs()).resolves.toEqual([]);
+	});
+});
+
+describe("deleteCv", () => {
+	beforeEach(async () => {
+		await resetCvDatabase();
+	});
+
+	it("removes the resume from IndexedDB", async () => {
+		const kept = await createCv({ title: "Keep me", locale: "en" });
+		const removed = await createCv({ title: "Delete me", locale: "fr-CA" });
+
+		await deleteCv(removed.id);
+
+		const listed = await listCvs();
+		expect(listed.map((cv) => cv.id)).toEqual([kept.id]);
+	});
+
+	it("is a no-op when the id does not exist", async () => {
+		const kept = await createCv({ title: "Keep me", locale: "en" });
+
+		await expect(deleteCv("missing-id")).resolves.toBeUndefined();
+
+		const listed = await listCvs();
+		expect(listed.map((cv) => cv.id)).toEqual([kept.id]);
 	});
 });

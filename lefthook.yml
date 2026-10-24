@@ -1,0 +1,13 @@
+pre-commit:
+  parallel: false
+  commands:
+    biome:
+      glob: "*.{js,jsx,ts,tsx,json}"
+      run: pnpm exec biome check --write --files-ignore-unknown=true --no-errors-on-unmatched {staged_files}
+      stage_fixed: true
+    typecheck:
+      run: pnpm typecheck
+    test:
+      run: pnpm test
+    lint-fsd:
+      run: pnpm lint:fsd
