@@ -21,6 +21,6 @@ pnpm fsd s lib -r src
 ```
 
 - Prefer `-r src` so generation lands next to existing `app` / `pages` / `shared`.
-- After scaffolding, fill in real code (public API `index.ts`, components). Do not leave empty stubs if the task needs working code.
+- After scaffolding, fill in real code and a public API `index.ts` that re-exports what other slices import. Cross-slice imports must use that API (e.g. `@/entities/cv`), not deep segment paths. Do not leave empty stubs if the task needs working code.
 - You may still edit or move files by hand for tiny one-off tweaks; do not invent a parallel folder layout that fights FSD.
 - Docs: https://github.com/feature-sliced/cli

@@ -1,14 +1,6 @@
-<!-- intent-skills:start -->
-## Skill Loading
+## Skill loading
 
-Use the repository’s installed Intent. If it is unavailable, report the missing dependency instead of downloading a replacement.
-Before editing files for a substantial task:
-- Run `pnpm exec intent list` from the workspace root to see available local skills.
-- If a listed skill matches the task, run `pnpm exec intent load <package>#<skill>` before changing files.
-- Use the loaded `SKILL.md` guidance while making the change.
-- Monorepos: when working across packages, run the skill check from the workspace root and prefer the local skill for the package being changed.
-- Multiple matches: prefer the most specific local skill for the package or concern you are changing; load additional skills only when the task spans multiple packages or concerns.
-<!-- intent-skills:end -->
+Local skills live under `.agents/skills/` (and `.claude/skills/` symlinks). Before substantial edits, pick a matching skill by name and follow its `SKILL.md`. Do not assume `@tanstack/intent` is installed.
 
 ## Project rules (always apply)
 
@@ -19,3 +11,8 @@ These rules apply on every task, for any agent. Source of truth: `.agents/rules/
 - [Git branch naming](.agents/rules/git-branch-naming.md)
 - [Lint after edits](.agents/rules/lint-after-edits.md)
 - [React conditional render](.agents/rules/react-conditional-render.md)
+- [shadcn UI only](.agents/rules/shadcn-ui-only.md)
+
+## Review standards
+
+Judgement-call standards for review (not always loaded into implementation): [CODING_STANDARDS.md](CODING_STANDARDS.md).

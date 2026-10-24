@@ -3,8 +3,15 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import type { Cv } from "@/entities/cv/model/cv";
+import type { Cv } from "@/entities/cv";
 import { CvListPage } from "./cv-list-page";
+
+vi.mock("../model/use-cv-list-navigation", () => ({
+	useCvListNavigation: () => ({
+		onCreated: vi.fn(),
+		onDeleted: vi.fn(),
+	}),
+}));
 
 afterEach(() => {
 	cleanup();
@@ -31,15 +38,13 @@ const sampleCvs: Cv[] = [
 
 describe("CvListPage", () => {
 	it("shows an empty state when there are no CVs", () => {
-		render(<CvListPage cvs={[]} onCreated={() => {}} onDeleted={() => {}} />);
+		render(<CvListPage cvs={[]} />);
 
 		expect(screen.getByText(/no cvs yet/i)).toBeTruthy();
 	});
 
 	it("lists each CV title, locale, and updated time", () => {
-		render(
-			<CvListPage cvs={sampleCvs} onCreated={() => {}} onDeleted={() => {}} />,
-		);
+		render(<CvListPage cvs={sampleCvs} />);
 
 		expect(screen.getByText("Frontend CV")).toBeTruthy();
 		expect(screen.getByText("CV Québec")).toBeTruthy();
@@ -48,7 +53,7 @@ describe("CvListPage", () => {
 	});
 
 	it("opens the create modal from the Create new CV button", () => {
-		render(<CvListPage cvs={[]} onCreated={vi.fn()} onDeleted={vi.fn()} />);
+		render(<CvListPage cvs={[]} />);
 
 		fireEvent.click(screen.getByRole("button", { name: /create new cv/i }));
 
@@ -60,9 +65,7 @@ describe("CvListPage", () => {
 	});
 
 	it("opens a delete confirmation naming the CV", () => {
-		render(
-			<CvListPage cvs={sampleCvs} onCreated={vi.fn()} onDeleted={vi.fn()} />,
-		);
+		render(<CvListPage cvs={sampleCvs} />);
 
 		fireEvent.click(
 			screen.getByRole("button", { name: /delete this cv: frontend cv/i }),

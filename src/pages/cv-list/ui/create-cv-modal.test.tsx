@@ -13,7 +13,7 @@ import {
 	type CreateCvInput,
 	type Cv,
 	createEmptyCvContent,
-} from "@/entities/cv/model/cv";
+} from "@/entities/cv";
 import { CreateCvModal } from "./create-cv-modal";
 
 afterEach(() => {

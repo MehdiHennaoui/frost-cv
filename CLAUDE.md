@@ -7,8 +7,9 @@ Always apply the project rules (same source as Cursor / other agents):
 @.agents/rules/git-branch-naming.md
 @.agents/rules/lint-after-edits.md
 @.agents/rules/react-conditional-render.md
+@.agents/rules/shadcn-ui-only.md
 
-Also follow [AGENTS.md](AGENTS.md) (Intent skill loading + rule index).
+Also follow [AGENTS.md](AGENTS.md) (skill loading + rule index). Review judgement calls: [CODING_STANDARDS.md](CODING_STANDARDS.md).
 
 ## Agent skills
 

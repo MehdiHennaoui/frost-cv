@@ -2,12 +2,11 @@ import { PlusIcon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 
 import {
+	type CreateCvInput,
+	type Cv,
 	createCv as createCvInDb,
 	deleteCv as deleteCvInDb,
-} from "@/entities/cv/api/cv-repository";
-import type { CreateCvInput, Cv } from "@/entities/cv/model/cv";
-import { CreateCvModal } from "@/features/create-cv/ui/create-cv-modal";
-import { DeleteCvConfirmModal } from "@/features/delete-cv";
+} from "@/entities/cv";
 import { formatUpdatedAt } from "@/shared/lib/timestamp";
 import { Button } from "@/shared/ui/button";
 import {
@@ -17,13 +16,14 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/shared/ui/card";
+import { useCvListNavigation } from "../model/use-cv-list-navigation";
+import { CreateCvModal } from "./create-cv-modal";
+import { DeleteCvConfirmModal } from "./delete-cv-confirm-modal";
 
 type CvListPageProps = {
 	cvs: Cv[];
 	createCv?: (input: CreateCvInput) => Promise<Cv>;
 	deleteCv?: (id: string) => Promise<void>;
-	onCreated: (cvId: string) => void;
-	onDeleted: () => void | Promise<void>;
 };
 
 function CvCard({ cv, onDelete }: { cv: Cv; onDelete: (cv: Cv) => void }) {
@@ -59,9 +59,8 @@ export function CvListPage({
 	cvs,
 	createCv = createCvInDb,
 	deleteCv = deleteCvInDb,
-	onCreated,
-	onDeleted,
 }: CvListPageProps) {
+	const { onCreated, onDeleted } = useCvListNavigation();
 	const [isCreateOpen, setIsCreateOpen] = useState(false);
 	const [pendingDelete, setPendingDelete] = useState<Cv | null>(null);
 
