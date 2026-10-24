@@ -53,6 +53,19 @@
 					}
 				}
 			},
+			"style": {
+				"noRestrictedImports": {
+					"level": "error",
+					"options": {
+						"patterns": [
+							{
+								"group": ["@base-ui/react", "@base-ui/react/*"],
+								"message": "Use @/shared/ui/* (shadcn) instead of Base UI directly."
+							}
+						]
+					}
+				}
+			},
 			"suspicious": {
 				"noConsole": {
 					"level": "on",
@@ -63,6 +76,18 @@
 			}
 		}
 	},
+	"overrides": [
+		{
+			"includes": ["**/src/shared/ui/**"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": "off"
+					}
+				}
+			}
+		}
+	],
 	"javascript": {
 		"formatter": {
 			"quoteStyle": "double"
