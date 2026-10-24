@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { listCvs } from "@/entities/cv";
 import { CvListPage } from "@/pages/cv-list";
+import { useAppTranslation } from "@/shared/i18n";
 
 export const Route = createFileRoute("/cvs")({
 	ssr: false,
@@ -9,9 +10,15 @@ export const Route = createFileRoute("/cvs")({
 		const cvs = await listCvs();
 		return { cvs };
 	},
-	pendingComponent: () => <p className="text-muted-foreground">Loading CVs…</p>,
+	pendingComponent: CvListPending,
 	component: CvListRoute,
 });
+
+function CvListPending() {
+	const { t } = useAppTranslation();
+
+	return <p className="text-muted-foreground">{t("cvList.loading")}</p>;
+}
 
 function CvListRoute() {
 	const { cvs } = Route.useLoaderData();

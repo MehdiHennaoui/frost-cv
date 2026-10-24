@@ -7,6 +7,7 @@ import {
 	createCv as createCvInDb,
 	deleteCv as deleteCvInDb,
 } from "@/entities/cv";
+import { isUiLocale, useAppTranslation } from "@/shared/i18n";
 import { formatUpdatedAt } from "@/shared/lib/timestamp";
 import { Button } from "@/shared/ui/button";
 import {
@@ -27,6 +28,14 @@ type CvListPageProps = {
 };
 
 function CvCard({ cv, onDelete }: { cv: Cv; onDelete: (cv: Cv) => void }) {
+	const { t, i18n } = useAppTranslation();
+	const uiLocale = isUiLocale(i18n.language) ? i18n.language : "en";
+	const formattedUpdatedAt = formatUpdatedAt(cv.updatedAt, uiLocale);
+	const updatedAt =
+		formattedUpdatedAt === "Unknown date"
+			? t("cvList.unknownDate")
+			: formattedUpdatedAt;
+
 	function handleDelete() {
 		onDelete(cv);
 	}
@@ -36,18 +45,18 @@ function CvCard({ cv, onDelete }: { cv: Cv; onDelete: (cv: Cv) => void }) {
 			<CardHeader>
 				<CardTitle className="min-w-0 break-words">{cv.title}</CardTitle>
 				<CardDescription>
-					CV locale: {cv.locale} · Updated {formatUpdatedAt(cv.updatedAt)}
+					{t("cvList.meta", { locale: cv.locale, updatedAt })}
 				</CardDescription>
 				<CardAction>
 					<Button
 						type="button"
 						variant="ghost"
 						size="sm"
-						aria-label={`Delete this CV: ${cv.title}`}
+						aria-label={t("cvList.deleteNamed", { title: cv.title })}
 						onClick={handleDelete}
 					>
 						<Trash2Icon data-icon="inline-start" aria-hidden />
-						Delete this CV
+						{t("cvList.delete")}
 					</Button>
 				</CardAction>
 			</CardHeader>
@@ -60,6 +69,7 @@ export function CvListPage({
 	createCv = createCvInDb,
 	deleteCv = deleteCvInDb,
 }: CvListPageProps) {
+	const { t } = useAppTranslation();
 	const { onCreated, onDeleted } = useCvListNavigation();
 	const [isCreateOpen, setIsCreateOpen] = useState(false);
 	const [pendingDelete, setPendingDelete] = useState<Cv | null>(null);
@@ -81,15 +91,17 @@ export function CvListPage({
 	return (
 		<>
 			<div className="flex items-center justify-between gap-4">
-				<h1 className="font-semibold text-3xl tracking-tight">Your CVs</h1>
+				<h1 className="font-semibold text-3xl tracking-tight">
+					{t("cvList.heading")}
+				</h1>
 				<Button type="button" onClick={handleOpenCreate}>
 					<PlusIcon data-icon="inline-start" />
-					Create new CV
+					{t("cvList.create")}
 				</Button>
 			</div>
 
 			{cvs.length === 0 ? (
-				<p className="mt-6 text-muted-foreground">No CVs yet.</p>
+				<p className="mt-6 text-muted-foreground">{t("cvList.empty")}</p>
 			) : (
 				<ul className="mt-6 grid gap-4 sm:grid-cols-2">
 					{cvs.map((cv) => (

@@ -9,6 +9,7 @@ import {
 	type CvLocale,
 	createCvInputSchema,
 } from "@/entities/cv";
+import { useAppTranslation } from "@/shared/i18n";
 import { Button } from "@/shared/ui/button";
 import {
 	Dialog,
@@ -21,6 +22,7 @@ import { Field, FieldError, FieldGroup, FieldLabel } from "@/shared/ui/field";
 import { Input } from "@/shared/ui/input";
 import { NativeSelect, NativeSelectOption } from "@/shared/ui/native-select";
 import { Spinner } from "@/shared/ui/spinner";
+import { translateCvMessage } from "../model/translate-cv-message";
 
 type CreateCvModalProps = {
 	open: boolean;
@@ -29,10 +31,7 @@ type CreateCvModalProps = {
 	onCreated: (cvId: string) => void;
 };
 
-const LOCALES: { value: CvLocale; label: string }[] = [
-	{ value: "en", label: "English" },
-	{ value: "fr-CA", label: "French (Canada)" },
-];
+const LOCALE_VALUES: CvLocale[] = ["en", "fr-CA"];
 
 const DEFAULT_VALUES: CreateCvInput = {
 	title: "",
@@ -40,19 +39,26 @@ const DEFAULT_VALUES: CreateCvInput = {
 };
 
 function parseCvLocale(value: string): CvLocale {
-	const locale = LOCALES.find((option) => option.value === value);
+	const locale = LOCALE_VALUES.find((option) => option === value);
 	if (!locale) {
 		return "en";
 	}
-	return locale.value;
+	return locale;
 }
 
-function fieldErrorMessages(errors: unknown[]): Array<{ message: string }> {
+function fieldErrorMessages(
+	errors: unknown[],
+	translate: (message: string) => string,
+): Array<{ message: string }> {
 	return errors.flatMap((error) =>
 		// Field errors are string | { message } | unknown — otherwise drops the rest.
 		match(error)
-			.with(P.string.minLength(1), (message) => [{ message }])
-			.with({ message: P.string.minLength(1) }, ({ message }) => [{ message }])
+			.with(P.string.minLength(1), (message) => [
+				{ message: translate(message) },
+			])
+			.with({ message: P.string.minLength(1) }, ({ message }) => [
+				{ message: translate(message) },
+			])
 			.otherwise(() => []),
 	);
 }
@@ -63,6 +69,7 @@ export function CreateCvModal({
 	createCv,
 	onCreated,
 }: CreateCvModalProps) {
+	const { t } = useAppTranslation();
 	const form = useForm({
 		defaultValues: DEFAULT_VALUES,
 		validators: {
@@ -104,11 +111,15 @@ export function CreateCvModal({
 		handleOpenChange(false);
 	}
 
+	function translateMessage(message: string) {
+		return translateCvMessage(message, t);
+	}
+
 	return (
 		<Dialog open={open} onOpenChange={handleOpenChange}>
-			<DialogContent>
+			<DialogContent closeLabel={t("dialog.close")}>
 				<DialogHeader>
-					<DialogTitle>Create new CV</DialogTitle>
+					<DialogTitle>{t("createCv.title")}</DialogTitle>
 				</DialogHeader>
 				<form onSubmit={handleFormSubmit}>
 					<FieldGroup className="gap-4">
@@ -124,7 +135,9 @@ export function CreateCvModal({
 
 								return (
 									<Field data-invalid={isInvalid || undefined}>
-										<FieldLabel htmlFor={field.name}>Title</FieldLabel>
+										<FieldLabel htmlFor={field.name}>
+											{t("createCv.fieldTitle")}
+										</FieldLabel>
 										<Input
 											id={field.name}
 											name={field.name}
@@ -136,7 +149,10 @@ export function CreateCvModal({
 										/>
 										{isInvalid && (
 											<FieldError
-												errors={fieldErrorMessages(field.state.meta.errors)}
+												errors={fieldErrorMessages(
+													field.state.meta.errors,
+													translateMessage,
+												)}
 											/>
 										)}
 									</Field>
@@ -156,7 +172,9 @@ export function CreateCvModal({
 
 								return (
 									<Field data-invalid={isInvalid || undefined}>
-										<FieldLabel htmlFor={field.name}>CV locale</FieldLabel>
+										<FieldLabel htmlFor={field.name}>
+											{t("createCv.fieldLocale")}
+										</FieldLabel>
 										<NativeSelect
 											id={field.name}
 											name={field.name}
@@ -166,18 +184,19 @@ export function CreateCvModal({
 											aria-invalid={isInvalid}
 											className="w-full"
 										>
-											{LOCALES.map((option) => (
-												<NativeSelectOption
-													key={option.value}
-													value={option.value}
-												>
-													{option.label}
-												</NativeSelectOption>
-											))}
+											<NativeSelectOption value="en">
+												{t("uiLocale.option.en")}
+											</NativeSelectOption>
+											<NativeSelectOption value="fr-CA">
+												{t("uiLocale.option.fr-CA")}
+											</NativeSelectOption>
 										</NativeSelect>
 										{isInvalid && (
 											<FieldError
-												errors={fieldErrorMessages(field.state.meta.errors)}
+												errors={fieldErrorMessages(
+													field.state.meta.errors,
+													translateMessage,
+												)}
 											/>
 										)}
 									</Field>
@@ -196,7 +215,7 @@ export function CreateCvModal({
 									onClick={handleCancel}
 								>
 									<XIcon data-icon="inline-start" />
-									Cancel
+									{t("createCv.cancel")}
 								</Button>
 								<Button type="submit" disabled={isSubmitting}>
 									{isSubmitting ? (
@@ -204,7 +223,7 @@ export function CreateCvModal({
 									) : (
 										<PlusIcon data-icon="inline-start" />
 									)}
-									Create CV
+									{t("createCv.submit")}
 								</Button>
 							</DialogFooter>
 						)}

@@ -8,14 +8,16 @@ export function isValidTimestamp(value: number): boolean {
 }
 
 /**
- * Formats a Unix ms timestamp for display (en-CA).
- * Falls back to a stable label when the timestamp is invalid.
+ * Formats a Unix ms timestamp for display.
+ * `en` uses en-CA. `fr-CA` uses French (Canada).
+ * Falls back to a stable English label when the timestamp is invalid.
  */
-export function formatUpdatedAt(timestamp: number): string {
+export function formatUpdatedAt(timestamp: number, locale = "en"): string {
 	if (!isValidTimestamp(timestamp)) {
 		return "Unknown date";
 	}
-	return new Date(timestamp).toLocaleDateString("en-CA", {
+	const dateLocale = locale === "fr-CA" ? "fr-CA" : "en-CA";
+	return new Date(timestamp).toLocaleDateString(dateLocale, {
 		year: "numeric",
 		month: "short",
 		day: "numeric",
