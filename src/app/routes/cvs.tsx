@@ -22,14 +22,10 @@ function CvListRoute() {
 	const navigate = useNavigate();
 	const router = useRouter();
 
-	return (
-		<CvListPage
-			cvs={cvs}
-			onCreated={(cvId) => {
-				void router
-					.invalidate()
-					.then(() => navigate({ to: "/cvs/$cvId", params: { cvId } }));
-			}}
-		/>
-	);
+	async function handleCreated(cvId: string) {
+		await router.invalidate();
+		await navigate({ to: "/cvs/$cvId", params: { cvId } });
+	}
+
+	return <CvListPage cvs={cvs} onCreated={handleCreated} />;
 }

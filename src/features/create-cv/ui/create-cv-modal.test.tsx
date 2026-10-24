@@ -9,7 +9,11 @@ import {
 } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import type { CreateCvInput, Cv } from "@/entities/cv/model/cv";
+import {
+	type CreateCvInput,
+	type Cv,
+	createEmptyCvContent,
+} from "@/entities/cv/model/cv";
 import { CreateCvModal } from "./create-cv-modal";
 
 afterEach(() => {
@@ -21,13 +25,7 @@ function emptyCv(overrides: Partial<Cv> = {}): Cv {
 		id: "cv-1",
 		title: "My CV",
 		locale: "en",
-		content: {
-			identity: {},
-			experiences: [],
-			education: [],
-			languages: [],
-			customSections: [],
-		},
+		content: createEmptyCvContent(),
 		createdAt: 1,
 		updatedAt: 1,
 		...overrides,
@@ -48,9 +46,12 @@ describe("CreateCvModal", () => {
 			/>,
 		);
 
-		fireEvent.click(screen.getByRole("button", { name: /^create$/i }));
+		fireEvent.click(screen.getByRole("button", { name: /^create cv$/i }));
 
 		await waitFor(() => {
+			expect(screen.getByRole("alert").textContent).toMatch(
+				/title is required/i,
+			);
 			expect(createCv).not.toHaveBeenCalled();
 			expect(onCreated).not.toHaveBeenCalled();
 		});
@@ -78,7 +79,7 @@ describe("CreateCvModal", () => {
 		fireEvent.change(screen.getByLabelText(/cv locale/i), {
 			target: { value: "fr-CA" },
 		});
-		fireEvent.click(screen.getByRole("button", { name: /^create$/i }));
+		fireEvent.click(screen.getByRole("button", { name: /^create cv$/i }));
 
 		await waitFor(() => {
 			expect(createCv).toHaveBeenCalledWith({

@@ -1,6 +1,11 @@
 import Dexie, { type EntityTable } from "dexie";
 
-import { type CreateCvInput, type Cv, createEmptyCvContent } from "../model/cv";
+import {
+	type CreateCvInput,
+	type Cv,
+	createCvInputSchema,
+	createEmptyCvContent,
+} from "../model/cv";
 
 const DB_NAME = "frost-cv";
 
@@ -24,16 +29,16 @@ export async function listCvs(): Promise<Cv[]> {
 }
 
 export async function createCv(input: CreateCvInput): Promise<Cv> {
-	const title = input.title.trim();
-	if (!title) {
-		throw new Error("Title is required");
+	const parsed = createCvInputSchema.safeParse(input);
+	if (!parsed.success) {
+		throw new Error(parsed.error.issues[0]?.message ?? "Could not create CV");
 	}
 
 	const now = Date.now();
 	const cv: Cv = {
 		id: crypto.randomUUID(),
-		title,
-		locale: input.locale,
+		title: parsed.data.title,
+		locale: parsed.data.locale,
 		content: createEmptyCvContent(),
 		createdAt: now,
 		updatedAt: now,

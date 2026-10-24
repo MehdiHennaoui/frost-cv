@@ -45,12 +45,14 @@ describe("CvListPage", () => {
 		expect(screen.getByText(/CV locale: fr-CA · Updated/i)).toBeTruthy();
 	});
 
-	it("opens the create modal from the Create button", () => {
+	it("opens the create modal from the Create new CV button", () => {
 		render(<CvListPage cvs={[]} onCreated={vi.fn()} />);
 
-		fireEvent.click(screen.getByRole("button", { name: /^create$/i }));
+		fireEvent.click(screen.getByRole("button", { name: /create new cv/i }));
 
-		expect(screen.getByRole("heading", { name: /create cv/i })).toBeTruthy();
+		expect(
+			screen.getByRole("heading", { name: /create new cv/i }),
+		).toBeTruthy();
 		expect(screen.getByLabelText(/title/i)).toBeTruthy();
 		expect(screen.getByLabelText(/cv locale/i)).toBeTruthy();
 	});

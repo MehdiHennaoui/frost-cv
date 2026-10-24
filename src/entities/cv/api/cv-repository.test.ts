@@ -2,6 +2,7 @@ import "fake-indexeddb/auto";
 
 import { beforeEach, describe, expect, it } from "vitest";
 
+import { createEmptyCvContent } from "../model/cv";
 import { createCv, listCvs, putCv, resetCvDatabase } from "./cv-repository";
 
 describe("listCvs", () => {
@@ -49,13 +50,7 @@ describe("createCv", () => {
 		expect(cv.id).toBeTruthy();
 		expect(cv.title).toBe("My CV");
 		expect(cv.locale).toBe("fr-CA");
-		expect(cv.content).toEqual({
-			identity: {},
-			experiences: [],
-			education: [],
-			languages: [],
-			customSections: [],
-		});
+		expect(cv.content).toEqual(createEmptyCvContent());
 		expect(cv.createdAt).toBe(cv.updatedAt);
 		expect(cv.createdAt).toBeGreaterThan(0);
 
