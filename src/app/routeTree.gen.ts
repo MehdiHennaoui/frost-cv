@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CvsRouteImport } from './routes/cvs'
+import { Route as CvsCvIdRouteImport } from './routes/cvs_.$cvId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +23,40 @@ const CvsRoute = CvsRouteImport.update({
   path: '/cvs',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CvsCvIdRoute = CvsCvIdRouteImport.update({
+  id: '/cvs_/$cvId',
+  path: '/cvs/$cvId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cvs': typeof CvsRoute
+  '/cvs/$cvId': typeof CvsCvIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cvs': typeof CvsRoute
+  '/cvs/$cvId': typeof CvsCvIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/cvs': typeof CvsRoute
+  '/cvs_/$cvId': typeof CvsCvIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/cvs'
+  fullPaths: '/' | '/cvs' | '/cvs/$cvId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/cvs'
-  id: '__root__' | '/' | '/cvs'
+  to: '/' | '/cvs' | '/cvs/$cvId'
+  id: '__root__' | '/' | '/cvs' | '/cvs_/$cvId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CvsRoute: typeof CvsRoute
+  CvsCvIdRoute: typeof CvsCvIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +75,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CvsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cvs_/$cvId': {
+      id: '/cvs_/$cvId'
+      path: '/cvs/$cvId'
+      fullPath: '/cvs/$cvId'
+      preLoaderRoute: typeof CvsCvIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CvsRoute: CvsRoute,
+  CvsCvIdRoute: CvsCvIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
