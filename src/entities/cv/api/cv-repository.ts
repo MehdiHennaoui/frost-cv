@@ -47,6 +47,10 @@ export async function createCv(input: CreateCvInput): Promise<Cv> {
 	return cv;
 }
 
+export async function deleteCv(id: string): Promise<void> {
+	await db.cvs.delete(id);
+}
+
 /** Test / seed helper — not required for list UI. */
 export async function putCv(cv: Cv): Promise<string> {
 	const id = await db.cvs.put(cv);

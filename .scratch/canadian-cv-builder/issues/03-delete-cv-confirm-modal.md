@@ -4,11 +4,11 @@
 
 **Blocked by:** 01 — Resume model + Dexie + list
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Maps to:** US-03
 
-- [ ] Delete action opens a confirmation modal naming the CV (or equivalent clear context)
-- [ ] Confirm removes the resume from IndexedDB
-- [ ] Cancel / dismiss leaves the resume unchanged
-- [ ] List refreshes and no longer shows the deleted CV
+- [x] Delete action opens a confirmation modal naming the CV (or equivalent clear context)
+- [x] Confirm removes the resume from IndexedDB
+- [x] Cancel / dismiss leaves the resume unchanged
+- [x] List refreshes and no longer shows the deleted CV

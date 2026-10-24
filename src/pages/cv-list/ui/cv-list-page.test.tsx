@@ -31,13 +31,15 @@ const sampleCvs: Cv[] = [
 
 describe("CvListPage", () => {
 	it("shows an empty state when there are no CVs", () => {
-		render(<CvListPage cvs={[]} onCreated={() => {}} />);
+		render(<CvListPage cvs={[]} onCreated={() => {}} onDeleted={() => {}} />);
 
 		expect(screen.getByText(/no cvs yet/i)).toBeTruthy();
 	});
 
 	it("lists each CV title, locale, and updated time", () => {
-		render(<CvListPage cvs={sampleCvs} onCreated={() => {}} />);
+		render(
+			<CvListPage cvs={sampleCvs} onCreated={() => {}} onDeleted={() => {}} />,
+		);
 
 		expect(screen.getByText("Frontend CV")).toBeTruthy();
 		expect(screen.getByText("CV Québec")).toBeTruthy();
@@ -46,7 +48,7 @@ describe("CvListPage", () => {
 	});
 
 	it("opens the create modal from the Create new CV button", () => {
-		render(<CvListPage cvs={[]} onCreated={vi.fn()} />);
+		render(<CvListPage cvs={[]} onCreated={vi.fn()} onDeleted={vi.fn()} />);
 
 		fireEvent.click(screen.getByRole("button", { name: /create new cv/i }));
 
@@ -55,5 +57,20 @@ describe("CvListPage", () => {
 		).toBeTruthy();
 		expect(screen.getByLabelText(/title/i)).toBeTruthy();
 		expect(screen.getByLabelText(/cv locale/i)).toBeTruthy();
+	});
+
+	it("opens a delete confirmation naming the CV", () => {
+		render(
+			<CvListPage cvs={sampleCvs} onCreated={vi.fn()} onDeleted={vi.fn()} />,
+		);
+
+		fireEvent.click(
+			screen.getByRole("button", { name: /delete frontend cv/i }),
+		);
+
+		expect(screen.getByRole("heading", { name: /delete cv/i })).toBeTruthy();
+		expect(
+			screen.getByText(/Delete “Frontend CV”\? This cannot be undone\./),
+		).toBeTruthy();
 	});
 });

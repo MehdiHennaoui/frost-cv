@@ -1,9 +1,13 @@
-import { PlusIcon } from "lucide-react";
+import { PlusIcon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 
-import { createCv as createCvInDb } from "@/entities/cv/api/cv-repository";
+import {
+	createCv as createCvInDb,
+	deleteCv as deleteCvInDb,
+} from "@/entities/cv/api/cv-repository";
 import type { CreateCvInput, Cv } from "@/entities/cv/model/cv";
 import { CreateCvModal } from "@/features/create-cv/ui/create-cv-modal";
+import { DeleteCvConfirmModal } from "@/features/delete-cv";
 import { formatUpdatedAt } from "@/shared/lib/timestamp";
 import { Button } from "@/shared/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
@@ -11,17 +15,34 @@ import { Card, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 type CvListPageProps = {
 	cvs: Cv[];
 	createCv?: (input: CreateCvInput) => Promise<Cv>;
+	deleteCv?: (id: string) => Promise<void>;
 	onCreated: (cvId: string) => void;
+	onDeleted: () => void | Promise<void>;
 };
 
-function CvCard({ cv }: { cv: Cv }) {
+function CvCard({ cv, onDelete }: { cv: Cv; onDelete: (cv: Cv) => void }) {
+	function handleDelete() {
+		onDelete(cv);
+	}
+
 	return (
 		<Card size="sm">
-			<CardHeader>
-				<CardTitle>{cv.title}</CardTitle>
-				<CardDescription>
-					CV locale: {cv.locale} · Updated {formatUpdatedAt(cv.updatedAt)}
-				</CardDescription>
+			<CardHeader className="flex-row items-start justify-between gap-2">
+				<div className="min-w-0">
+					<CardTitle>{cv.title}</CardTitle>
+					<CardDescription>
+						CV locale: {cv.locale} · Updated {formatUpdatedAt(cv.updatedAt)}
+					</CardDescription>
+				</div>
+				<Button
+					type="button"
+					variant="ghost"
+					size="icon-sm"
+					aria-label={`Delete ${cv.title}`}
+					onClick={handleDelete}
+				>
+					<Trash2Icon />
+				</Button>
 			</CardHeader>
 		</Card>
 	);
@@ -30,12 +51,25 @@ function CvCard({ cv }: { cv: Cv }) {
 export function CvListPage({
 	cvs,
 	createCv = createCvInDb,
+	deleteCv = deleteCvInDb,
 	onCreated,
+	onDeleted,
 }: CvListPageProps) {
 	const [isCreateOpen, setIsCreateOpen] = useState(false);
+	const [pendingDelete, setPendingDelete] = useState<Cv | null>(null);
 
 	function handleOpenCreate() {
 		setIsCreateOpen(true);
+	}
+
+	function handleRequestDelete(cv: Cv) {
+		setPendingDelete(cv);
+	}
+
+	function handleDeleteOpenChange(open: boolean) {
+		if (!open) {
+			setPendingDelete(null);
+		}
 	}
 
 	return (
@@ -54,7 +88,7 @@ export function CvListPage({
 				<ul className="mt-6 grid gap-4 sm:grid-cols-2">
 					{cvs.map((cv) => (
 						<li key={cv.id}>
-							<CvCard cv={cv} />
+							<CvCard cv={cv} onDelete={handleRequestDelete} />
 						</li>
 					))}
 				</ul>
@@ -66,6 +100,17 @@ export function CvListPage({
 				createCv={createCv}
 				onCreated={onCreated}
 			/>
+
+			{pendingDelete ? (
+				<DeleteCvConfirmModal
+					open
+					cvId={pendingDelete.id}
+					cvTitle={pendingDelete.title}
+					onOpenChange={handleDeleteOpenChange}
+					deleteCv={deleteCv}
+					onDeleted={onDeleted}
+				/>
+			) : null}
 		</>
 	);
 }

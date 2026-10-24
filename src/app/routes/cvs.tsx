@@ -27,5 +27,11 @@ function CvListRoute() {
 		await navigate({ to: "/cvs/$cvId", params: { cvId } });
 	}
 
-	return <CvListPage cvs={cvs} onCreated={handleCreated} />;
+	async function handleDeleted() {
+		await router.invalidate();
+	}
+
+	return (
+		<CvListPage cvs={cvs} onCreated={handleCreated} onDeleted={handleDeleted} />
+	);
 }
