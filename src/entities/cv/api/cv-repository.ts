@@ -28,6 +28,10 @@ export async function listCvs(): Promise<Cv[]> {
 	return cvs;
 }
 
+export async function getCv(id: string): Promise<Cv | undefined> {
+	return db.cvs.get(id);
+}
+
 export async function createCv(input: CreateCvInput): Promise<Cv> {
 	const parsed = createCvInputSchema.safeParse(input);
 	if (!parsed.success) {

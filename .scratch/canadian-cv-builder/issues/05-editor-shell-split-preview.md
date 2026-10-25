@@ -4,12 +4,12 @@
 
 **Blocked by:** 02 — Create CV modal
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Maps to:** US-11 (partial)
 
-- [ ] Route loads a resume by id from IndexedDB (missing id → clear not-found UX)
-- [ ] Desktop: split view with editor and preview side by side
-- [ ] Mobile: Edit / Preview tabs
-- [ ] Preview renders from **persisted** resume data (not unsaved drafts)
-- [ ] Section order model exists with header fixed first; placeholder slots for experiences, education, languages, customs
+- [x] Route loads a resume by id from IndexedDB (missing id → clear not-found UX)
+- [x] Desktop: split view with editor and preview side by side
+- [x] Mobile: Edit / Preview tabs
+- [x] Preview renders from **persisted** resume data (not unsaved drafts)
+- [x] Section order model exists with header fixed first; placeholder slots for experiences, education, languages, customs

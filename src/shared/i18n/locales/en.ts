@@ -41,4 +41,31 @@ export const en = {
 		confirm: "Delete",
 		failed: "Could not delete CV",
 	},
+	cvEditor: {
+		loading: "Loading CV…",
+		notFound: "CV not found",
+		notFoundHint: "This CV is missing or was deleted.",
+		backToList: "Back to CV list",
+		meta: "CV locale: {{locale}}",
+		stubHint: "Section editors arrive in later tickets.",
+		tab: {
+			edit: "Edit CV",
+			preview: "Preview CV",
+		},
+		edit: {
+			label: "CV editor",
+		},
+		preview: {
+			label: "Canadian CV preview",
+			unnamed: "Name",
+			sectionEmpty: "No entries yet.",
+		},
+		section: {
+			identity: "Identity",
+			experiences: "Experiences",
+			education: "Education",
+			languages: "Languages",
+			customs: "Custom sections",
+		},
+	},
 };

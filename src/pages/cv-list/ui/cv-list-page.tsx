@@ -40,7 +40,11 @@ function CvCard({ cv, onDelete }: { cv: Cv; onDelete: (cv: Cv) => void }) {
 	return (
 		<Card size="sm" className="h-full">
 			<CardHeader>
-				<CardTitle className="min-w-0 break-words">{cv.title}</CardTitle>
+				<CardTitle className="min-w-0 break-words">
+					<a href={`/cvs/${cv.id}`} className="hover:underline">
+						{cv.title}
+					</a>
+				</CardTitle>
 				<CardDescription>
 					{t("cvList.meta", { locale: cv.locale, updatedAt })}
 				</CardDescription>

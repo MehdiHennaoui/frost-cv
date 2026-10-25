@@ -1,6 +1,7 @@
 export {
 	createCv,
 	deleteCv,
+	getCv,
 	listCvs,
 	putCv,
 	resetCvDatabase,
@@ -13,4 +14,7 @@ export {
 	createCvInputSchema,
 	createEmptyCvContent,
 	cvLocaleSchema,
+	DEFAULT_SECTION_ORDER,
+	type SectionKey,
+	sectionOrderOf,
 } from "./model/cv";
