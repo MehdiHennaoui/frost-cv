@@ -1,4 +1,4 @@
-import { UiLocaleSwitch, UiLocaleSync } from "@/shared/i18n";
+import { UiLocaleSwitch } from "@/shared/i18n";
 
 type AppLayoutProps = {
 	children: React.ReactNode;
@@ -7,7 +7,6 @@ type AppLayoutProps = {
 export function AppLayout({ children }: AppLayoutProps) {
 	return (
 		<main className="mx-auto min-h-dvh max-w-2xl overflow-y-auto p-4 md:p-8">
-			<UiLocaleSync />
 			<div className="mb-6 flex justify-end">
 				<UiLocaleSwitch />
 			</div>

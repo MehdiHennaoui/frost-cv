@@ -7,7 +7,7 @@ import {
 	createCv as createCvInDb,
 	deleteCv as deleteCvInDb,
 } from "@/entities/cv";
-import { isUiLocale, useAppTranslation } from "@/shared/i18n";
+import { useAppTranslation, useUiLocale } from "@/shared/i18n";
 import { formatUpdatedAt } from "@/shared/lib/timestamp";
 import { Button } from "@/shared/ui/button";
 import {
@@ -28,13 +28,10 @@ type CvListPageProps = {
 };
 
 function CvCard({ cv, onDelete }: { cv: Cv; onDelete: (cv: Cv) => void }) {
-	const { t, i18n } = useAppTranslation();
-	const uiLocale = isUiLocale(i18n.language) ? i18n.language : "en";
-	const formattedUpdatedAt = formatUpdatedAt(cv.updatedAt, uiLocale);
+	const { t } = useAppTranslation();
+	const uiLocale = useUiLocale();
 	const updatedAt =
-		formattedUpdatedAt === "Unknown date"
-			? t("cvList.unknownDate")
-			: formattedUpdatedAt;
+		formatUpdatedAt(cv.updatedAt, uiLocale) ?? t("cvList.unknownDate");
 
 	function handleDelete() {
 		onDelete(cv);

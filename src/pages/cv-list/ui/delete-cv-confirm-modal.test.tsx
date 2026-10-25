@@ -28,8 +28,10 @@ describe("DeleteCvConfirmModal", () => {
 			/>,
 		);
 
-		expect(screen.getByText(/Frontend CV/)).toBeTruthy();
-		expect(screen.getByRole("heading", { name: /delete cv/i })).toBeTruthy();
+		expect(screen.getByText("deleteCv.description")).toBeTruthy();
+		expect(
+			screen.getByRole("heading", { name: "deleteCv.title" }),
+		).toBeTruthy();
 	});
 
 	it("deletes and reports success on confirm", async () => {
@@ -48,7 +50,7 @@ describe("DeleteCvConfirmModal", () => {
 			/>,
 		);
 
-		fireEvent.click(screen.getByRole("button", { name: /^delete$/i }));
+		fireEvent.click(screen.getByRole("button", { name: "deleteCv.confirm" }));
 
 		await waitFor(() => {
 			expect(deleteCv).toHaveBeenCalledWith("cv-1");
@@ -73,7 +75,7 @@ describe("DeleteCvConfirmModal", () => {
 			/>,
 		);
 
-		fireEvent.click(screen.getByRole("button", { name: /cancel/i }));
+		fireEvent.click(screen.getByRole("button", { name: "deleteCv.cancel" }));
 
 		await waitFor(() => {
 			expect(onOpenChange).toHaveBeenCalledWith(false);

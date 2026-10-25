@@ -1,18 +1,14 @@
+import { LanguagesIcon } from "lucide-react";
 import type { ChangeEvent } from "react";
 
-import { Label } from "@/shared/ui/label";
+import { Field, FieldLabel } from "@/shared/ui/field";
 import { NativeSelect, NativeSelectOption } from "@/shared/ui/native-select";
-import { changeUiLocale, useAppTranslation } from "./instance";
-import { isUiLocale, UI_LOCALES, type UiLocale } from "./ui-locale";
-
-const optionKey = {
-	en: "uiLocale.option.en",
-	"fr-CA": "uiLocale.option.fr-CA",
-} as const;
+import { changeUiLocale, useAppTranslation, useUiLocale } from "./instance";
+import { isUiLocale } from "./ui-locale";
 
 export function UiLocaleSwitch() {
-	const { t, i18n } = useAppTranslation();
-	const value: UiLocale = isUiLocale(i18n.language) ? i18n.language : "en";
+	const { t } = useAppTranslation();
+	const value = useUiLocale();
 
 	function handleChange(event: ChangeEvent<HTMLSelectElement>) {
 		const next = event.target.value;
@@ -23,15 +19,19 @@ export function UiLocaleSwitch() {
 	}
 
 	return (
-		<div className="flex flex-col gap-1">
-			<Label htmlFor="ui-locale">{t("uiLocale.label")}</Label>
+		<Field className="w-auto">
+			<FieldLabel htmlFor="ui-locale">
+				<LanguagesIcon aria-hidden className="size-4" />
+				{t("uiLocale.label")}
+			</FieldLabel>
 			<NativeSelect id="ui-locale" value={value} onChange={handleChange}>
-				{UI_LOCALES.map((locale) => (
-					<NativeSelectOption key={locale} value={locale}>
-						{t(optionKey[locale])}
-					</NativeSelectOption>
-				))}
+				<NativeSelectOption value="en">
+					{t("uiLocale.option.en")}
+				</NativeSelectOption>
+				<NativeSelectOption value="fr">
+					{t("uiLocale.option.fr")}
+				</NativeSelectOption>
 			</NativeSelect>
-		</div>
+		</Field>
 	);
 }

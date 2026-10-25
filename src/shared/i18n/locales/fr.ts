@@ -1,11 +1,17 @@
 import type { en } from "./en";
 
-export const frCA = {
+export const fr = {
 	dialog: {
 		close: "Fermer",
 	},
 	uiLocale: {
 		label: "Langue de l’interface",
+		option: {
+			en: "Anglais",
+			fr: "Français",
+		},
+	},
+	cvLocale: {
 		option: {
 			en: "Anglais",
 			"fr-CA": "Français (Canada)",

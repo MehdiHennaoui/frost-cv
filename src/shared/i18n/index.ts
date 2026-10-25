@@ -1,12 +1,9 @@
-export { changeUiLocale, i18n, useAppTranslation } from "./instance";
 export {
-	DEFAULT_UI_LOCALE,
-	isUiLocale,
-	readUiLocale,
-	UI_LOCALE_STORAGE_KEY,
-	UI_LOCALES,
-	type UiLocale,
-	writeUiLocale,
-} from "./ui-locale";
+	changeUiLocale,
+	i18n,
+	useAppTranslation,
+	useUiLocale,
+} from "./instance";
+export { useTranslationKeys } from "./test";
+export { isUiLocale, UI_LOCALES, type UiLocale } from "./ui-locale";
 export { UiLocaleSwitch } from "./ui-locale-switch";
-export { UiLocaleSync } from "./ui-locale-sync";

@@ -12,7 +12,6 @@ import {
 	DialogTitle,
 } from "@/shared/ui/dialog";
 import { Spinner } from "@/shared/ui/spinner";
-import { translateCvMessage } from "../model/translate-cv-message";
 
 type DeleteCvConfirmModalProps = {
 	open: boolean;
@@ -33,7 +32,7 @@ export function DeleteCvConfirmModal({
 }: DeleteCvConfirmModalProps) {
 	const { t } = useAppTranslation();
 	const [isDeleting, setIsDeleting] = useState(false);
-	const [error, setError] = useState<string | null>(null);
+	const [error, setError] = useState<"deleteCv.failed" | null>(null);
 
 	function handleOpenChange(nextOpen: boolean) {
 		if (!nextOpen && isDeleting) {
@@ -56,8 +55,8 @@ export function DeleteCvConfirmModal({
 			await deleteCv(cvId);
 			onOpenChange(false);
 			await onDeleted();
-		} catch (err) {
-			setError(err instanceof Error ? err.message : "Could not delete CV");
+		} catch {
+			setError("deleteCv.failed");
 		} finally {
 			setIsDeleting(false);
 		}
@@ -65,10 +64,7 @@ export function DeleteCvConfirmModal({
 
 	return (
 		<Dialog open={open} onOpenChange={handleOpenChange}>
-			<DialogContent
-				showCloseButton={!isDeleting}
-				closeLabel={t("dialog.close")}
-			>
+			<DialogContent showCloseButton={!isDeleting}>
 				<DialogHeader>
 					<DialogTitle>{t("deleteCv.title")}</DialogTitle>
 					<DialogDescription>
@@ -77,7 +73,7 @@ export function DeleteCvConfirmModal({
 				</DialogHeader>
 				{error && (
 					<p className="text-destructive text-sm" role="alert">
-						{translateCvMessage(error, t)}
+						{t(error)}
 					</p>
 				)}
 				<DialogFooter>

@@ -22,7 +22,6 @@ import { Field, FieldError, FieldGroup, FieldLabel } from "@/shared/ui/field";
 import { Input } from "@/shared/ui/input";
 import { NativeSelect, NativeSelectOption } from "@/shared/ui/native-select";
 import { Spinner } from "@/shared/ui/spinner";
-import { translateCvMessage } from "../model/translate-cv-message";
 
 type CreateCvModalProps = {
 	open: boolean;
@@ -86,8 +85,7 @@ export function CreateCvModal({
 					...meta,
 					errorMap: {
 						...meta.errorMap,
-						onSubmit:
-							err instanceof Error ? err.message : "Could not create CV",
+						onSubmit: err instanceof Error ? err.message : "createCv.failed",
 					},
 				}));
 			}
@@ -111,13 +109,9 @@ export function CreateCvModal({
 		handleOpenChange(false);
 	}
 
-	function translateMessage(message: string) {
-		return translateCvMessage(message, t);
-	}
-
 	return (
 		<Dialog open={open} onOpenChange={handleOpenChange}>
-			<DialogContent closeLabel={t("dialog.close")}>
+			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>{t("createCv.title")}</DialogTitle>
 				</DialogHeader>
@@ -151,7 +145,12 @@ export function CreateCvModal({
 											<FieldError
 												errors={fieldErrorMessages(
 													field.state.meta.errors,
-													translateMessage,
+													(message) =>
+														t(
+															message as
+																| "createCv.titleRequired"
+																| "createCv.failed",
+														),
 												)}
 											/>
 										)}
@@ -185,17 +184,22 @@ export function CreateCvModal({
 											className="w-full"
 										>
 											<NativeSelectOption value="en">
-												{t("uiLocale.option.en")}
+												{t("cvLocale.option.en")}
 											</NativeSelectOption>
 											<NativeSelectOption value="fr-CA">
-												{t("uiLocale.option.fr-CA")}
+												{t("cvLocale.option.fr-CA")}
 											</NativeSelectOption>
 										</NativeSelect>
 										{isInvalid && (
 											<FieldError
 												errors={fieldErrorMessages(
 													field.state.meta.errors,
-													translateMessage,
+													(message) =>
+														t(
+															message as
+																| "createCv.titleRequired"
+																| "createCv.failed",
+														),
 												)}
 											/>
 										)}

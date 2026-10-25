@@ -1,10 +1,16 @@
 /** @vitest-environment jsdom */
 
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import {
+	cleanup,
+	fireEvent,
+	render,
+	screen,
+	waitFor,
+} from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import type { Cv } from "@/entities/cv";
-import { i18n, UiLocaleSwitch, UiLocaleSync } from "@/shared/i18n";
+import { changeUiLocale, i18n, UiLocaleSwitch } from "@/shared/i18n";
 import { CvListPage } from "./cv-list-page";
 
 const sampleCv: Cv = {
@@ -16,17 +22,17 @@ const sampleCv: Cv = {
 	updatedAt: 1_700_000_000_000,
 };
 
-afterEach(async () => {
-	cleanup();
+beforeEach(() => {
 	localStorage.clear();
-	document.documentElement.lang = "en";
-	await i18n.changeLanguage("en");
+});
+
+afterEach(() => {
+	cleanup();
 });
 
 function renderList(cvs: Cv[]) {
 	return render(
 		<>
-			<UiLocaleSync />
 			<UiLocaleSwitch />
 			<CvListPage cvs={cvs} />
 		</>,
@@ -34,56 +40,62 @@ function renderList(cvs: Cv[]) {
 }
 
 describe("CV list UI locale", () => {
-	it("switches list, create, and delete copy to French", async () => {
+	it("renders list, create, and delete copy as translation keys", async () => {
 		renderList([sampleCv]);
 
-		fireEvent.change(screen.getByLabelText("UI locale"), {
-			target: { value: "fr-CA" },
-		});
-
-		expect(await screen.findByRole("heading", { name: "Vos CV" })).toBeTruthy();
-		expect(screen.getByRole("button", { name: "Créer un CV" })).toBeTruthy();
 		expect(
-			screen.getByText(/Langue du CV : fr-CA · Mis à jour .+/),
+			screen.getByRole("heading", { name: "cvList.heading" }),
 		).toBeTruthy();
-		expect(document.documentElement.lang).toBe("fr-CA");
+		expect(screen.getByRole("button", { name: "cvList.create" })).toBeTruthy();
+		expect(screen.getByText("cvList.meta")).toBeTruthy();
 
-		fireEvent.click(screen.getByRole("button", { name: "Créer un CV" }));
+		fireEvent.click(screen.getByRole("button", { name: "cvList.create" }));
 
-		expect(screen.getByRole("heading", { name: "Créer un CV" })).toBeTruthy();
-		expect(screen.getByLabelText("Titre")).toBeTruthy();
-		expect(screen.getByLabelText("Langue du CV")).toBeTruthy();
-		expect(screen.getByRole("button", { name: "Fermer" })).toBeTruthy();
-		fireEvent.click(screen.getByRole("button", { name: /^Créer le CV$/ }));
+		expect(
+			screen.getByRole("heading", { name: "createCv.title" }),
+		).toBeTruthy();
+		expect(screen.getByLabelText("createCv.fieldTitle")).toBeTruthy();
+		expect(screen.getByLabelText("createCv.fieldLocale")).toBeTruthy();
+		expect(screen.getByRole("button", { name: "dialog.close" })).toBeTruthy();
+		fireEvent.click(screen.getByRole("button", { name: "createCv.submit" }));
 		expect((await screen.findByRole("alert")).textContent).toBe(
-			"Le titre est obligatoire",
+			"createCv.titleRequired",
 		);
-		fireEvent.click(screen.getByRole("button", { name: "Annuler" }));
+		fireEvent.click(screen.getByRole("button", { name: "createCv.cancel" }));
 
-		fireEvent.click(
-			screen.getByRole("button", { name: "Supprimer ce CV : Frontend CV" }),
-		);
+		const [deleteButton] = screen.getAllByRole("button", {
+			name: "cvList.deleteNamed",
+		});
+		expect(deleteButton).toBeTruthy();
+		fireEvent.click(deleteButton);
 
 		expect(
-			screen.getByRole("heading", { name: "Supprimer le CV" }),
+			screen.getByRole("heading", { name: "deleteCv.title" }),
 		).toBeTruthy();
-		expect(screen.getByRole("button", { name: "Fermer" })).toBeTruthy();
+		expect(screen.getByText("deleteCv.description")).toBeTruthy();
 		expect(
-			screen.getByText(
-				"Supprimer « Frontend CV » ? Cette action est irréversible.",
-			),
+			screen.getByRole("button", { name: "deleteCv.confirm" }),
 		).toBeTruthy();
-		expect(screen.getByRole("button", { name: /^Supprimer$/ })).toBeTruthy();
 	});
 
-	it("applies a stored French UI locale after mount", async () => {
-		localStorage.setItem("frost-cv.ui-locale", "fr-CA");
-
+	it("persists the selected UI locale in localStorage", async () => {
 		renderList([]);
 
-		expect(await screen.findByRole("heading", { name: "Vos CV" })).toBeTruthy();
+		fireEvent.change(screen.getByLabelText("uiLocale.label"), {
+			target: { value: "fr" },
+		});
+
+		await waitFor(() => {
+			expect(i18n.language).toBe("fr");
+			expect(localStorage.getItem("i18nextLng")).toBe("fr");
+		});
+
+		cleanup();
+		localStorage.setItem("i18nextLng", "fr");
+		await changeUiLocale("fr");
+		renderList([]);
+
+		expect(screen.getByRole("heading", { name: "Vos CV" })).toBeTruthy();
 		expect(screen.getByText("Aucun CV pour le moment.")).toBeTruthy();
-		expect(screen.getByLabelText("Langue de l’interface")).toBeTruthy();
-		expect(document.documentElement.lang).toBe("fr-CA");
 	});
 });

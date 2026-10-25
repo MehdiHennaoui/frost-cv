@@ -31,7 +31,7 @@ export async function listCvs(): Promise<Cv[]> {
 export async function createCv(input: CreateCvInput): Promise<Cv> {
 	const parsed = createCvInputSchema.safeParse(input);
 	if (!parsed.success) {
-		throw new Error(parsed.error.issues[0]?.message ?? "Could not create CV");
+		throw new Error(parsed.error.issues[0]?.message ?? "createCv.failed");
 	}
 
 	const now = Date.now();

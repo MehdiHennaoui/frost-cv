@@ -6,6 +6,12 @@ export const en = {
 		label: "UI locale",
 		option: {
 			en: "English",
+			fr: "French",
+		},
+	},
+	cvLocale: {
+		option: {
+			en: "English",
 			"fr-CA": "French (Canada)",
 		},
 	},
