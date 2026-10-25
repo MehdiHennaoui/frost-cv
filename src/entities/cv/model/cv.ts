@@ -17,7 +17,7 @@ export type Cv = {
 };
 
 export const createCvInputSchema = z.object({
-	title: z.string().trim().min(1, "Title is required"),
+	title: z.string().trim().min(1, "createCv.titleRequired"),
 	locale: cvLocaleSchema,
 });
 

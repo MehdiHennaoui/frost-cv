@@ -9,7 +9,7 @@ A single résumé document the user creates, edits, stores locally, and can expo
 _Avoid_: Resume, curriculum, document (when meaning this entity)
 
 **UI locale**:
-The language of the application chrome (`en` or `fr-CA`). Independent of any CV’s content language.
+The language of the application chrome (`en` or `fr`). Independent of any CV’s content language.
 _Avoid_: Language (alone), app language (prefer this term)
 
 **CV locale**:

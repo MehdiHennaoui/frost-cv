@@ -7,15 +7,14 @@ export function isValidTimestamp(value: number): boolean {
 	return Number.isFinite(time);
 }
 
-/**
- * Formats a Unix ms timestamp for display (en-CA).
- * Falls back to a stable label when the timestamp is invalid.
- */
-export function formatUpdatedAt(timestamp: number): string {
+export function formatUpdatedAt(
+	timestamp: number,
+	locale = "en",
+): string | null {
 	if (!isValidTimestamp(timestamp)) {
-		return "Unknown date";
+		return null;
 	}
-	return new Date(timestamp).toLocaleDateString("en-CA", {
+	return new Date(timestamp).toLocaleDateString(locale, {
 		year: "numeric",
 		month: "short",
 		day: "numeric",

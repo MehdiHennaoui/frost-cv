@@ -8,7 +8,7 @@ Product framing from the grill session. Implementation tickets live under [`issu
 | --- | --- |
 | Runtime | Local-only (browser). No auth, no cloud sync. |
 | Persistence | IndexedDB via **Dexie** (MIT). |
-| UI i18n | `en` + `fr-CA` via **i18next** / **react-i18next**. English is the source locale. |
+| UI i18n | `en` + `fr` via **i18next** / **react-i18next**. English is the source locale. Preference persists via **i18next-browser-languagedetector** (`i18nextLng` in `localStorage`), defaults to `en`. |
 | CV metadata | Each CV has a **title** and a **locale** (content / PDF label language). |
 | Header (always first) | First name, last name, job title, email, phone, postal code, LinkedIn, GitHub, website, description (WYSIWYG). |
 | v1 sections | Experiences, Education/Formation, Languages, N custom sections. |

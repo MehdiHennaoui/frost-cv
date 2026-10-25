@@ -16,13 +16,13 @@ describe("isValidTimestamp", () => {
 });
 
 describe("formatUpdatedAt", () => {
-	it("formats a valid timestamp with en-CA locale options", () => {
+	it("formats a valid timestamp", () => {
 		const formatted = formatUpdatedAt(1_700_000_000_000);
-		expect(formatted).not.toBe("Unknown date");
-		expect(formatted.length).toBeGreaterThan(0);
+		expect(formatted).not.toBeNull();
+		expect(formatted?.length).toBeGreaterThan(0);
 	});
 
-	it("returns Unknown date for an invalid timestamp", () => {
-		expect(formatUpdatedAt(Number.NaN)).toBe("Unknown date");
+	it("returns null for an invalid timestamp", () => {
+		expect(formatUpdatedAt(Number.NaN)).toBeNull();
 	});
 });

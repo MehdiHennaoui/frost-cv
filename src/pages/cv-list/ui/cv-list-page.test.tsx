@@ -40,7 +40,7 @@ describe("CvListPage", () => {
 	it("shows an empty state when there are no CVs", () => {
 		render(<CvListPage cvs={[]} />);
 
-		expect(screen.getByText(/no cvs yet/i)).toBeTruthy();
+		expect(screen.getByText("cvList.empty")).toBeTruthy();
 	});
 
 	it("lists each CV title, locale, and updated time", () => {
@@ -48,32 +48,33 @@ describe("CvListPage", () => {
 
 		expect(screen.getByText("Frontend CV")).toBeTruthy();
 		expect(screen.getByText("CV Québec")).toBeTruthy();
-		expect(screen.getByText(/CV locale: en · Updated/i)).toBeTruthy();
-		expect(screen.getByText(/CV locale: fr-CA · Updated/i)).toBeTruthy();
+		expect(screen.getAllByText(/^cvList\.meta$/).length).toBe(2);
 	});
 
 	it("opens the create modal from the Create new CV button", () => {
 		render(<CvListPage cvs={[]} />);
 
-		fireEvent.click(screen.getByRole("button", { name: /create new cv/i }));
+		fireEvent.click(screen.getByRole("button", { name: "cvList.create" }));
 
 		expect(
-			screen.getByRole("heading", { name: /create new cv/i }),
+			screen.getByRole("heading", { name: "createCv.title" }),
 		).toBeTruthy();
-		expect(screen.getByLabelText(/title/i)).toBeTruthy();
-		expect(screen.getByLabelText(/cv locale/i)).toBeTruthy();
+		expect(screen.getByLabelText("createCv.fieldTitle")).toBeTruthy();
+		expect(screen.getByLabelText("createCv.fieldLocale")).toBeTruthy();
 	});
 
 	it("opens a delete confirmation naming the CV", () => {
 		render(<CvListPage cvs={sampleCvs} />);
 
-		fireEvent.click(
-			screen.getByRole("button", { name: /delete this cv: frontend cv/i }),
-		);
+		const [deleteButton] = screen.getAllByRole("button", {
+			name: "cvList.deleteNamed",
+		});
+		expect(deleteButton).toBeTruthy();
+		fireEvent.click(deleteButton);
 
-		expect(screen.getByRole("heading", { name: /delete cv/i })).toBeTruthy();
 		expect(
-			screen.getByText(/Delete “Frontend CV”\? This cannot be undone\./),
+			screen.getByRole("heading", { name: "deleteCv.title" }),
 		).toBeTruthy();
+		expect(screen.getByText("deleteCv.description")).toBeTruthy();
 	});
 });

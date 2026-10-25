@@ -1,6 +1,7 @@
 import { Trash2Icon, XIcon } from "lucide-react";
 import { useState } from "react";
 
+import { useAppTranslation } from "@/shared/i18n";
 import { Button } from "@/shared/ui/button";
 import {
 	Dialog,
@@ -29,8 +30,9 @@ export function DeleteCvConfirmModal({
 	deleteCv,
 	onDeleted,
 }: DeleteCvConfirmModalProps) {
+	const { t } = useAppTranslation();
 	const [isDeleting, setIsDeleting] = useState(false);
-	const [error, setError] = useState<string | null>(null);
+	const [error, setError] = useState<"deleteCv.failed" | null>(null);
 
 	function handleOpenChange(nextOpen: boolean) {
 		if (!nextOpen && isDeleting) {
@@ -53,8 +55,8 @@ export function DeleteCvConfirmModal({
 			await deleteCv(cvId);
 			onOpenChange(false);
 			await onDeleted();
-		} catch (err) {
-			setError(err instanceof Error ? err.message : "Could not delete CV");
+		} catch {
+			setError("deleteCv.failed");
 		} finally {
 			setIsDeleting(false);
 		}
@@ -64,14 +66,14 @@ export function DeleteCvConfirmModal({
 		<Dialog open={open} onOpenChange={handleOpenChange}>
 			<DialogContent showCloseButton={!isDeleting}>
 				<DialogHeader>
-					<DialogTitle>Delete CV</DialogTitle>
+					<DialogTitle>{t("deleteCv.title")}</DialogTitle>
 					<DialogDescription>
-						Delete “{cvTitle}”? This cannot be undone.
+						{t("deleteCv.description", { title: cvTitle })}
 					</DialogDescription>
 				</DialogHeader>
 				{error && (
 					<p className="text-destructive text-sm" role="alert">
-						{error}
+						{t(error)}
 					</p>
 				)}
 				<DialogFooter>
@@ -82,7 +84,7 @@ export function DeleteCvConfirmModal({
 						onClick={handleCancel}
 					>
 						<XIcon data-icon="inline-start" />
-						Cancel
+						{t("deleteCv.cancel")}
 					</Button>
 					<Button
 						type="button"
@@ -95,7 +97,7 @@ export function DeleteCvConfirmModal({
 						) : (
 							<Trash2Icon data-icon="inline-start" />
 						)}
-						Delete
+						{t("deleteCv.confirm")}
 					</Button>
 				</DialogFooter>
 			</DialogContent>

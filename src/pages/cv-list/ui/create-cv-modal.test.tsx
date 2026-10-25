@@ -46,11 +46,11 @@ describe("CreateCvModal", () => {
 			/>,
 		);
 
-		fireEvent.click(screen.getByRole("button", { name: /^create cv$/i }));
+		fireEvent.click(screen.getByRole("button", { name: "createCv.submit" }));
 
 		await waitFor(() => {
-			expect(screen.getByRole("alert").textContent).toMatch(
-				/title is required/i,
+			expect(screen.getByRole("alert").textContent).toBe(
+				"createCv.titleRequired",
 			);
 			expect(createCv).not.toHaveBeenCalled();
 			expect(onCreated).not.toHaveBeenCalled();
@@ -73,13 +73,13 @@ describe("CreateCvModal", () => {
 			/>,
 		);
 
-		fireEvent.change(screen.getByLabelText(/title/i), {
+		fireEvent.change(screen.getByLabelText("createCv.fieldTitle"), {
 			target: { value: "Frontend" },
 		});
-		fireEvent.change(screen.getByLabelText(/cv locale/i), {
+		fireEvent.change(screen.getByLabelText("createCv.fieldLocale"), {
 			target: { value: "fr-CA" },
 		});
-		fireEvent.click(screen.getByRole("button", { name: /^create cv$/i }));
+		fireEvent.click(screen.getByRole("button", { name: "createCv.submit" }));
 
 		await waitFor(() => {
 			expect(createCv).toHaveBeenCalledWith({
@@ -104,7 +104,7 @@ describe("CreateCvModal", () => {
 			/>,
 		);
 
-		fireEvent.click(screen.getByRole("button", { name: /cancel/i }));
+		fireEvent.click(screen.getByRole("button", { name: "createCv.cancel" }));
 
 		await waitFor(() => {
 			expect(onOpenChange).toHaveBeenCalledWith(false);
