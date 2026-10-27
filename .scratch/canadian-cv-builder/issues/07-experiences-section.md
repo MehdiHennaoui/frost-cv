@@ -4,13 +4,13 @@
 
 **Blocked by:** 06 — Form pattern + TipTap + Header
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Maps to:** US-06
 
-- [ ] Fields: job title, company, location, start month/year, end month/year or current-position flag, description (TipTap HTML)
-- [ ] Current position disables/hides end date; preview shows Present/Présent based on CV locale
-- [ ] User can add multiple experiences; delete removes after appropriate confirmation if destructive
-- [ ] Items within the section are reorderable
-- [ ] Autosave / flush behavior matches the header pattern
-- [ ] Preview lists persisted experiences in item order
+- [x] Fields: job title, company, location, start month/year, end month/year or current-position flag, description (TipTap HTML)
+- [x] Current position disables/hides end date; preview shows Present/Présent based on CV locale
+- [x] User can add multiple experiences; delete removes after appropriate confirmation if destructive
+- [x] Items within the section are reorderable
+- [x] Autosave / flush behavior matches the header pattern
+- [x] Preview lists persisted experiences in item order

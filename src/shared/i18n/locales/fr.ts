@@ -74,10 +74,37 @@ export const fr = {
 				link: "Lien",
 			},
 		},
+		experiences: {
+			add: "Ajouter une expérience",
+			empty: "Aucune expérience pour le moment.",
+			untitled: "Expérience sans titre",
+			delete: "Supprimer cette expérience",
+			deleteTitle: "Supprimer l’expérience",
+			deleteDescription:
+				"Supprimer « {{title}} » ? Cette action est irréversible.",
+			deleteCancel: "Annuler",
+			deleteConfirm: "Supprimer cette expérience",
+			position: "Position",
+			positionOption: "Position {{n}}",
+			field: {
+				jobTitle: "Titre du poste",
+				company: "Entreprise",
+				location: "Lieu",
+				startMonth: "Mois de début",
+				endMonth: "Mois de fin",
+				isCurrent: "Poste actuel",
+				description: "Description",
+			},
+			errors: {
+				endBeforeStart:
+					"Le mois de fin doit être égal ou postérieur au mois de début.",
+			},
+		},
 		preview: {
 			label: "Aperçu du CV canadien",
 			unnamed: "Nom",
 			sectionEmpty: "Aucune entrée pour le moment.",
+			present: "Présent",
 		},
 		section: {
 			identity: "Identité",
