@@ -16,10 +16,11 @@ Product framing from the grill session. Implementation tickets live under [`issu
 | Languages entries | Language name + **free-text** level (not an enum). |
 | Custom sections | Each custom block is a **top-level** section in the global order (can sit between Experiences, Education, Languages, etc.). |
 | Section order | Header fixed at top. Other sections reorderable via **drag-and-drop** (@dnd-kit) **and** a position selector. Order persists immediately. |
-| Forms | **TanStack Form**. Explicit Save / Cancel per block. Dirty guard modal (Discard / Keep editing). No global autosave. |
+| Forms | **TanStack Form**. Debounced autosave (**1s** after last change) per block; flush immediately on blur and on leaving the editor route. No Save / Cancel buttons; no dirty-guard modal. |
 | Dates | Month + year only, in every dated section. Current job hides end date; PDF shows Present / Présent from CV locale. |
 | WYSIWYG | **TipTap** core OSS only (no Cloud / Pro). Bold, italic, lists, links. Stored as **HTML**. |
 | Preview / PDF | Canadian layout with Tailwind. PDF = browser **print** of the preview. No hard page limit in v1. |
+| Editor shell | Shared `AppLayout` chrome (locale, page title, sidebar). Edit UI is portaled into the sidebar on the CV editor route; preview is the main pane. Not page-local split columns or mobile Edit/Preview tabs. |
 | JSON | Export and import (create new CV or replace an existing one after confirmation). |
 | Tracker | Local files in this folder — not GitHub Issues. |
 
@@ -47,23 +48,23 @@ As a user, I can switch the application UI between English and French (Canada).
 
 ### US-05 — Edit header
 
-As a user, I can edit and **save** the header fields (including WYSIWYG description), or cancel; leaving with unsaved changes asks me to discard or keep editing.
+As a user, I can edit the header fields (including WYSIWYG description); changes persist automatically after 1s of idle typing, or immediately when I leave the field or the editor route.
 
 ### US-06 — Experiences
 
-As a user, I can add, edit, save, delete, and reorder work experiences (job title, company, location, start/end month-year or current role, WYSIWYG description).
+As a user, I can add, edit, delete, and reorder work experiences (job title, company, location, start/end month-year or current role, WYSIWYG description); edits autosave like the header.
 
 ### US-07 — Education
 
-As a user, I can add, edit, save, delete, and reorder education entries (school, degree, start/end month-year, city/country).
+As a user, I can add, edit, delete, and reorder education entries (school, degree, start/end month-year, city/country); edits autosave like the header.
 
 ### US-08 — Languages
 
-As a user, I can add, edit, save, delete, and reorder language entries (language name + free-text level).
+As a user, I can add, edit, delete, and reorder language entries (language name + free-text level); edits autosave like the header.
 
 ### US-09 — Custom sections
 
-As a user, I can add custom sections (title + WYSIWYG description), each appearing as its own top-level section in the CV order.
+As a user, I can add custom sections (title + WYSIWYG description), each appearing as its own top-level section in the CV order; edits autosave like the header.
 
 ### US-10 — Reorder sections
 
@@ -71,7 +72,7 @@ As a user, I can reorder non-header sections with drag-and-drop and a position s
 
 ### US-11 — Canadian preview
 
-As a user, I see a live Canadian-format preview of **saved** CV data (split view on desktop; Edit / Preview tabs on mobile).
+As a user, I see a live Canadian-format preview of **persisted** CV data in the main pane (updates after autosave flush), while edit UI lives in the app sidebar on the editor route (opens on enter, closes on leave).
 
 ### US-12 — Export PDF
 

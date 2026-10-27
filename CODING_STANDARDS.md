@@ -7,6 +7,14 @@ Read during **code review**, not as always-on implementation context. Mechanical
 - Enforced by [shadcn-ui-only](.agents/rules/shadcn-ui-only.md) + Biome: product code uses `@/shared/ui/*` only; Base UI only inside those wrappers.
 - Prefer shadcn composition (`Dialog` + `DialogContent` + `DialogHeader` / `Footer` / `Title`) over hand-rolled portal markup.
 - Missing control → `pnpm dlx shadcn@latest add <component>` into `src/shared/ui/`, then import from `@/shared/ui`.
+- Do **not** turn off Biome rules for all of `src/shared/ui/**`. For generated shadcn exceptions (e.g. sidebar cookie write), use a single-line `biome-ignore` on that line only.
+
+## App shell
+
+- Locale switch, page `<h1>`, and the sidebar shell live in `AppLayout`. Pages must not remount that chrome.
+- Editor content enters the sidebar only through `SidebarPortal` / `createPortal` into the layout host.
+- Page titles come from `ROUTE_PAGE_TITLE_KEYS` plus optional loader `pageTitle` — not React state or a `useEffect` that syncs a title into context.
+- When UI feedback changes shell acceptance, update the issue (and settled decisions / US copy) before marking the ticket resolved. For review, the **current issue** wins over older USER-STORIES wording until those stories are amended.
 
 ## Control copy
 

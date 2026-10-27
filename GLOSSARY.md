@@ -41,8 +41,8 @@ The section for school and degree history. UI copy may say “Formation” in Fr
 _Avoid_: Certification (distinct, out of v1), Formation (UI-only synonym)
 
 **Draft**:
-Unsaved values in an open form. Not a separate CV; only an explicit save writes draft values into local storage.
-_Avoid_: Autosave, temporary CV, scratch CV
+Form values that have changed since the last successful persist. They flush to local storage after 1s of idle typing, or immediately on blur / leaving the editor route. Not a separate CV.
+_Avoid_: Explicit save, temporary CV, scratch CV
 
 **Import**:
 Loading a CV from a JSON file into local storage. The operation is all-or-nothing: invalid or unsupported files make no change to stored CVs.
