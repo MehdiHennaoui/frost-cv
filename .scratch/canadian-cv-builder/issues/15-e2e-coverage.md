@@ -4,7 +4,7 @@
 
 **Blocked by:** 07 — Experiences section (pattern exists under `e2e/`)
 
-**Status:** claimed
+**Status:** resolved
 
 **Scope:**
 
