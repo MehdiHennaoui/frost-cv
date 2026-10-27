@@ -1,5 +1,3 @@
-import { GlobeIcon } from "lucide-react";
-
 import { Button } from "@/shared/ui/button";
 import {
 	DropdownMenu,
@@ -10,14 +8,22 @@ import {
 import { changeUiLocale, useAppTranslation, useUiLocale } from "./instance";
 import type { UiLocale } from "./ui-locale";
 
-const LOCALE_OPTIONS: { locale: UiLocale; flag: string }[] = [
-	{ locale: "en", flag: "🇬🇧" },
-	{ locale: "fr", flag: "🇫🇷" },
+const LOCALE_OPTIONS: {
+	locale: UiLocale;
+	flag: string;
+	/** Native name — not i18n’d so it stays recognizable in every UI locale. */
+	label: string;
+}[] = [
+	{ locale: "en", flag: "🇬🇧", label: "English" },
+	{ locale: "fr", flag: "🇫🇷", label: "Français" },
 ];
 
 export function UiLocaleSwitch() {
 	const { t } = useAppTranslation();
 	const value = useUiLocale();
+	const selected =
+		LOCALE_OPTIONS.find((option) => option.locale === value) ??
+		LOCALE_OPTIONS[0];
 
 	function handleSelect(locale: UiLocale) {
 		if (locale === value) {
@@ -38,19 +44,26 @@ export function UiLocaleSwitch() {
 					/>
 				}
 			>
-				<GlobeIcon aria-hidden />
+				<span aria-hidden className="text-base leading-none">
+					{selected.flag}
+				</span>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end">
-				{LOCALE_OPTIONS.map(({ locale, flag }) => (
-					<DropdownMenuItem
-						key={locale}
-						onClick={() => handleSelect(locale)}
-						data-active={locale === value ? "" : undefined}
-					>
-						<span aria-hidden>{flag}</span>
-						<span>{t(`uiLocale.option.${locale}`)}</span>
-					</DropdownMenuItem>
-				))}
+				{LOCALE_OPTIONS.map(({ locale, flag, label }) => {
+					const isSelected = locale === value;
+					return (
+						<DropdownMenuItem
+							key={locale}
+							onClick={() => handleSelect(locale)}
+							data-active={isSelected ? "" : undefined}
+						>
+							<span aria-hidden>{flag}</span>
+							<span className={isSelected ? "font-bold" : undefined}>
+								{label}
+							</span>
+						</DropdownMenuItem>
+					);
+				})}
 			</DropdownMenuContent>
 		</DropdownMenu>
 	);

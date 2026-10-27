@@ -79,9 +79,7 @@ describe("CV list UI locale", () => {
 		renderList([]);
 
 		fireEvent.click(screen.getByRole("button", { name: "uiLocale.label" }));
-		fireEvent.click(
-			screen.getByRole("menuitem", { name: /uiLocale\.option\.fr/ }),
-		);
+		fireEvent.click(screen.getByRole("menuitem", { name: /Français/ }));
 
 		await waitFor(() => {
 			expect(i18n.language).toBe("fr");
