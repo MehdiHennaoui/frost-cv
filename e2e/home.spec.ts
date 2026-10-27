@@ -5,5 +5,8 @@ test("root redirects to CV list empty state", async ({ page }) => {
 	await expect(page).toHaveURL(/\/cvs\/?$/);
 	await expect(page).toHaveTitle(/Frost CV/i);
 	await expect(page.getByRole("heading", { name: "Your CVs" })).toBeVisible();
+	await expect(page.getByText("Loading CVs…")).toHaveCount(0, {
+		timeout: 15_000,
+	});
 	await expect(page.getByText(/no cvs yet/i)).toBeVisible();
 });

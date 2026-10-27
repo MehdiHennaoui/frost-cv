@@ -4,7 +4,7 @@
 
 **Blocked by:** 07 — Experiences section (pattern exists under `e2e/`)
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Scope:**
 
@@ -15,8 +15,8 @@
 
 **Maps to:** polish / regression safety across US-01–US-11
 
-- [ ] List: create CV → appears on `/cvs` after navigating back
-- [ ] List: delete CV with confirm removes it from the list
-- [ ] Editor identity header: edit a field → preview updates after flush/blur
-- [ ] Education / languages / custom sections: one happy-path each once those tickets ship (or stub tickets if still open)
-- [ ] Document in `docs/agents/` when to add an E2E vs unit test (one short note is enough)
+- [x] List: create CV → appears on `/cvs` after navigating back
+- [x] List: delete CV with confirm removes it from the list
+- [x] Editor identity header: edit a field → preview updates after flush/blur
+- [x] Education / languages / custom sections: one happy-path each once those tickets ship (or stub tickets if still open)
+- [x] Document in `docs/agents/` when to add an E2E vs unit test (one short note is enough)
