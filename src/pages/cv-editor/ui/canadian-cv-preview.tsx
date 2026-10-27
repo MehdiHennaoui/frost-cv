@@ -1,16 +1,27 @@
 import type { Cv } from "@/entities/cv";
 import { sectionOrderOf } from "@/entities/cv";
-import { useAppTranslation } from "@/shared/i18n";
+import { i18n, useAppTranslation } from "@/shared/i18n";
 import { sanitizeCvHtml } from "@/shared/lib/sanitize-html";
+import {
+	experienceDateRangeLabel,
+	experiencesOf,
+} from "../model/experience-fields";
 import { identityFieldsOf } from "../model/identity-fields";
 
 type CanadianCvPreviewProps = {
 	cv: Cv;
 };
 
+function presentLabelForCvLocale(locale: Cv["locale"]): string {
+	const uiLng = locale === "fr-CA" ? "fr" : "en";
+	return i18n.getFixedT(uiLng)("cvEditor.preview.present");
+}
+
 export function CanadianCvPreview({ cv }: CanadianCvPreviewProps) {
 	const { t } = useAppTranslation();
 	const identity = identityFieldsOf(cv.content);
+	const experiences = experiencesOf(cv.content);
+	const presentLabel = presentLabelForCvLocale(cv.locale);
 	const fullName = [identity.firstName, identity.lastName]
 		.filter(Boolean)
 		.join(" ");
@@ -57,16 +68,72 @@ export function CanadianCvPreview({ cv }: CanadianCvPreviewProps) {
 
 				{order
 					.filter((key) => key !== "identity")
-					.map((key) => (
-						<section key={key} className="space-y-1">
-							<h2 className="border-neutral-300 border-b font-semibold text-xs uppercase tracking-wide">
-								{t(`cvEditor.section.${key}`)}
-							</h2>
-							<p className="text-neutral-500 text-xs">
-								{t("cvEditor.preview.sectionEmpty")}
-							</p>
-						</section>
-					))}
+					.map((key) => {
+						if (key === "experiences") {
+							return (
+								<section key={key} className="space-y-3">
+									<h2 className="border-neutral-300 border-b font-semibold text-xs uppercase tracking-wide">
+										{t(`cvEditor.section.${key}`)}
+									</h2>
+									{experiences.length === 0 ? (
+										<p className="text-neutral-500 text-xs">
+											{t("cvEditor.preview.sectionEmpty")}
+										</p>
+									) : (
+										<ul className="space-y-3">
+											{experiences.map((entry) => {
+												const range = experienceDateRangeLabel(
+													entry,
+													presentLabel,
+												);
+												const bodyHtml = sanitizeCvHtml(entry.description);
+												return (
+													<li key={entry.id} className="space-y-1">
+														<div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
+															<p className="font-semibold">
+																{[entry.jobTitle, entry.company]
+																	.filter(Boolean)
+																	.join(" · ") ||
+																	t("cvEditor.experiences.untitled")}
+															</p>
+															{range && (
+																<p className="text-neutral-600 text-xs">
+																	{range}
+																</p>
+															)}
+														</div>
+														{entry.location && (
+															<p className="text-neutral-700 text-xs">
+																{entry.location}
+															</p>
+														)}
+														{bodyHtml && (
+															<div
+																className="text-neutral-800 text-sm [&_a]:underline [&_ol]:list-decimal [&_ol]:pl-5 [&_ul]:list-disc [&_ul]:pl-5"
+																// biome-ignore lint/security/noDangerouslySetInnerHtml: TipTap HTML sanitized via sanitizeCvHtml
+																dangerouslySetInnerHTML={{ __html: bodyHtml }}
+															/>
+														)}
+													</li>
+												);
+											})}
+										</ul>
+									)}
+								</section>
+							);
+						}
+
+						return (
+							<section key={key} className="space-y-1">
+								<h2 className="border-neutral-300 border-b font-semibold text-xs uppercase tracking-wide">
+									{t(`cvEditor.section.${key}`)}
+								</h2>
+								<p className="text-neutral-500 text-xs">
+									{t("cvEditor.preview.sectionEmpty")}
+								</p>
+							</section>
+						);
+					})}
 			</div>
 		</article>
 	);
