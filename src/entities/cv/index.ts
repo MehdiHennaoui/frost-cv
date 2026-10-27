@@ -5,6 +5,7 @@ export {
 	listCvs,
 	putCv,
 	resetCvDatabase,
+	saveCv,
 } from "./api/cv-repository";
 export {
 	type CreateCvInput,

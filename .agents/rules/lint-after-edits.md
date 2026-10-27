@@ -14,3 +14,4 @@ pnpm lint:all
 - Fix any issues it reports that your changes caused, then re-run until it passes.
 - Skip only for pure Q&A / no file writes, or when the user explicitly asks not to lint.
 - Do not skip because the change “looks small.”
+- Lefthook `lint-fsd` / Steiger can hit `EMFILE` under a restrictive sandbox. Run `pnpm lint:all` and git commits with unrestricted filesystem permissions when that happens.

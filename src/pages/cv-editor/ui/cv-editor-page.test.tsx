@@ -52,6 +52,7 @@ function sampleCv(overrides: Partial<Cv> = {}): Cv {
 				firstName: "Ada",
 				lastName: "Lovelace",
 				jobTitle: "Analyst",
+				description: "<p>Built engines</p>",
 			},
 		},
 		createdAt: 1,
@@ -68,12 +69,16 @@ describe("CvEditorPage", () => {
 		expect(screen.queryByLabelText("cvEditor.preview.label")).toBeNull();
 	});
 
-	it("portals section editors into the sidebar host, not the preview", () => {
+	it("portals identity form and section stubs into the sidebar host", () => {
 		const { host } = renderEditor(sampleCv());
 
-		const sections = within(host).getAllByRole("listitem");
-		expect(sections.map((el) => el.textContent)).toEqual([
-			"cvEditor.section.identity",
+		expect(
+			within(host).getByLabelText("cvEditor.identity.field.firstName"),
+		).toBeTruthy();
+		expect(within(host).getByDisplayValue("Ada")).toBeTruthy();
+
+		const stubs = within(host).getAllByRole("listitem");
+		expect(stubs.map((el) => el.textContent)).toEqual([
 			"cvEditor.section.experiences",
 			"cvEditor.section.education",
 			"cvEditor.section.languages",
@@ -81,7 +86,9 @@ describe("CvEditorPage", () => {
 		]);
 
 		const preview = screen.getByLabelText("cvEditor.preview.label");
-		expect(within(preview).queryByText("cvEditor.section.identity")).toBeNull();
+		expect(
+			within(preview).queryByLabelText("cvEditor.identity.field.firstName"),
+		).toBeNull();
 	});
 
 	it("preview shows persisted identity outside the sidebar", () => {
@@ -90,5 +97,6 @@ describe("CvEditorPage", () => {
 		const preview = screen.getByLabelText("cvEditor.preview.label");
 		expect(within(preview).getByText("Ada Lovelace")).toBeTruthy();
 		expect(within(preview).getByText("Analyst")).toBeTruthy();
+		expect(within(preview).getByText("Built engines")).toBeTruthy();
 	});
 });

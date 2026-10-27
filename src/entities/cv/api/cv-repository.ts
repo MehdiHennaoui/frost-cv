@@ -55,6 +55,16 @@ export async function deleteCv(id: string): Promise<void> {
 	await db.cvs.delete(id);
 }
 
+/** Persists a CV and bumps updatedAt. */
+export async function saveCv(cv: Cv): Promise<Cv> {
+	const next: Cv = {
+		...cv,
+		updatedAt: Date.now(),
+	};
+	await db.cvs.put(next);
+	return next;
+}
+
 /** Test / seed helper — not required for list UI. */
 export async function putCv(cv: Cv): Promise<string> {
 	const id = await db.cvs.put(cv);
