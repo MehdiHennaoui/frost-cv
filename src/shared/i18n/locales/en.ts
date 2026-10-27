@@ -47,9 +47,30 @@ export const en = {
 		notFoundHint: "This CV is missing or was deleted.",
 		backToList: "Back to CV list",
 		meta: "CV locale: {{locale}}",
-		stubHint: "Section editors arrive in later tickets.",
 		edit: {
 			label: "CV editor",
+		},
+		identity: {
+			linkPrompt: "Link URL",
+			field: {
+				firstName: "First name",
+				lastName: "Last name",
+				jobTitle: "Job title",
+				email: "Email",
+				phone: "Phone",
+				postalCode: "Postal code",
+				linkedin: "LinkedIn",
+				github: "GitHub",
+				website: "Website",
+				description: "Description",
+			},
+			toolbar: {
+				bold: "Bold",
+				italic: "Italic",
+				bulletList: "Bullet list",
+				orderedList: "Numbered list",
+				link: "Link",
+			},
 		},
 		preview: {
 			label: "Canadian CV preview",

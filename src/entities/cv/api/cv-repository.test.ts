@@ -10,6 +10,7 @@ import {
 	listCvs,
 	putCv,
 	resetCvDatabase,
+	saveCv,
 } from "./cv-repository";
 
 describe("listCvs", () => {
@@ -112,5 +113,30 @@ describe("deleteCv", () => {
 
 		const listed = await listCvs();
 		expect(listed.map((cv) => cv.id)).toEqual([kept.id]);
+	});
+});
+
+describe("saveCv", () => {
+	beforeEach(async () => {
+		await resetCvDatabase();
+	});
+
+	it("persists content changes and bumps updatedAt", async () => {
+		const created = await createCv({ title: "Editable", locale: "en" });
+		const saved = await saveCv({
+			...created,
+			content: {
+				...created.content,
+				identity: { firstName: "Ada", description: "<p>Hi</p>" },
+			},
+			updatedAt: created.updatedAt,
+		});
+
+		expect(saved.updatedAt).toBeGreaterThanOrEqual(created.updatedAt);
+		await expect(getCv(created.id)).resolves.toEqual(saved);
+		expect(saved.content.identity).toEqual({
+			firstName: "Ada",
+			description: "<p>Hi</p>",
+		});
 	});
 });

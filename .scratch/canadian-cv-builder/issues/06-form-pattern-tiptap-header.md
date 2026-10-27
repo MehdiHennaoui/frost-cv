@@ -4,13 +4,13 @@
 
 **Blocked by:** 05 — Editor shell + split preview
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Maps to:** US-05, US-11
 
-- [ ] Header form fields: first name, last name, job title, email, phone, postal code, LinkedIn, GitHub, website, description (TipTap)
-- [ ] TipTap core OSS only: bold, italic, bullet/numbered lists, links; content stored as HTML
-- [ ] Debounced autosave (1s after last change) persists header to IndexedDB and refreshes preview
-- [ ] Flush pending draft immediately on field/block blur and on leaving the editor route
-- [ ] No Save / Cancel controls; no Discard / Keep editing modal
-- [ ] Preview header reflects persisted values only (may lag the open draft by up to 1s until flush)
+- [x] Header form fields: first name, last name, job title, email, phone, postal code, LinkedIn, GitHub, website, description (TipTap)
+- [x] TipTap core OSS only: bold, italic, bullet/numbered lists, links; content stored as HTML
+- [x] Debounced autosave (1s after last change) persists header to IndexedDB and refreshes preview
+- [x] Flush pending draft immediately on field/block blur and on leaving the editor route
+- [x] No Save / Cancel controls; no Discard / Keep editing modal
+- [x] Preview header reflects persisted values only (may lag the open draft by up to 1s until flush)

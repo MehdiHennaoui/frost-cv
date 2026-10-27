@@ -49,9 +49,30 @@ export const fr = {
 		notFoundHint: "Ce CV est absent ou a été supprimé.",
 		backToList: "Retour à la liste des CV",
 		meta: "Langue du CV : {{locale}}",
-		stubHint: "Les éditeurs de section arriveront dans de prochains tickets.",
 		edit: {
 			label: "Éditeur de CV",
+		},
+		identity: {
+			linkPrompt: "URL du lien",
+			field: {
+				firstName: "Prénom",
+				lastName: "Nom",
+				jobTitle: "Titre du poste",
+				email: "Courriel",
+				phone: "Téléphone",
+				postalCode: "Code postal",
+				linkedin: "LinkedIn",
+				github: "GitHub",
+				website: "Site web",
+				description: "Description",
+			},
+			toolbar: {
+				bold: "Gras",
+				italic: "Italique",
+				bulletList: "Liste à puces",
+				orderedList: "Liste numérotée",
+				link: "Lien",
+			},
 		},
 		preview: {
 			label: "Aperçu du CV canadien",

@@ -50,3 +50,32 @@ export function identityFieldsOf(content: CvContent): IdentityFields {
 		description: readString(identity.description),
 	};
 }
+
+/** Merges Identity fields into CV content without dropping other sections. */
+export function withIdentity(
+	content: CvContent,
+	identity: IdentityFields,
+): CvContent {
+	return {
+		...content,
+		identity: { ...identity },
+	};
+}
+
+export function identityFieldsEqual(
+	a: IdentityFields,
+	b: IdentityFields,
+): boolean {
+	return (
+		a.firstName === b.firstName &&
+		a.lastName === b.lastName &&
+		a.jobTitle === b.jobTitle &&
+		a.email === b.email &&
+		a.phone === b.phone &&
+		a.postalCode === b.postalCode &&
+		a.linkedin === b.linkedin &&
+		a.github === b.github &&
+		a.website === b.website &&
+		a.description === b.description
+	);
+}

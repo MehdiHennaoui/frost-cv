@@ -1,8 +1,11 @@
+import { useEffect, useState } from "react";
+
 import { type Cv, sectionOrderOf } from "@/entities/cv";
 import { useAppTranslation } from "@/shared/i18n";
 import { SidebarPortal } from "@/shared/lib/sidebar-portal";
 import { buttonVariants } from "@/shared/ui/button";
 import { CanadianCvPreview } from "./canadian-cv-preview";
+import { IdentityHeaderForm } from "./identity-header-form";
 
 type CvEditorPageProps = {
 	cv: Cv | undefined;
@@ -10,7 +13,7 @@ type CvEditorPageProps = {
 
 function SectionPlaceholders({ cv }: { cv: Cv }) {
 	const { t } = useAppTranslation();
-	const order = sectionOrderOf(cv.content);
+	const order = sectionOrderOf(cv.content).filter((key) => key !== "identity");
 
 	return (
 		<ul className="flex flex-col gap-3">
@@ -26,7 +29,13 @@ function SectionPlaceholders({ cv }: { cv: Cv }) {
 	);
 }
 
-function EditorSidebarContent({ cv }: { cv: Cv }) {
+function EditorSidebarContent({
+	cv,
+	onPersisted,
+}: {
+	cv: Cv;
+	onPersisted: (cv: Cv) => void;
+}) {
 	const { t } = useAppTranslation();
 
 	return (
@@ -35,12 +44,10 @@ function EditorSidebarContent({ cv }: { cv: Cv }) {
 				<p className="text-muted-foreground text-xs">
 					{t("cvEditor.meta", { locale: cv.locale })}
 				</p>
-				<p className="mt-2 text-muted-foreground text-xs">
-					{t("cvEditor.stubHint")}
-				</p>
 			</div>
-			<div className="min-h-0 flex-1 overflow-y-auto px-2">
-				<p className="mb-2 font-medium text-xs">{t("cvEditor.edit.label")}</p>
+			<div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-2">
+				<p className="font-medium text-xs">{t("cvEditor.edit.label")}</p>
+				<IdentityHeaderForm cv={cv} onPersisted={onPersisted} />
 				<SectionPlaceholders cv={cv} />
 			</div>
 			<div className="border-sidebar-border border-t p-2">
@@ -54,8 +61,13 @@ function EditorSidebarContent({ cv }: { cv: Cv }) {
 
 export function CvEditorPage({ cv }: CvEditorPageProps) {
 	const { t } = useAppTranslation();
+	const [persistedCv, setPersistedCv] = useState(cv);
 
-	if (!cv) {
+	useEffect(() => {
+		setPersistedCv(cv);
+	}, [cv]);
+
+	if (!persistedCv) {
 		return (
 			<main className="mx-auto flex max-w-6xl flex-col gap-4 p-4 md:p-8">
 				<p className="text-muted-foreground">{t("cvEditor.notFoundHint")}</p>
@@ -69,10 +81,10 @@ export function CvEditorPage({ cv }: CvEditorPageProps) {
 	return (
 		<>
 			<SidebarPortal>
-				<EditorSidebarContent cv={cv} />
+				<EditorSidebarContent cv={persistedCv} onPersisted={setPersistedCv} />
 			</SidebarPortal>
 			<main className="flex flex-1 justify-center bg-muted/40 p-4 md:p-8">
-				<CanadianCvPreview cv={cv} />
+				<CanadianCvPreview cv={persistedCv} />
 			</main>
 		</>
 	);

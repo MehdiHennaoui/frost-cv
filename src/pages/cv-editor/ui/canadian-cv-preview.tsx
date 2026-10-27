@@ -1,6 +1,7 @@
 import type { Cv } from "@/entities/cv";
 import { sectionOrderOf } from "@/entities/cv";
 import { useAppTranslation } from "@/shared/i18n";
+import { sanitizeCvHtml } from "@/shared/lib/sanitize-html";
 import { identityFieldsOf } from "../model/identity-fields";
 
 type CanadianCvPreviewProps = {
@@ -22,6 +23,7 @@ export function CanadianCvPreview({ cv }: CanadianCvPreviewProps) {
 		identity.github,
 		identity.website,
 	].filter(Boolean);
+	const descriptionHtml = sanitizeCvHtml(identity.description);
 
 	return (
 		<article
@@ -44,7 +46,13 @@ export function CanadianCvPreview({ cv }: CanadianCvPreviewProps) {
 							))}
 						</ul>
 					)}
-					{/* shortcut: Identity description HTML waits for TipTap + sanitize in ticket 06 */}
+					{descriptionHtml && (
+						<div
+							className="pt-2 text-neutral-800 text-sm [&_a]:underline [&_ol]:list-decimal [&_ol]:pl-5 [&_ul]:list-disc [&_ul]:pl-5"
+							// biome-ignore lint/security/noDangerouslySetInnerHtml: TipTap HTML sanitized via sanitizeCvHtml
+							dangerouslySetInnerHTML={{ __html: descriptionHtml }}
+						/>
+					)}
 				</header>
 
 				{order
