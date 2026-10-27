@@ -1,6 +1,6 @@
 # 09: Languages section
 
-**What to build:** The user can add, edit, save, delete, and reorder language entries. Each entry has a language name and a free-text level (not a fixed enum). Saved languages appear in the preview.
+**What to build:** The user can add, edit, delete, and reorder language entries. Each entry has a language name and a free-text level (not a fixed enum). Edits use the shared autosave pattern. Persisted languages appear in the preview.
 
 **Blocked by:** 06 — Form pattern + TipTap + Header
 
@@ -10,6 +10,6 @@
 
 - [ ] Fields: language name, level as plain text input
 - [ ] CRUD + item reorder within the section
-- [ ] Save/Cancel/dirty guard match the shared form pattern
-- [ ] Preview lists saved languages in item order
+- [ ] Autosave / flush behavior matches the shared form pattern
+- [ ] Preview lists persisted languages in item order
 - [ ] No TipTap required for this section
