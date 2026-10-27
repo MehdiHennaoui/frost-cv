@@ -33,8 +33,17 @@ When creating a branch, use:
 - `prototype/composer-layout`
 - `research/ats-keywords`
 
+## Tickets
+
+When starting work on an issue-tracker ticket (`/implement`, a numbered `.scratch/.../issues/NN-*.md`, or an equivalent ticket ask):
+
+1. Create and check out a branch **before** editing code (from up-to-date `main` / default base).
+2. Name it from the ticket slug, e.g. `feature/form-pattern-tiptap-header` for `06-form-pattern-tiptap-header.md` (drop the numeric prefix; keep the kebab slug).
+3. Commit on that branch only — never commit ticket work directly on `main`.
+
 ## Do not
 
 - Invent extra prefixes (`hotfix/`, `bugfix/`, `improvement/`, …). Urgency belongs in the PR, not the branch name.
 - Use spaces, underscores, or PascalCase in the description.
-- Create a branch unless the user asked for one (or the task clearly needs isolation).
+- Skip the ticket branch for “small” ticket work; isolation is required whenever a ticket is in play.
+- Create a branch for vague chat-only nits with no ticket — only when the user asks or the task clearly needs isolation.
