@@ -6,6 +6,7 @@ import { createEmptyCvContent } from "../model/cv";
 import {
 	createCv,
 	deleteCv,
+	getCv,
 	listCvs,
 	putCv,
 	resetCvDatabase,
@@ -70,6 +71,22 @@ describe("createCv", () => {
 			/title/i,
 		);
 		await expect(listCvs()).resolves.toEqual([]);
+	});
+});
+
+describe("getCv", () => {
+	beforeEach(async () => {
+		await resetCvDatabase();
+	});
+
+	it("returns the CV when the id exists", async () => {
+		const created = await createCv({ title: "Target", locale: "en" });
+
+		await expect(getCv(created.id)).resolves.toEqual(created);
+	});
+
+	it("returns undefined when the id is missing", async () => {
+		await expect(getCv("missing-id")).resolves.toBeUndefined();
 	});
 });
 

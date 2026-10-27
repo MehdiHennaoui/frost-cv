@@ -1,19 +1,27 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { getCv } from "@/entities/cv";
+import { CvEditorPage } from "@/pages/cv-editor";
+import { useAppTranslation } from "@/shared/i18n";
+
 export const Route = createFileRoute("/cvs_/$cvId")({
 	ssr: false,
-	component: CvEditorStubRoute,
+	loader: async ({ params }) => {
+		const cv = await getCv(params.cvId);
+		return { cv, pageTitle: cv?.title };
+	},
+	pendingComponent: CvEditorPending,
+	component: CvEditorRoute,
 });
 
-function CvEditorStubRoute() {
-	const { cvId } = Route.useParams();
-	return (
-		<>
-			<h1 className="font-semibold text-3xl tracking-tight">CV editor</h1>
-			<p className="mt-4 text-muted-foreground">
-				Editing CV <span className="font-mono text-foreground">{cvId}</span>.
-				Full editor arrives in a later ticket.
-			</p>
-		</>
-	);
+function CvEditorPending() {
+	const { t } = useAppTranslation();
+
+	return <p className="text-muted-foreground">{t("cvEditor.loading")}</p>;
+}
+
+function CvEditorRoute() {
+	const { cv } = Route.useLoaderData();
+
+	return <CvEditorPage cv={cv} />;
 }

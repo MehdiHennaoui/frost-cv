@@ -43,9 +43,6 @@ describe("CV list UI locale", () => {
 	it("renders list, create, and delete copy as translation keys", async () => {
 		renderList([sampleCv]);
 
-		expect(
-			screen.getByRole("heading", { name: "cvList.heading" }),
-		).toBeTruthy();
 		expect(screen.getByRole("button", { name: "cvList.create" })).toBeTruthy();
 		expect(screen.getByText("cvList.meta")).toBeTruthy();
 
@@ -81,9 +78,8 @@ describe("CV list UI locale", () => {
 	it("persists the selected UI locale in localStorage", async () => {
 		renderList([]);
 
-		fireEvent.change(screen.getByLabelText("uiLocale.label"), {
-			target: { value: "fr" },
-		});
+		fireEvent.click(screen.getByRole("button", { name: "uiLocale.label" }));
+		fireEvent.click(screen.getByRole("menuitem", { name: /Français/ }));
 
 		await waitFor(() => {
 			expect(i18n.language).toBe("fr");
@@ -95,7 +91,6 @@ describe("CV list UI locale", () => {
 		await changeUiLocale("fr");
 		renderList([]);
 
-		expect(screen.getByRole("heading", { name: "Vos CV" })).toBeTruthy();
 		expect(screen.getByText("Aucun CV pour le moment.")).toBeTruthy();
 	});
 });

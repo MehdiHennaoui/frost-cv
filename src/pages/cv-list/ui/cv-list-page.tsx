@@ -40,7 +40,11 @@ function CvCard({ cv, onDelete }: { cv: Cv; onDelete: (cv: Cv) => void }) {
 	return (
 		<Card size="sm" className="h-full">
 			<CardHeader>
-				<CardTitle className="min-w-0 break-words">{cv.title}</CardTitle>
+				<CardTitle className="min-w-0 break-words">
+					<a href={`/cvs/${cv.id}`} className="hover:underline">
+						{cv.title}
+					</a>
+				</CardTitle>
 				<CardDescription>
 					{t("cvList.meta", { locale: cv.locale, updatedAt })}
 				</CardDescription>
@@ -86,11 +90,8 @@ export function CvListPage({
 	}
 
 	return (
-		<>
-			<div className="flex items-center justify-between gap-4">
-				<h1 className="font-semibold text-3xl tracking-tight">
-					{t("cvList.heading")}
-				</h1>
+		<main className="mx-auto max-w-6xl overflow-y-auto p-4 md:p-8">
+			<div className="flex justify-end">
 				<Button type="button" onClick={handleOpenCreate}>
 					<PlusIcon data-icon="inline-start" />
 					{t("cvList.create")}
@@ -126,6 +127,6 @@ export function CvListPage({
 					onDeleted={onDeleted}
 				/>
 			)}
-		</>
+		</main>
 	);
 }

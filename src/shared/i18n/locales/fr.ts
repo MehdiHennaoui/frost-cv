@@ -43,4 +43,27 @@ export const fr = {
 		confirm: "Supprimer",
 		failed: "Impossible de supprimer le CV",
 	},
+	cvEditor: {
+		loading: "Chargement du CV…",
+		notFound: "CV introuvable",
+		notFoundHint: "Ce CV est absent ou a été supprimé.",
+		backToList: "Retour à la liste des CV",
+		meta: "Langue du CV : {{locale}}",
+		stubHint: "Les éditeurs de section arriveront dans de prochains tickets.",
+		edit: {
+			label: "Éditeur de CV",
+		},
+		preview: {
+			label: "Aperçu du CV canadien",
+			unnamed: "Nom",
+			sectionEmpty: "Aucune entrée pour le moment.",
+		},
+		section: {
+			identity: "Identité",
+			experiences: "Expériences",
+			education: "Formation",
+			languages: "Langues",
+			customs: "Sections personnalisées",
+		},
+	},
 } satisfies typeof en;
