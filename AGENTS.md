@@ -16,3 +16,7 @@ These rules apply on every task, for any agent. Source of truth: `.agents/rules/
 ## Review standards
 
 Judgement-call standards for review (not always loaded into implementation): [CODING_STANDARDS.md](CODING_STANDARDS.md).
+
+## Navigation
+
+- CV editor section pattern (forms, TipTap, autosave): [CODING_STANDARDS.md — Editor sections](CODING_STANDARDS.md#editor-sections) and [docs/agents/testing-autosave.md](docs/agents/testing-autosave.md).

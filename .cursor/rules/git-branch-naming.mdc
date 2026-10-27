@@ -37,9 +37,12 @@ When creating a branch, use:
 
 When starting work on an issue-tracker ticket (`/implement`, a numbered `.scratch/.../issues/NN-*.md`, or an equivalent ticket ask):
 
-1. Create and check out a branch **before** editing code (from up-to-date `main` / default base).
+1. If HEAD is `main`/`master`, create and check out the ticket branch **before** any edit (from up-to-date `main`).
 2. Name it from the ticket slug, e.g. `feature/form-pattern-tiptap-header` for `06-form-pattern-tiptap-header.md` (drop the numeric prefix; keep the kebab slug).
-3. Commit on that branch only — never commit ticket work directly on `main`.
+3. Commit on that branch only.
+4. Lefthook blocks commits that touch `.scratch/**/issues/**` or `src/**` while on `main`/`master`.
+
+Dirty-tree moves: stash or commit before `git reset --hard`.
 
 ## Do not
 

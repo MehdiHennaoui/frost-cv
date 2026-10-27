@@ -8,11 +8,12 @@ import {
 	ListIcon,
 	ListOrderedIcon,
 } from "lucide-react";
-import { useEffect } from "react";
+import { useLayoutEffect } from "react";
 
 import { useAppTranslation } from "@/shared/i18n";
 import { cn } from "@/shared/lib/cn";
 import { Button } from "@/shared/ui/button";
+import { useResizableContentHeight } from "../model/use-resizable-content-height";
 
 type RichTextEditorProps = {
 	id?: string;
@@ -56,7 +57,7 @@ export function RichTextEditor({
 			attributes: {
 				id: id ?? "",
 				class:
-					"prose prose-sm max-w-none min-h-24 px-2.5 py-2 outline-none focus-visible:outline-none",
+					"prose prose-sm max-w-none px-2.5 py-2 outline-none focus-visible:outline-none",
 				...(ariaInvalid ? { "aria-invalid": "true" } : {}),
 			},
 		},
@@ -68,7 +69,11 @@ export function RichTextEditor({
 		},
 	});
 
-	useEffect(() => {
+	const { ref: bodyRef, style: bodyStyle } = useResizableContentHeight(
+		editor ? value : undefined,
+	);
+
+	useLayoutEffect(() => {
 		if (!editor || editor.isFocused) {
 			return;
 		}
@@ -107,13 +112,13 @@ export function RichTextEditor({
 	return (
 		<div
 			className={cn(
-				"overflow-hidden rounded-md border border-input bg-transparent shadow-xs",
+				"rounded-md border border-input bg-transparent shadow-xs",
 				"focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50",
 				ariaInvalid &&
 					"border-destructive ring-3 ring-destructive/20 dark:ring-destructive/40",
 			)}
 		>
-			<div className="flex flex-wrap gap-0.5 border-input border-b bg-muted/30 p-1">
+			<div className="flex flex-wrap gap-0.5 rounded-t-md border-input border-b bg-muted/30 p-1">
 				<Button
 					type="button"
 					size="icon-sm"
@@ -165,7 +170,13 @@ export function RichTextEditor({
 					<LinkIcon />
 				</Button>
 			</div>
-			<EditorContent editor={editor} />
+			<div
+				ref={bodyRef}
+				className="resize-y overflow-y-auto rounded-b-md"
+				style={bodyStyle}
+			>
+				<EditorContent editor={editor} />
+			</div>
 		</div>
 	);
 }

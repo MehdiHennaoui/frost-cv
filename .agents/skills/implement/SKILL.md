@@ -8,7 +8,13 @@ Implement the work described by the user in the spec or tickets.
 
 If the user passes a ticket reference, fetch it from the issue tracker and state its title before starting. If the reference is ambiguous, ask.
 
-Before editing code: create and check out a ticket branch from up-to-date `main` (see git-branch-naming: `feature/<ticket-slug>` or the matching type). Do not commit ticket work on `main`.
+## Branch first
+
+If `git branch --show-current` is `main` or `master` and this is tracker-ticket work: create and check out the ticket branch from up-to-date `main` **before** editing (see git-branch-naming: `feature/<ticket-slug>` or the matching type). Commit ticket work on that branch only.
+
+When rearranging commits (e.g. moving work off `main`): stash or commit dirty files first — do not `git reset --hard` on a dirty tree.
+
+## Build
 
 Call the Skill tool with "tdd" where possible, at pre-agreed seams.
 
@@ -16,4 +22,13 @@ Run typechecking regularly, single test files regularly, and the full test suite
 
 Once done, call the Skill tool with "code-review" to review the work.
 
-Commit your work on the ticket branch.
+Commit on the ticket branch.
+
+## Ship gate (before `Status: resolved`)
+
+All of these must hold before flipping the issue to `resolved`:
+
+1. Every change you intend for the ticket is committed (no leftover polish still dirty).
+2. The ticket branch is pushed to `origin`.
+3. A PR is open. If `gh` fails with **401** / bad credentials, **stop** and run `/wizard` for `gh auth login` — do not keep retrying `gh pr create`.
+4. Only then set `Status: resolved` on the issue file.
