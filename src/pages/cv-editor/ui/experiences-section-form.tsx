@@ -1,11 +1,4 @@
-import {
-	ArrowDownIcon,
-	ArrowUpIcon,
-	BriefcaseIcon,
-	PlusIcon,
-	Trash2Icon,
-	XIcon,
-} from "lucide-react";
+import { BriefcaseIcon, PlusIcon, Trash2Icon, XIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { type Cv, saveCv } from "@/entities/cv";
@@ -22,14 +15,17 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/shared/ui/dialog";
-import { Field, FieldGroup, FieldLabel } from "@/shared/ui/field";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/shared/ui/field";
 import { Input } from "@/shared/ui/input";
+import { NativeSelect, NativeSelectOption } from "@/shared/ui/native-select";
 import {
 	createEmptyExperience,
 	type ExperienceEntry,
+	experienceDateRangeError,
 	experiencesEqual,
+	experiencesHaveValidDateRanges,
 	experiencesOf,
-	moveExperience,
+	moveExperienceTo,
 	removeExperience,
 	withExperiences,
 } from "../model/experience-fields";
@@ -79,13 +75,21 @@ export function ExperiencesSectionForm({
 	useEffect(() => {
 		const autosave = autosaveRef.current;
 		return () => {
-			void autosave.flush();
+			if (experiencesHaveValidDateRanges(draftRef.current)) {
+				void autosave.flush();
+			} else {
+				autosave.cancel();
+			}
 		};
 	}, []);
 
 	function commit(next: ExperienceEntry[], options?: { flush?: boolean }) {
 		draftRef.current = next;
 		setEntries(next);
+		if (!experiencesHaveValidDateRanges(next)) {
+			autosaveRef.current.cancel();
+			return;
+		}
 		if (options?.flush) {
 			autosaveRef.current.schedule(next);
 			void autosaveRef.current.flush();
@@ -103,6 +107,10 @@ export function ExperiencesSectionForm({
 	}
 
 	function flush() {
+		if (!experiencesHaveValidDateRanges(draftRef.current)) {
+			autosaveRef.current.cancel();
+			return;
+		}
 		void autosaveRef.current.flush();
 	}
 
@@ -152,138 +160,160 @@ export function ExperiencesSectionForm({
 								{t("cvEditor.experiences.empty")}
 							</p>
 						)}
-						{entries.map((entry, index) => (
-							<div
-								key={entry.id}
-								className="space-y-3 rounded-lg border border-border p-3"
-							>
-								<div className="flex flex-wrap gap-1">
-									<Button
-										type="button"
-										size="sm"
-										variant="ghost"
-										disabled={index === 0}
-										aria-label={t("cvEditor.experiences.moveUp")}
-										onClick={() =>
-											commit(moveExperience(draftRef.current, entry.id, "up"), {
-												flush: true,
-											})
-										}
-									>
-										<ArrowUpIcon aria-hidden className="size-4" />
-									</Button>
-									<Button
-										type="button"
-										size="sm"
-										variant="ghost"
-										disabled={index === entries.length - 1}
-										aria-label={t("cvEditor.experiences.moveDown")}
-										onClick={() =>
-											commit(
-												moveExperience(draftRef.current, entry.id, "down"),
-												{ flush: true },
-											)
-										}
-									>
-										<ArrowDownIcon aria-hidden className="size-4" />
-									</Button>
-									<Button
-										type="button"
-										size="sm"
-										variant="ghost"
-										aria-label={t("cvEditor.experiences.delete")}
-										onClick={() => setPendingDeleteId(entry.id)}
-									>
-										<Trash2Icon aria-hidden className="size-4" />
-									</Button>
-								</div>
-
-								<FieldGroup className="gap-3">
-									{TEXT_FIELDS.map((name) => (
-										<Field key={name}>
-											<FieldLabel htmlFor={`experience-${entry.id}-${name}`}>
-												{t(`cvEditor.experiences.field.${name}`)}
+						{entries.map((entry, index) => {
+							const dateError = experienceDateRangeError(entry);
+							return (
+								<div
+									key={entry.id}
+									className="space-y-3 rounded-lg border border-border p-3"
+								>
+									<div className="flex flex-wrap items-end justify-between gap-2">
+										<Field className="w-auto gap-1.5">
+											<FieldLabel htmlFor={`experience-${entry.id}-position`}>
+												{t("cvEditor.experiences.position")}
 											</FieldLabel>
-											<Input
-												id={`experience-${entry.id}-${name}`}
-												value={entry[name]}
-												onBlur={flush}
-												onChange={(event) =>
-													patchEntry(entry.id, { [name]: event.target.value })
-												}
-											/>
+											<NativeSelect
+												id={`experience-${entry.id}-position`}
+												size="sm"
+												disabled={entries.length < 2}
+												value={String(index)}
+												aria-label={t("cvEditor.experiences.position")}
+												onChange={(event) => {
+													const toIndex = Number(event.target.value);
+													if (Number.isNaN(toIndex)) {
+														return;
+													}
+													commit(
+														moveExperienceTo(
+															draftRef.current,
+															entry.id,
+															toIndex,
+														),
+														{ flush: true },
+													);
+												}}
+											>
+												{Array.from({ length: entries.length }, (_, position) =>
+													String(position),
+												).map((value) => (
+													<NativeSelectOption key={value} value={value}>
+														{t("cvEditor.experiences.positionOption", {
+															n: Number(value) + 1,
+														})}
+													</NativeSelectOption>
+												))}
+											</NativeSelect>
 										</Field>
-									))}
+										<Button
+											type="button"
+											size="sm"
+											variant="ghost"
+											onClick={() => setPendingDeleteId(entry.id)}
+										>
+											<Trash2Icon data-icon="inline-start" />
+											{t("cvEditor.experiences.delete")}
+										</Button>
+									</div>
 
-									<Field>
-										<FieldLabel htmlFor={`experience-${entry.id}-startMonth`}>
-											{t("cvEditor.experiences.field.startMonth")}
-										</FieldLabel>
-										<Input
-											id={`experience-${entry.id}-startMonth`}
-											type="month"
-											value={entry.startMonth}
-											onBlur={flush}
-											onChange={(event) =>
-												patchEntry(entry.id, { startMonth: event.target.value })
-											}
-										/>
-									</Field>
+									<FieldGroup className="gap-3">
+										{TEXT_FIELDS.map((name) => (
+											<Field key={name}>
+												<FieldLabel htmlFor={`experience-${entry.id}-${name}`}>
+													{t(`cvEditor.experiences.field.${name}`)}
+												</FieldLabel>
+												<Input
+													id={`experience-${entry.id}-${name}`}
+													value={entry[name]}
+													onBlur={flush}
+													onChange={(event) =>
+														patchEntry(entry.id, { [name]: event.target.value })
+													}
+												/>
+											</Field>
+										))}
 
-									<Field orientation="horizontal">
-										<Checkbox
-											id={`experience-${entry.id}-isCurrent`}
-											checked={entry.isCurrent}
-											onBlur={flush}
-											onCheckedChange={(checked) => {
-												const isCurrent = checked === true;
-												patchEntry(entry.id, {
-													isCurrent,
-													endMonth: isCurrent ? "" : entry.endMonth,
-												});
-												flush();
-											}}
-										/>
-										<FieldLabel htmlFor={`experience-${entry.id}-isCurrent`}>
-											{t("cvEditor.experiences.field.isCurrent")}
-										</FieldLabel>
-									</Field>
-
-									{!entry.isCurrent && (
-										<Field>
-											<FieldLabel htmlFor={`experience-${entry.id}-endMonth`}>
-												{t("cvEditor.experiences.field.endMonth")}
+										<Field data-invalid={dateError ? true : undefined}>
+											<FieldLabel htmlFor={`experience-${entry.id}-startMonth`}>
+												{t("cvEditor.experiences.field.startMonth")}
 											</FieldLabel>
 											<Input
-												id={`experience-${entry.id}-endMonth`}
+												id={`experience-${entry.id}-startMonth`}
 												type="month"
-												value={entry.endMonth}
+												value={entry.startMonth}
+												aria-invalid={dateError ? true : undefined}
 												onBlur={flush}
 												onChange={(event) =>
 													patchEntry(entry.id, {
-														endMonth: event.target.value,
+														startMonth: event.target.value,
 													})
 												}
 											/>
+											{dateError && (
+												<FieldError errors={[{ message: t(dateError) }]} />
+											)}
 										</Field>
-									)}
 
-									<Field>
-										<FieldLabel htmlFor={`experience-${entry.id}-description`}>
-											{t("cvEditor.experiences.field.description")}
-										</FieldLabel>
-										<RichTextEditor
-											id={`experience-${entry.id}-description`}
-											value={entry.description}
-											onBlur={flush}
-											onChange={(html) =>
-												patchEntry(entry.id, { description: html })
-											}
-										/>
-									</Field>
-								</FieldGroup>
-							</div>
-						))}
+										<Field orientation="horizontal">
+											<Checkbox
+												id={`experience-${entry.id}-isCurrent`}
+												checked={entry.isCurrent}
+												onBlur={flush}
+												onCheckedChange={(checked) => {
+													const isCurrent = checked === true;
+													patchEntry(entry.id, {
+														isCurrent,
+														endMonth: isCurrent ? "" : entry.endMonth,
+													});
+													flush();
+												}}
+											/>
+											<FieldLabel htmlFor={`experience-${entry.id}-isCurrent`}>
+												{t("cvEditor.experiences.field.isCurrent")}
+											</FieldLabel>
+										</Field>
+
+										{!entry.isCurrent && (
+											<Field data-invalid={dateError ? true : undefined}>
+												<FieldLabel htmlFor={`experience-${entry.id}-endMonth`}>
+													{t("cvEditor.experiences.field.endMonth")}
+												</FieldLabel>
+												<Input
+													id={`experience-${entry.id}-endMonth`}
+													type="month"
+													value={entry.endMonth}
+													aria-invalid={dateError ? true : undefined}
+													onBlur={flush}
+													onChange={(event) =>
+														patchEntry(entry.id, {
+															endMonth: event.target.value,
+														})
+													}
+												/>
+												{dateError && (
+													<FieldError errors={[{ message: t(dateError) }]} />
+												)}
+											</Field>
+										)}
+
+										<Field>
+											<FieldLabel
+												htmlFor={`experience-${entry.id}-description`}
+											>
+												{t("cvEditor.experiences.field.description")}
+											</FieldLabel>
+											<RichTextEditor
+												id={`experience-${entry.id}-description`}
+												value={entry.description}
+												onBlur={flush}
+												onChange={(html) =>
+													patchEntry(entry.id, { description: html })
+												}
+											/>
+										</Field>
+									</FieldGroup>
+								</div>
+							);
+						})}
 					</CardContent>
 				</Card>
 			</form>

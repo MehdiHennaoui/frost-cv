@@ -81,8 +81,8 @@ export const en = {
 			deleteDescription: "Delete “{{title}}”? This cannot be undone.",
 			deleteCancel: "Cancel",
 			deleteConfirm: "Delete this experience",
-			moveUp: "Move experience up",
-			moveDown: "Move experience down",
+			position: "Position",
+			positionOption: "Position {{n}}",
 			field: {
 				jobTitle: "Job title",
 				company: "Company",
@@ -91,6 +91,9 @@ export const en = {
 				endMonth: "End month",
 				isCurrent: "Current position",
 				description: "Description",
+			},
+			errors: {
+				endBeforeStart: "End month must be on or after the start month.",
 			},
 		},
 		preview: {

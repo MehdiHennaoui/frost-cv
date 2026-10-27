@@ -3,10 +3,13 @@ import { describe, expect, it } from "vitest";
 import { createEmptyCvContent } from "@/entities/cv";
 import {
 	createEmptyExperience,
+	experienceDateRangeError,
 	experienceDateRangeLabel,
+	experienceEntrySchema,
 	experiencesEqual,
+	experiencesHaveValidDateRanges,
 	experiencesOf,
-	moveExperience,
+	moveExperienceTo,
 	removeExperience,
 	withExperiences,
 } from "./experience-fields";
@@ -87,24 +90,24 @@ describe("experiencesEqual", () => {
 	});
 });
 
-describe("moveExperience / removeExperience", () => {
-	it("reorders and removes by id", () => {
+describe("moveExperienceTo / removeExperience", () => {
+	it("reorders to an index and removes by id", () => {
 		const first = { ...createEmptyExperience(), id: "a", jobTitle: "A" };
 		const second = { ...createEmptyExperience(), id: "b", jobTitle: "B" };
 		const third = { ...createEmptyExperience(), id: "c", jobTitle: "C" };
 		const list = [first, second, third];
 
-		expect(moveExperience(list, "b", "up").map((e) => e.id)).toEqual([
+		expect(moveExperienceTo(list, "b", 0).map((e) => e.id)).toEqual([
 			"b",
 			"a",
 			"c",
 		]);
-		expect(moveExperience(list, "b", "down").map((e) => e.id)).toEqual([
-			"a",
-			"c",
+		expect(moveExperienceTo(list, "a", 2).map((e) => e.id)).toEqual([
 			"b",
+			"c",
+			"a",
 		]);
-		expect(moveExperience(list, "a", "up")).toEqual(list);
+		expect(moveExperienceTo(list, "a", 0)).toEqual(list);
 		expect(removeExperience(list, "b").map((e) => e.id)).toEqual(["a", "c"]);
 	});
 });
@@ -144,5 +147,45 @@ describe("experienceDateRangeLabel", () => {
 				"Présent",
 			),
 		).toBe("01/2020 – Présent");
+	});
+});
+
+describe("experienceEntrySchema date range", () => {
+	it("accepts equal or ordered months and current roles", () => {
+		expect(
+			experienceEntrySchema.safeParse({
+				...createEmptyExperience(),
+				startMonth: "2020-01",
+				endMonth: "2020-01",
+			}).success,
+		).toBe(true);
+		expect(
+			experienceEntrySchema.safeParse({
+				...createEmptyExperience(),
+				startMonth: "2021-06",
+				endMonth: "2020-01",
+				isCurrent: true,
+			}).success,
+		).toBe(true);
+		expect(
+			experienceDateRangeError({
+				...createEmptyExperience(),
+				startMonth: "2020-01",
+				endMonth: "",
+			}),
+		).toBeNull();
+	});
+
+	it("rejects end before start", () => {
+		const entry = {
+			...createEmptyExperience(),
+			startMonth: "2021-06",
+			endMonth: "2020-01",
+		};
+		expect(experienceEntrySchema.safeParse(entry).success).toBe(false);
+		expect(experienceDateRangeError(entry)).toBe(
+			"cvEditor.experiences.errors.endBeforeStart",
+		);
+		expect(experiencesHaveValidDateRanges([entry])).toBe(false);
 	});
 });

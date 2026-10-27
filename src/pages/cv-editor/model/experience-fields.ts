@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 import type { CvContent } from "@/entities/cv";
 
 export type ExperienceEntry = {
@@ -11,6 +13,64 @@ export type ExperienceEntry = {
 	isCurrent: boolean;
 	description: string;
 };
+
+const monthYearSchema = z.union([
+	z.literal(""),
+	z.string().regex(/^\d{4}-\d{2}$/),
+]);
+
+/** Entry shape + start ≤ end when both months are set (skipped for current roles). */
+export const experienceEntrySchema = z
+	.object({
+		id: z.string(),
+		jobTitle: z.string(),
+		company: z.string(),
+		location: z.string(),
+		startMonth: monthYearSchema,
+		endMonth: monthYearSchema,
+		isCurrent: z.boolean(),
+		description: z.string(),
+	})
+	.superRefine((entry, ctx) => {
+		if (entry.isCurrent) {
+			return;
+		}
+		if (!entry.startMonth || !entry.endMonth) {
+			return;
+		}
+		if (entry.startMonth > entry.endMonth) {
+			ctx.addIssue({
+				code: "custom",
+				message: "cvEditor.experiences.errors.endBeforeStart",
+				path: ["endMonth"],
+			});
+		}
+	});
+
+export type ExperienceDateErrorKey =
+	"cvEditor.experiences.errors.endBeforeStart";
+
+/** Returns an i18n key when start/end months are incoherent; otherwise null. */
+export function experienceDateRangeError(
+	entry: ExperienceEntry,
+): ExperienceDateErrorKey | null {
+	const result = experienceEntrySchema.safeParse(entry);
+	if (result.success) {
+		return null;
+	}
+	const issue = result.error.issues.find(
+		(item) => item.message === "cvEditor.experiences.errors.endBeforeStart",
+	);
+	return issue ? (issue.message as ExperienceDateErrorKey) : null;
+}
+
+export function experiencesHaveValidDateRanges(
+	entries: ExperienceEntry[],
+): boolean {
+	return entries.every(
+		(entry) => experienceEntrySchema.safeParse(entry).success,
+	);
+}
 
 const EMPTY: ExperienceEntry = {
 	id: "",
@@ -96,22 +156,24 @@ export function experiencesEqual(
 	});
 }
 
-export function moveExperience(
+/** Moves an entry to `toIndex` (0-based). No-op if the id or index is invalid. */
+export function moveExperienceTo(
 	list: ExperienceEntry[],
 	id: string,
-	direction: "up" | "down",
+	toIndex: number,
 ): ExperienceEntry[] {
-	const index = list.findIndex((entry) => entry.id === id);
-	if (index < 0) {
-		return list;
-	}
-	const target = direction === "up" ? index - 1 : index + 1;
-	if (target < 0 || target >= list.length) {
+	const fromIndex = list.findIndex((entry) => entry.id === id);
+	if (
+		fromIndex < 0 ||
+		toIndex < 0 ||
+		toIndex >= list.length ||
+		fromIndex === toIndex
+	) {
 		return list;
 	}
 	const next = [...list];
-	const [item] = next.splice(index, 1);
-	next.splice(target, 0, item);
+	const [item] = next.splice(fromIndex, 1);
+	next.splice(toIndex, 0, item);
 	return next;
 }
 

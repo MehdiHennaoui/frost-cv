@@ -84,8 +84,8 @@ export const fr = {
 				"Supprimer « {{title}} » ? Cette action est irréversible.",
 			deleteCancel: "Annuler",
 			deleteConfirm: "Supprimer cette expérience",
-			moveUp: "Monter l’expérience",
-			moveDown: "Descendre l’expérience",
+			position: "Position",
+			positionOption: "Position {{n}}",
 			field: {
 				jobTitle: "Titre du poste",
 				company: "Entreprise",
@@ -94,6 +94,10 @@ export const fr = {
 				endMonth: "Mois de fin",
 				isCurrent: "Poste actuel",
 				description: "Description",
+			},
+			errors: {
+				endBeforeStart:
+					"Le mois de fin doit être égal ou postérieur au mois de début.",
 			},
 		},
 		preview: {

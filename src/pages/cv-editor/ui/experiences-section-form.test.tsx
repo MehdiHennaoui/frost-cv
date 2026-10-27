@@ -196,7 +196,39 @@ describe("ExperiencesSectionForm", () => {
 		expect(saveCvMock.mock.calls[0]?.[0].content.experiences).toEqual([]);
 	});
 
-	it("moves an experience down in order", async () => {
+	it("blocks autosave and shows an error when end is before start", async () => {
+		const cv = sampleCv();
+		saveCvMock.mockImplementation(async (next: Cv) => ({
+			...next,
+			updatedAt: 2,
+		}));
+		vi.useFakeTimers({
+			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
+		});
+
+		render(<ExperiencesSectionForm cv={cv} onPersisted={vi.fn()} />);
+
+		fireEvent.change(
+			screen.getByLabelText("cvEditor.experiences.field.endMonth"),
+			{
+				target: { value: "2019-01" },
+			},
+		);
+
+		expect(
+			screen.getAllByText("cvEditor.experiences.errors.endBeforeStart"),
+		).toHaveLength(2);
+
+		await vi.advanceTimersByTimeAsync(1000);
+		await act(async () => {
+			fireEvent.blur(
+				screen.getByLabelText("cvEditor.experiences.field.endMonth"),
+			);
+		});
+		expect(saveCvMock).not.toHaveBeenCalled();
+	});
+
+	it("moves an experience via the position select", async () => {
 		const cv = sampleCv();
 		cv.content.experiences = [
 			...(cv.content.experiences as object[]),
@@ -219,10 +251,9 @@ describe("ExperiencesSectionForm", () => {
 		render(<ExperiencesSectionForm cv={cv} onPersisted={vi.fn()} />);
 
 		await act(async () => {
-			fireEvent.click(
-				screen.getAllByRole("button", {
-					name: "cvEditor.experiences.moveDown",
-				})[0],
+			fireEvent.change(
+				screen.getAllByLabelText("cvEditor.experiences.position")[0],
+				{ target: { value: "1" } },
 			);
 		});
 
@@ -232,5 +263,13 @@ describe("ExperiencesSectionForm", () => {
 				(e: { id: string }) => e.id,
 			),
 		).toEqual(["exp-2", "exp-1"]);
+	});
+
+	it("shows an explicit delete label on the delete control", () => {
+		render(<ExperiencesSectionForm cv={sampleCv()} onPersisted={vi.fn()} />);
+
+		expect(
+			screen.getByRole("button", { name: "cvEditor.experiences.delete" }),
+		).toBeTruthy();
 	});
 });
