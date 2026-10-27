@@ -4,7 +4,7 @@
 
 **Blocked by:** 05 — Editor shell + split preview
 
-**Status:** resolved
+**Status:** claimed
 
 **Maps to:** US-05, US-11
 
