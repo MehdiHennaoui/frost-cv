@@ -5,6 +5,7 @@ import { useAppTranslation } from "@/shared/i18n";
 import { SidebarPortal } from "@/shared/lib/sidebar-portal";
 import { buttonVariants } from "@/shared/ui/button";
 import { CanadianCvPreview } from "./canadian-cv-preview";
+import { EducationSectionForm } from "./education-section-form";
 import { ExperiencesSectionForm } from "./experiences-section-form";
 import { IdentityHeaderForm } from "./identity-header-form";
 
@@ -32,6 +33,12 @@ function EditorSidebarSections({
 							cv={cv}
 							onPersisted={onPersisted}
 						/>
+					);
+				}
+
+				if (key === "education") {
+					return (
+						<EducationSectionForm key={key} cv={cv} onPersisted={onPersisted} />
 					);
 				}
 

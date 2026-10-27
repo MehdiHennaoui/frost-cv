@@ -3,6 +3,10 @@ import { sectionOrderOf } from "@/entities/cv";
 import { i18n, useAppTranslation } from "@/shared/i18n";
 import { sanitizeCvHtml } from "@/shared/lib/sanitize-html";
 import {
+	educationDateRangeLabel,
+	educationOf,
+} from "../model/education-fields";
+import {
 	experienceDateRangeLabel,
 	experiencesOf,
 } from "../model/experience-fields";
@@ -21,6 +25,7 @@ export function CanadianCvPreview({ cv }: CanadianCvPreviewProps) {
 	const { t } = useAppTranslation();
 	const identity = identityFieldsOf(cv.content);
 	const experiences = experiencesOf(cv.content);
+	const education = educationOf(cv.content);
 	const presentLabel = presentLabelForCvLocale(cv.locale);
 	const fullName = [identity.firstName, identity.lastName]
 		.filter(Boolean)
@@ -113,6 +118,49 @@ export function CanadianCvPreview({ cv }: CanadianCvPreviewProps) {
 																// biome-ignore lint/security/noDangerouslySetInnerHtml: TipTap HTML sanitized via sanitizeCvHtml
 																dangerouslySetInnerHTML={{ __html: bodyHtml }}
 															/>
+														)}
+													</li>
+												);
+											})}
+										</ul>
+									)}
+								</section>
+							);
+						}
+
+						if (key === "education") {
+							return (
+								<section key={key} className="space-y-3">
+									<h2 className="border-neutral-300 border-b font-semibold text-xs uppercase tracking-wide">
+										{t(`cvEditor.section.${key}`)}
+									</h2>
+									{education.length === 0 ? (
+										<p className="text-neutral-500 text-xs">
+											{t("cvEditor.preview.sectionEmpty")}
+										</p>
+									) : (
+										<ul className="space-y-3">
+											{education.map((entry) => {
+												const range = educationDateRangeLabel(entry);
+												return (
+													<li key={entry.id} className="space-y-1">
+														<div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
+															<p className="font-semibold">
+																{[entry.degree, entry.school]
+																	.filter(Boolean)
+																	.join(" · ") ||
+																	t("cvEditor.education.untitled")}
+															</p>
+															{range && (
+																<p className="text-neutral-600 text-xs">
+																	{range}
+																</p>
+															)}
+														</div>
+														{entry.location && (
+															<p className="text-neutral-700 text-xs">
+																{entry.location}
+															</p>
 														)}
 													</li>
 												);

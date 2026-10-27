@@ -100,6 +100,31 @@ export const fr = {
 					"Le mois de fin doit être égal ou postérieur au mois de début.",
 			},
 		},
+		education: {
+			add: "Ajouter une formation",
+			empty: "Aucune formation pour le moment.",
+			untitled: "Formation sans titre",
+			delete: "Supprimer cette formation",
+			deleteTitle: "Supprimer la formation",
+			deleteDescription:
+				"Supprimer « {{title}} » ? Cette action est irréversible.",
+			deleteCancel: "Annuler",
+			deleteConfirm: "Supprimer cette formation",
+			position: "Position",
+			positionOption: "Position {{n}}",
+			field: {
+				school: "Établissement",
+				degree: "Diplôme",
+				location: "Ville / pays",
+				startMonth: "Mois de début",
+				endMonth: "Mois de fin",
+			},
+			errors: {
+				endBeforeStart:
+					"Le mois de fin doit être égal ou postérieur au mois de début.",
+			},
+		},
+
 		preview: {
 			label: "Aperçu du CV canadien",
 			unnamed: "Nom",

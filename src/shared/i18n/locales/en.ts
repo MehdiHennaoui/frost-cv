@@ -96,6 +96,29 @@ export const en = {
 				endBeforeStart: "End month must be on or after the start month.",
 			},
 		},
+		education: {
+			add: "Add education",
+			empty: "No education yet.",
+			untitled: "Untitled education",
+			delete: "Delete this education",
+			deleteTitle: "Delete education",
+			deleteDescription: "Delete “{{title}}”? This cannot be undone.",
+			deleteCancel: "Cancel",
+			deleteConfirm: "Delete this education",
+			position: "Position",
+			positionOption: "Position {{n}}",
+			field: {
+				school: "School name",
+				degree: "Degree name",
+				location: "City / country",
+				startMonth: "Start month",
+				endMonth: "End month",
+			},
+			errors: {
+				endBeforeStart: "End month must be on or after the start month.",
+			},
+		},
+
 		preview: {
 			label: "Canadian CV preview",
 			unnamed: "Name",
