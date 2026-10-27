@@ -8,7 +8,7 @@ export const Route = createFileRoute("/cvs_/$cvId")({
 	ssr: false,
 	loader: async ({ params }) => {
 		const cv = await getCv(params.cvId);
-		return { cv };
+		return { cv, pageTitle: cv?.title };
 	},
 	pendingComponent: CvEditorPending,
 	component: CvEditorRoute,

@@ -48,10 +48,6 @@ export const en = {
 		backToList: "Back to CV list",
 		meta: "CV locale: {{locale}}",
 		stubHint: "Section editors arrive in later tickets.",
-		tab: {
-			edit: "Edit CV",
-			preview: "Preview CV",
-		},
 		edit: {
 			label: "CV editor",
 		},

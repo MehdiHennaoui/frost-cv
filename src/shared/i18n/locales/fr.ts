@@ -50,10 +50,6 @@ export const fr = {
 		backToList: "Retour à la liste des CV",
 		meta: "Langue du CV : {{locale}}",
 		stubHint: "Les éditeurs de section arriveront dans de prochains tickets.",
-		tab: {
-			edit: "Éditer le CV",
-			preview: "Aperçu du CV",
-		},
 		edit: {
 			label: "Éditeur de CV",
 		},

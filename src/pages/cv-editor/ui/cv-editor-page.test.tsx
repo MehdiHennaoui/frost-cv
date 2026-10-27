@@ -1,27 +1,44 @@
 /** @vitest-environment jsdom */
 
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { cleanup, render, screen, within } from "@testing-library/react";
+import { useEffect } from "react";
+import { afterEach, describe, expect, it } from "vitest";
 
 import { type Cv, createEmptyCvContent } from "@/entities/cv";
+import {
+	SidebarPortalProvider,
+	useSidebarPortalHost,
+} from "@/shared/lib/sidebar-portal";
 import { CvEditorPage } from "./cv-editor-page";
 
 afterEach(() => {
 	cleanup();
-	vi.unstubAllGlobals();
 });
 
-function stubViewport(isMdUp: boolean) {
-	vi.stubGlobal(
-		"matchMedia",
-		vi.fn((query: string) => ({
-			matches: isMdUp,
-			media: query,
-			addEventListener: vi.fn(),
-			removeEventListener: vi.fn(),
-			dispatchEvent: vi.fn(),
-		})),
+function HostBinder({ host }: { host: HTMLElement }) {
+	const { setHost } = useSidebarPortalHost();
+
+	useEffect(() => {
+		setHost(host);
+		return () => setHost(null);
+	}, [host, setHost]);
+
+	return null;
+}
+
+function renderEditor(cv: Cv | undefined) {
+	const host = document.createElement("div");
+	host.setAttribute("data-testid", "app-sidebar-portal");
+	document.body.appendChild(host);
+
+	const view = render(
+		<SidebarPortalProvider>
+			<HostBinder host={host} />
+			<CvEditorPage cv={cv} />
+		</SidebarPortalProvider>,
 	);
+
+	return { host, ...view };
 }
 
 function sampleCv(overrides: Partial<Cv> = {}): Cv {
@@ -45,18 +62,16 @@ function sampleCv(overrides: Partial<Cv> = {}): Cv {
 
 describe("CvEditorPage", () => {
 	it("shows not-found when the CV is missing", () => {
-		stubViewport(true);
-		render(<CvEditorPage cv={undefined} />);
+		renderEditor(undefined);
 
-		expect(screen.getByText("cvEditor.notFound")).toBeTruthy();
-		expect(screen.queryByText("cvEditor.tab.edit")).toBeNull();
+		expect(screen.getByText("cvEditor.notFoundHint")).toBeTruthy();
+		expect(screen.queryByLabelText("cvEditor.preview.label")).toBeNull();
 	});
 
-	it("lists section placeholders with identity first from persisted order", () => {
-		stubViewport(true);
-		render(<CvEditorPage cv={sampleCv()} />);
+	it("portals section editors into the sidebar host, not the preview", () => {
+		const { host } = renderEditor(sampleCv());
 
-		const sections = screen.getAllByRole("listitem");
+		const sections = within(host).getAllByRole("listitem");
 		expect(sections.map((el) => el.textContent)).toEqual([
 			"cvEditor.section.identity",
 			"cvEditor.section.experiences",
@@ -64,25 +79,16 @@ describe("CvEditorPage", () => {
 			"cvEditor.section.languages",
 			"cvEditor.section.customs",
 		]);
+
+		const preview = screen.getByLabelText("cvEditor.preview.label");
+		expect(within(preview).queryByText("cvEditor.section.identity")).toBeNull();
 	});
 
-	it("preview shows persisted identity, not a draft", () => {
-		stubViewport(true);
-		render(<CvEditorPage cv={sampleCv()} />);
+	it("preview shows persisted identity outside the sidebar", () => {
+		renderEditor(sampleCv());
 
-		expect(screen.getByText("Ada Lovelace")).toBeTruthy();
-		expect(screen.getByText("Analyst")).toBeTruthy();
-	});
-
-	it("switches mobile tabs between edit and preview", () => {
-		stubViewport(false);
-		render(<CvEditorPage cv={sampleCv()} />);
-
-		fireEvent.click(screen.getByRole("tab", { name: "cvEditor.tab.preview" }));
-		expect(
-			screen
-				.getByRole("tab", { name: "cvEditor.tab.preview" })
-				.getAttribute("data-active"),
-		).toBe("");
+		const preview = screen.getByLabelText("cvEditor.preview.label");
+		expect(within(preview).getByText("Ada Lovelace")).toBeTruthy();
+		expect(within(preview).getByText("Analyst")).toBeTruthy();
 	});
 });

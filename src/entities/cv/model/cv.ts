@@ -45,21 +45,33 @@ export function createEmptyCvContent(): CvContent {
 	};
 }
 
+function isSectionKey(value: unknown): value is SectionKey {
+	return (
+		typeof value === "string" &&
+		(DEFAULT_SECTION_ORDER as readonly string[]).includes(value)
+	);
+}
+
+function isCompleteSectionOrder(value: unknown): value is SectionKey[] {
+	if (!Array.isArray(value)) {
+		return false;
+	}
+	if (value.length !== DEFAULT_SECTION_ORDER.length) {
+		return false;
+	}
+	if (value[0] !== "identity") {
+		return false;
+	}
+	if (!value.every(isSectionKey)) {
+		return false;
+	}
+	return DEFAULT_SECTION_ORDER.every((key) => value.includes(key));
+}
+
 /** Reads persisted section order; Identity must stay first with all placeholder slots. */
 export function sectionOrderOf(content: CvContent): SectionKey[] {
-	const raw = content.sectionOrder;
-	const allowed = DEFAULT_SECTION_ORDER as readonly string[];
-	if (
-		Array.isArray(raw) &&
-		raw.length === DEFAULT_SECTION_ORDER.length &&
-		raw[0] === "identity" &&
-		raw.every(
-			(key): key is SectionKey =>
-				typeof key === "string" && allowed.includes(key),
-		) &&
-		DEFAULT_SECTION_ORDER.every((key) => raw.includes(key))
-	) {
-		return raw;
+	if (isCompleteSectionOrder(content.sectionOrder)) {
+		return content.sectionOrder;
 	}
 	return [...DEFAULT_SECTION_ORDER];
 }

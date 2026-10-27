@@ -1,8 +1,7 @@
 import { type Cv, sectionOrderOf } from "@/entities/cv";
 import { useAppTranslation } from "@/shared/i18n";
+import { SidebarPortal } from "@/shared/lib/sidebar-portal";
 import { buttonVariants } from "@/shared/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
-import { useIsMdUp } from "../model/use-is-md-up";
 import { CanadianCvPreview } from "./canadian-cv-preview";
 
 type CvEditorPageProps = {
@@ -14,7 +13,7 @@ function SectionPlaceholders({ cv }: { cv: Cv }) {
 	const order = sectionOrderOf(cv.content);
 
 	return (
-		<ul className="space-y-3">
+		<ul className="flex flex-col gap-3">
 			{order.map((key) => (
 				<li
 					key={key}
@@ -27,74 +26,54 @@ function SectionPlaceholders({ cv }: { cv: Cv }) {
 	);
 }
 
-function EditorPane({ cv }: { cv: Cv }) {
+function EditorSidebarContent({ cv }: { cv: Cv }) {
 	const { t } = useAppTranslation();
 
 	return (
-		<section aria-label={t("cvEditor.edit.label")} className="space-y-4">
-			<p className="text-muted-foreground text-sm">{t("cvEditor.stubHint")}</p>
-			<SectionPlaceholders cv={cv} />
-		</section>
+		<div className="flex h-full flex-col gap-3 p-2">
+			<div className="min-w-0 px-2">
+				<p className="text-muted-foreground text-xs">
+					{t("cvEditor.meta", { locale: cv.locale })}
+				</p>
+				<p className="mt-2 text-muted-foreground text-xs">
+					{t("cvEditor.stubHint")}
+				</p>
+			</div>
+			<div className="min-h-0 flex-1 overflow-y-auto px-2">
+				<p className="mb-2 font-medium text-xs">{t("cvEditor.edit.label")}</p>
+				<SectionPlaceholders cv={cv} />
+			</div>
+			<div className="border-sidebar-border border-t p-2">
+				<a href="/cvs" className={buttonVariants({ variant: "outline" })}>
+					{t("cvEditor.backToList")}
+				</a>
+			</div>
+		</div>
 	);
 }
 
 export function CvEditorPage({ cv }: CvEditorPageProps) {
 	const { t } = useAppTranslation();
-	const isMdUp = useIsMdUp();
 
 	if (!cv) {
 		return (
-			<div className="space-y-4">
-				<h1 className="font-semibold text-3xl tracking-tight">
-					{t("cvEditor.notFound")}
-				</h1>
+			<main className="mx-auto flex max-w-6xl flex-col gap-4 p-4 md:p-8">
 				<p className="text-muted-foreground">{t("cvEditor.notFoundHint")}</p>
 				<a href="/cvs" className={buttonVariants({ variant: "outline" })}>
 					{t("cvEditor.backToList")}
 				</a>
-			</div>
+			</main>
 		);
 	}
 
 	return (
-		<div className="space-y-4">
-			<div className="flex flex-wrap items-center justify-between gap-3">
-				<div className="min-w-0">
-					<h1 className="truncate font-semibold text-3xl tracking-tight">
-						{cv.title}
-					</h1>
-					<p className="text-muted-foreground text-sm">
-						{t("cvEditor.meta", { locale: cv.locale })}
-					</p>
-				</div>
-				<a href="/cvs" className={buttonVariants({ variant: "outline" })}>
-					{t("cvEditor.backToList")}
-				</a>
-			</div>
-
-			{isMdUp ? (
-				<div className="grid gap-6 md:grid-cols-2">
-					<EditorPane cv={cv} />
-					<CanadianCvPreview cv={cv} />
-				</div>
-			) : (
-				<Tabs defaultValue="edit">
-					<TabsList className="w-full">
-						<TabsTrigger value="edit" className="flex-1">
-							{t("cvEditor.tab.edit")}
-						</TabsTrigger>
-						<TabsTrigger value="preview" className="flex-1">
-							{t("cvEditor.tab.preview")}
-						</TabsTrigger>
-					</TabsList>
-					<TabsContent value="edit" className="mt-4">
-						<EditorPane cv={cv} />
-					</TabsContent>
-					<TabsContent value="preview" className="mt-4">
-						<CanadianCvPreview cv={cv} />
-					</TabsContent>
-				</Tabs>
-			)}
-		</div>
+		<>
+			<SidebarPortal>
+				<EditorSidebarContent cv={cv} />
+			</SidebarPortal>
+			<main className="flex flex-1 justify-center bg-muted/40 p-4 md:p-8">
+				<CanadianCvPreview cv={cv} />
+			</main>
+		</>
 	);
 }
