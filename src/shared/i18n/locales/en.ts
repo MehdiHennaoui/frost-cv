@@ -134,6 +134,19 @@ export const en = {
 				level: "Level",
 			},
 		},
+		customs: {
+			add: "Add custom section",
+			untitled: "Untitled section",
+			delete: "Delete this section",
+			deleteTitle: "Delete custom section",
+			deleteDescription: "Delete “{{title}}”? This cannot be undone.",
+			deleteCancel: "Cancel",
+			deleteConfirm: "Delete this section",
+			field: {
+				title: "Section title",
+				description: "Description",
+			},
+		},
 
 		preview: {
 			label: "Canadian CV preview",
@@ -146,7 +159,6 @@ export const en = {
 			experiences: "Experiences",
 			education: "Education",
 			languages: "Languages",
-			customs: "Custom sections",
 		},
 	},
 };

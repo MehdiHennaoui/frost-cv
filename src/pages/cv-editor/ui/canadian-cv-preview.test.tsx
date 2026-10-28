@@ -80,3 +80,36 @@ describe("CanadianCvPreview experiences", () => {
 		expect(screen.getByText("janv. 2020 – Présent")).toBeTruthy();
 	});
 });
+
+describe("CanadianCvPreview custom sections", () => {
+	it("renders each custom section title and sanitized HTML body", () => {
+		render(
+			<CanadianCvPreview
+				cv={sampleCv({
+					content: {
+						...createEmptyCvContent(),
+						customSections: [
+							{
+								id: "c1",
+								title: "Skills",
+								description: "<p>Rust</p><script>alert(1)</script>",
+							},
+						],
+						sectionOrder: [
+							"identity",
+							"experiences",
+							"education",
+							"languages",
+							"custom:c1",
+						],
+					},
+				})}
+			/>,
+		);
+
+		const preview = screen.getByLabelText("cvEditor.preview.label");
+		expect(within(preview).getByText("Skills")).toBeTruthy();
+		expect(within(preview).getByText("Rust")).toBeTruthy();
+		expect(preview.innerHTML).not.toContain("<script>");
+	});
+});
