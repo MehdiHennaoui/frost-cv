@@ -3,6 +3,8 @@ pre-commit:
   commands:
     refuse-ticket-on-main:
       run: bash scripts/refuse-ticket-commit-on-main.sh
+    refuse-scratch-wizard:
+      run: bash scripts/refuse-scratch-wizard-commit.sh
     biome:
       glob: "*.{js,jsx,ts,tsx,json}"
       run: pnpm exec biome check --write --files-ignore-unknown=true --no-errors-on-unmatched {staged_files}

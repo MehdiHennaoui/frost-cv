@@ -11,6 +11,7 @@ import {
 	experiencesOf,
 } from "../model/experience-fields";
 import { identityFieldsOf } from "../model/identity-fields";
+import { languagesOf } from "../model/language-fields";
 
 type CanadianCvPreviewProps = {
 	cv: Cv;
@@ -25,6 +26,7 @@ export function CanadianCvPreview({ cv }: CanadianCvPreviewProps) {
 	const identity = identityFieldsOf(cv.content);
 	const experiences = experiencesOf(cv.content);
 	const education = educationOf(cv.content);
+	const languages = languagesOf(cv.content);
 	const presentLabel = presentLabelForCvLocale(cv.locale);
 	const fullName = [identity.firstName, identity.lastName]
 		.filter(Boolean)
@@ -165,6 +167,31 @@ export function CanadianCvPreview({ cv }: CanadianCvPreviewProps) {
 													</li>
 												);
 											})}
+										</ul>
+									)}
+								</section>
+							);
+						}
+
+						if (key === "languages") {
+							return (
+								<section key={key} className="space-y-3">
+									<h2 className="border-neutral-300 border-b font-semibold text-xs uppercase tracking-wide">
+										{t(`cvEditor.section.${key}`)}
+									</h2>
+									{languages.length === 0 ? (
+										<p className="text-neutral-500 text-xs">
+											{t("cvEditor.preview.sectionEmpty")}
+										</p>
+									) : (
+										<ul className="space-y-1">
+											{languages.map((entry) => (
+												<li key={entry.id}>
+													{[entry.language, entry.level]
+														.filter(Boolean)
+														.join(" — ") || t("cvEditor.languages.untitled")}
+												</li>
+											))}
 										</ul>
 									)}
 								</section>

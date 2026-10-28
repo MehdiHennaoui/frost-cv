@@ -118,6 +118,22 @@ export const en = {
 				endBeforeStart: "End month must be on or after the start month.",
 			},
 		},
+		languages: {
+			add: "Add language",
+			empty: "No languages yet.",
+			untitled: "Untitled language",
+			delete: "Delete this language",
+			deleteTitle: "Delete language",
+			deleteDescription: "Delete “{{title}}”? This cannot be undone.",
+			deleteCancel: "Cancel",
+			deleteConfirm: "Delete this language",
+			position: "Position",
+			positionOption: "Position {{n}}",
+			field: {
+				language: "Language",
+				level: "Level",
+			},
+		},
 
 		preview: {
 			label: "Canadian CV preview",

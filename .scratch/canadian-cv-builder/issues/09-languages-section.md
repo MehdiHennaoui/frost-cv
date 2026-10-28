@@ -4,12 +4,12 @@
 
 **Blocked by:** 06 — Form pattern + TipTap + Header
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Maps to:** US-08
 
-- [ ] Fields: language name, level as plain text input
-- [ ] CRUD + item reorder within the section
-- [ ] Autosave / flush behavior matches the shared form pattern
-- [ ] Preview lists persisted languages in item order
-- [ ] No TipTap required for this section
+- [x] Fields: language name, level as plain text input
+- [x] CRUD + item reorder within the section
+- [x] Autosave / flush behavior matches the shared form pattern
+- [x] Preview lists persisted languages in item order
+- [x] No TipTap required for this section

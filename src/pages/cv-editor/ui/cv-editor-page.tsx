@@ -8,6 +8,7 @@ import { CanadianCvPreview } from "./canadian-cv-preview";
 import { EducationSectionForm } from "./education-section-form";
 import { ExperiencesSectionForm } from "./experiences-section-form";
 import { IdentityHeaderForm } from "./identity-header-form";
+import { LanguagesSectionForm } from "./languages-section-form";
 
 type CvEditorPageProps = {
 	cv: Cv | undefined;
@@ -39,6 +40,12 @@ function EditorSidebarSections({
 				if (key === "education") {
 					return (
 						<EducationSectionForm key={key} cv={cv} onPersisted={onPersisted} />
+					);
+				}
+
+				if (key === "languages") {
+					return (
+						<LanguagesSectionForm key={key} cv={cv} onPersisted={onPersisted} />
 					);
 				}
 
