@@ -4,12 +4,12 @@
 
 **Blocked by:** 06 — Form pattern + TipTap + Header
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Maps to:** US-09
 
-- [ ] User can create multiple custom sections (title + description HTML)
-- [ ] Each custom section appears as its own top-level section in the order model
-- [ ] User can delete a custom section (with confirmation if destructive)
-- [ ] Autosave / flush behavior matches the shared form pattern
-- [ ] Preview renders each persisted custom section with its title and HTML body
+- [x] User can create multiple custom sections (title + description HTML)
+- [x] Each custom section appears as its own top-level section in the order model
+- [x] User can delete a custom section (with confirmation if destructive)
+- [x] Autosave / flush behavior matches the shared form pattern
+- [x] Preview renders each persisted custom section with its title and HTML body
