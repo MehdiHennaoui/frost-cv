@@ -4,7 +4,7 @@
 
 **Blocked by:** 05 — Editor shell + Canadian preview (shell exists so skeletons can mirror list / editor chrome)
 
-**Status:** claimed
+**Status:** resolved
 
 **Scope:**
 
