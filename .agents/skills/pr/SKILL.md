@@ -9,7 +9,7 @@ metadata:
     url: "https://github.com/humanlayer/skills/blob/main/plugins/show-me/skills/show-me/SKILL.md"
 ---
 
-Only run this skill when the user explicitly asks for a PR. If `gh` fails with **401** / bad credentials, stop and tell the user — do not invent auth wizards or retry `gh pr create` in a loop.
+Only run this skill when the user explicitly asks for a PR. If `gh` fails with **401** / bad credentials, stop and tell the user what to run — do not generate wizards, scratch auth scripts, or retry `gh pr create` in a loop.
 
 Use this template for writing the PR body:
 

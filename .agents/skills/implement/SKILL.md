@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 Implement the work described by the user in the spec or tickets.
 
-If the user passes a ticket reference, fetch it from the issue tracker and state its title before starting. If the reference is ambiguous, ask.
+If the user passes a ticket reference, fetch it from the issue tracker and state its title before starting. If the reference is ambiguous, ask. To list candidates, grep `**Status:**` under `.scratch/**/issues/` for `ready-for-agent` (and blockers); do not search chat history unless Status lines are ambiguous.
 
 ## Branch first
 
