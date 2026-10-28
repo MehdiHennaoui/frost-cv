@@ -4,12 +4,12 @@
 
 **Blocked by:** 06 — Form pattern + TipTap + Header
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Maps to:** US-07
 
-- [ ] Fields: school name, degree name, start month/year, end month/year, city/country
-- [ ] Dates are month/year only
-- [ ] CRUD + item reorder within the section
-- [ ] Autosave / flush behavior matches the shared form pattern
-- [ ] Preview lists persisted education entries in item order
+- [x] Fields: school name, degree name, start month/year, end month/year, city/country
+- [x] Dates are month/year only
+- [x] CRUD + item reorder within the section
+- [x] Autosave / flush behavior matches the shared form pattern
+- [x] Preview lists persisted education entries in item order

@@ -16,7 +16,7 @@ import { CvListPage } from "./cv-list-page";
 const sampleCv: Cv = {
 	id: "1",
 	title: "Frontend CV",
-	locale: "fr-CA",
+	locale: "fr",
 	content: {},
 	createdAt: 1_000,
 	updatedAt: 1_700_000_000_000,

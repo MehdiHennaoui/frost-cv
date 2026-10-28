@@ -34,7 +34,7 @@ describe("listCvs", () => {
 		await putCv({
 			id: "cv-new",
 			title: "Newer CV",
-			locale: "fr-CA",
+			locale: "fr",
 			content: {},
 			createdAt: 2_000,
 			updatedAt: 2_000,
@@ -43,7 +43,7 @@ describe("listCvs", () => {
 		const cvs = await listCvs();
 
 		expect(cvs.map((cv) => cv.title)).toEqual(["Newer CV", "Older CV"]);
-		expect(cvs[0]?.locale).toBe("fr-CA");
+		expect(cvs[0]?.locale).toBe("fr");
 	});
 });
 
@@ -53,11 +53,11 @@ describe("createCv", () => {
 	});
 
 	it("persists a CV with title, locale, empty section defaults, and timestamps", async () => {
-		const cv = await createCv({ title: "  My CV  ", locale: "fr-CA" });
+		const cv = await createCv({ title: "  My CV  ", locale: "fr" });
 
 		expect(cv.id).toBeTruthy();
 		expect(cv.title).toBe("My CV");
-		expect(cv.locale).toBe("fr-CA");
+		expect(cv.locale).toBe("fr");
 		expect(cv.content).toEqual(createEmptyCvContent());
 		expect(cv.createdAt).toBe(cv.updatedAt);
 		expect(cv.createdAt).toBeGreaterThan(0);
@@ -98,7 +98,7 @@ describe("deleteCv", () => {
 
 	it("removes the resume from IndexedDB", async () => {
 		const kept = await createCv({ title: "Keep me", locale: "en" });
-		const removed = await createCv({ title: "Delete me", locale: "fr-CA" });
+		const removed = await createCv({ title: "Delete me", locale: "fr" });
 
 		await deleteCv(removed.id);
 

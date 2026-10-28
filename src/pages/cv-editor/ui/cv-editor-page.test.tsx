@@ -69,7 +69,7 @@ describe("CvEditorPage", () => {
 		expect(screen.queryByLabelText("cvEditor.preview.label")).toBeNull();
 	});
 
-	it("portals identity and experiences forms into the sidebar host", () => {
+	it("portals identity, experiences, and education forms into the sidebar host", () => {
 		const { host } = renderEditor(sampleCv());
 
 		expect(
@@ -79,7 +79,9 @@ describe("CvEditorPage", () => {
 		expect(
 			within(host).getByRole("button", { name: "cvEditor.experiences.add" }),
 		).toBeTruthy();
-		expect(within(host).getByText("cvEditor.section.education")).toBeTruthy();
+		expect(
+			within(host).getByRole("button", { name: "cvEditor.education.add" }),
+		).toBeTruthy();
 		expect(within(host).getByText("cvEditor.section.languages")).toBeTruthy();
 		expect(within(host).getByText("cvEditor.section.customs")).toBeTruthy();
 

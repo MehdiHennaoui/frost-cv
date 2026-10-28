@@ -59,7 +59,7 @@ describe("CreateCvModal", () => {
 
 	it("creates a CV and reports the new id on submit", async () => {
 		const createCv = vi.fn(async (_input: CreateCvInput) =>
-			emptyCv({ id: "new-id", title: "Frontend", locale: "fr-CA" }),
+			emptyCv({ id: "new-id", title: "Frontend", locale: "fr" }),
 		);
 		const onCreated = vi.fn();
 		const onOpenChange = vi.fn();
@@ -77,14 +77,14 @@ describe("CreateCvModal", () => {
 			target: { value: "Frontend" },
 		});
 		fireEvent.change(screen.getByLabelText("createCv.fieldLocale"), {
-			target: { value: "fr-CA" },
+			target: { value: "fr" },
 		});
 		fireEvent.click(screen.getByRole("button", { name: "createCv.submit" }));
 
 		await waitFor(() => {
 			expect(createCv).toHaveBeenCalledWith({
 				title: "Frontend",
-				locale: "fr-CA",
+				locale: "fr",
 			});
 			expect(onCreated).toHaveBeenCalledWith("new-id");
 		});

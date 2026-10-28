@@ -28,7 +28,7 @@ test.describe("experiences section", () => {
 			timeout: 5000,
 		});
 		await expect(preview.getByText("Montreal")).toBeVisible();
-		await expect(preview.getByText("01/2020")).toBeVisible();
+		await expect(preview.getByText("Jan 2020")).toBeVisible();
 	});
 
 	test("shows the date range error on both month fields", async ({ page }) => {

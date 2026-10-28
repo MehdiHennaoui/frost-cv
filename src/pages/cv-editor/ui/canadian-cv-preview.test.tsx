@@ -48,16 +48,16 @@ describe("CanadianCvPreview experiences", () => {
 
 		const preview = screen.getByLabelText("cvEditor.preview.label");
 		expect(within(preview).getByText("Engineer · Acme")).toBeTruthy();
-		expect(within(preview).getByText("01/2020 – Present")).toBeTruthy();
+		expect(within(preview).getByText("Jan 2020 – Present")).toBeTruthy();
 		expect(within(preview).getByText("Montreal")).toBeTruthy();
 		expect(within(preview).getByText("Shipped features")).toBeTruthy();
 	});
 
-	it("shows Présent when the CV locale is fr-CA", () => {
+	it("shows Présent when the CV locale is fr", () => {
 		render(
 			<CanadianCvPreview
 				cv={sampleCv({
-					locale: "fr-CA",
+					locale: "fr",
 					content: {
 						...createEmptyCvContent(),
 						experiences: [
@@ -77,6 +77,6 @@ describe("CanadianCvPreview experiences", () => {
 			/>,
 		);
 
-		expect(screen.getByText("01/2020 – Présent")).toBeTruthy();
+		expect(screen.getByText("janv. 2020 – Présent")).toBeTruthy();
 	});
 });

@@ -9,7 +9,7 @@ import {
 	type CvLocale,
 	createCvInputSchema,
 } from "@/entities/cv";
-import { useAppTranslation } from "@/shared/i18n";
+import { APP_LOCALES, useAppTranslation } from "@/shared/i18n";
 import { Button } from "@/shared/ui/button";
 import {
 	Dialog,
@@ -30,15 +30,13 @@ type CreateCvModalProps = {
 	onCreated: (cvId: string) => void;
 };
 
-const LOCALE_VALUES: CvLocale[] = ["en", "fr-CA"];
-
 const DEFAULT_VALUES: CreateCvInput = {
 	title: "",
 	locale: "en",
 };
 
 function parseCvLocale(value: string): CvLocale {
-	const locale = LOCALE_VALUES.find((option) => option === value);
+	const locale = APP_LOCALES.find((option) => option === value);
 	if (!locale) {
 		return "en";
 	}
@@ -183,12 +181,11 @@ export function CreateCvModal({
 											aria-invalid={isInvalid}
 											className="w-full"
 										>
-											<NativeSelectOption value="en">
-												{t("cvLocale.option.en")}
-											</NativeSelectOption>
-											<NativeSelectOption value="fr-CA">
-												{t("cvLocale.option.fr-CA")}
-											</NativeSelectOption>
+											{APP_LOCALES.map((locale) => (
+												<NativeSelectOption key={locale} value={locale}>
+													{t(`cvLocale.option.${locale}`)}
+												</NativeSelectOption>
+											))}
 										</NativeSelect>
 										{isInvalid && (
 											<FieldError
