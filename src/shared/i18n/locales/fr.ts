@@ -124,6 +124,23 @@ export const fr = {
 					"Le mois de fin doit être égal ou postérieur au mois de début.",
 			},
 		},
+		languages: {
+			add: "Ajouter une langue",
+			empty: "Aucune langue pour le moment.",
+			untitled: "Langue sans titre",
+			delete: "Supprimer cette langue",
+			deleteTitle: "Supprimer la langue",
+			deleteDescription:
+				"Supprimer « {{title}} » ? Cette action est irréversible.",
+			deleteCancel: "Annuler",
+			deleteConfirm: "Supprimer cette langue",
+			position: "Position",
+			positionOption: "Position {{n}}",
+			field: {
+				language: "Langue",
+				level: "Niveau",
+			},
+		},
 
 		preview: {
 			label: "Aperçu du CV canadien",
