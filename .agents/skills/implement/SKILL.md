@@ -30,5 +30,6 @@ All of these must hold before flipping the issue to `resolved`:
 
 1. Every change you intend for the ticket is committed (no leftover polish still dirty).
 2. The ticket branch is pushed to `origin`.
-3. A PR is open. If `gh` fails with **401** / bad credentials, **stop** and run `/wizard` for `gh auth login` — do not keep retrying `gh pr create`.
-4. Only then set `Status: resolved` on the issue file.
+3. Only then set `Status: resolved` on the issue file.
+
+Do **not** open a pull request unless the user explicitly asks.

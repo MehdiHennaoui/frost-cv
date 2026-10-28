@@ -36,7 +36,3 @@ Read during **code review**, not as always-on implementation context. Mechanical
 - Section editors live under `src/pages/cv-editor/` (forms in `ui/`, helpers in `model/`).
 - Debounced persist: `src/shared/lib/autosave.ts` (`createAutosave`). TipTap body height: `useResizableContentHeight` in `pages/cv-editor/model/`.
 - Autosave / flush tests: follow [docs/agents/testing-autosave.md](docs/agents/testing-autosave.md).
-
-## Auth walls for shipping
-
-- If `gh` returns 401 / bad credentials while opening a PR, stop and run `/wizard` for `gh auth login` — do not loop on `gh pr create`.
