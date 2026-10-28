@@ -4,7 +4,7 @@
 
 **Blocked by:** 05 — Editor shell + Canadian preview (shell exists so skeletons can mirror list / editor chrome)
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Scope:**
 
@@ -15,6 +15,6 @@
 
 **Maps to:** polish on US-01 / US-11 loading UX
 
-- [ ] List `pendingComponent` uses skeletons instead of (or in addition to a sr-only) plain loading paragraph
-- [ ] Editor `pendingComponent` uses skeletons that fit the AppLayout editor shell
-- [ ] No flash of wrong page title driven by a “not found” fallback while a valid CV is still loading (use a neutral pending title or leave title empty until loader data exists)
+- [x] List `pendingComponent` uses skeletons instead of (or in addition to a sr-only) plain loading paragraph
+- [x] Editor `pendingComponent` uses skeletons that fit the AppLayout editor shell
+- [x] No flash of wrong page title driven by a “not found” fallback while a valid CV is still loading (use a neutral pending title or leave title empty until loader data exists)

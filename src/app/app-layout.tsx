@@ -14,17 +14,10 @@ import {
 	SidebarTrigger,
 } from "@/shared/ui/sidebar";
 import { TooltipProvider } from "@/shared/ui/tooltip";
-import {
-	isRouteWithPageTitle,
-	ROUTE_PAGE_TITLE_KEYS,
-} from "./route-page-titles";
+import { resolveRoutePageTitle } from "./route-page-titles";
 
 type AppLayoutProps = {
 	children: React.ReactNode;
-};
-
-type PageTitleLoaderData = {
-	pageTitle?: string;
 };
 
 function useIsCvEditorRoute(): boolean {
@@ -40,20 +33,16 @@ function useRoutePageTitle(): string {
 		select: (state) => state.matches.at(-1),
 	});
 
-	if (!leaf) {
-		return "Frost CV";
-	}
+	const loaderData = leaf?.loaderData as { pageTitle?: string } | undefined;
 
-	const loaderData = leaf.loaderData as PageTitleLoaderData | undefined;
-	if (loaderData?.pageTitle) {
-		return loaderData.pageTitle;
-	}
-
-	if (isRouteWithPageTitle(leaf.routeId)) {
-		return t(ROUTE_PAGE_TITLE_KEYS[leaf.routeId]);
-	}
-
-	return "Frost CV";
+	return resolveRoutePageTitle(
+		leaf && {
+			routeId: leaf.routeId,
+			status: leaf.status,
+			pageTitle: loaderData?.pageTitle,
+		},
+		(key) => t(key),
+	);
 }
 
 function AppShell({ children }: { children: React.ReactNode }) {
