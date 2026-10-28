@@ -1,11 +1,14 @@
 import { z } from "zod";
 
+import { APP_LOCALES, type AppLocale } from "@/shared/i18n";
+
 /** CV content payload; section shapes fill in on later tickets. */
 export type CvContent = Record<string, unknown>;
 
-export const cvLocaleSchema = z.enum(["en", "fr-CA"]);
+/** Same codes as UI i18n (`APP_LOCALES`). */
+export const cvLocaleSchema = z.enum(APP_LOCALES);
 
-export type CvLocale = z.infer<typeof cvLocaleSchema>;
+export type CvLocale = AppLocale;
 
 /** Identity is always first; other slots are reorderable later. */
 export const DEFAULT_SECTION_ORDER = [

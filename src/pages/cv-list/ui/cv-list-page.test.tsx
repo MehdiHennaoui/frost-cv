@@ -29,7 +29,7 @@ const sampleCvs: Cv[] = [
 	{
 		id: "2",
 		title: "CV Québec",
-		locale: "fr-CA",
+		locale: "fr",
 		content: {},
 		createdAt: 2_000,
 		updatedAt: 1_600_000_000_000,

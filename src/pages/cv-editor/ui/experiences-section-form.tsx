@@ -1,9 +1,7 @@
 import { BriefcaseIcon, PlusIcon, Trash2Icon, XIcon } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
 
-import { type Cv, saveCv } from "@/entities/cv";
+import type { Cv } from "@/entities/cv";
 import { useAppTranslation } from "@/shared/i18n";
-import { createAutosave } from "@/shared/lib/autosave";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Checkbox } from "@/shared/ui/checkbox";
@@ -25,10 +23,10 @@ import {
 	experiencesEqual,
 	experiencesHaveValidDateRanges,
 	experiencesOf,
-	moveExperienceTo,
-	removeExperience,
 	withExperiences,
 } from "../model/experience-fields";
+import { useCvEntryList } from "../model/use-cv-entry-list";
+import { MonthInput } from "./month-input";
 import { RichTextEditor } from "./rich-text-editor";
 
 type ExperiencesSectionFormProps = {
@@ -47,89 +45,25 @@ export function ExperiencesSectionForm({
 	onPersisted,
 }: ExperiencesSectionFormProps) {
 	const { t } = useAppTranslation();
-	const cvRef = useRef(cv);
-	const onPersistedRef = useRef(onPersisted);
-	cvRef.current = cv;
-	onPersistedRef.current = onPersisted;
-
-	const initial = experiencesOf(cv.content);
-	const [entries, setEntries] = useState(initial);
-	const draftRef = useRef(initial);
-	const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
-
-	const autosaveRef = useRef(
-		createAutosave<ExperienceEntry[]>({
-			initialSaved: initial,
-			isEqual: experiencesEqual,
-			save: async (experiences) => {
-				const current = cvRef.current;
-				const next = await saveCv({
-					...current,
-					content: withExperiences(current.content, experiences),
-				});
-				onPersistedRef.current(next);
-			},
-		}),
-	);
-
-	useEffect(() => {
-		const autosave = autosaveRef.current;
-		return () => {
-			if (experiencesHaveValidDateRanges(draftRef.current)) {
-				void autosave.flush();
-			} else {
-				autosave.cancel();
-			}
-		};
-	}, []);
-
-	function commit(next: ExperienceEntry[], options?: { flush?: boolean }) {
-		draftRef.current = next;
-		setEntries(next);
-		if (!experiencesHaveValidDateRanges(next)) {
-			autosaveRef.current.cancel();
-			return;
-		}
-		if (options?.flush) {
-			autosaveRef.current.schedule(next);
-			void autosaveRef.current.flush();
-			return;
-		}
-		autosaveRef.current.schedule(next);
-	}
-
-	function patchEntry(id: string, patch: Partial<ExperienceEntry>) {
-		commit(
-			draftRef.current.map((entry) =>
-				entry.id === id ? { ...entry, ...patch } : entry,
-			),
-		);
-	}
-
-	function flush() {
-		if (!experiencesHaveValidDateRanges(draftRef.current)) {
-			autosaveRef.current.cancel();
-			return;
-		}
-		void autosaveRef.current.flush();
-	}
-
-	function handleAdd() {
-		commit([...draftRef.current, createEmptyExperience()], { flush: true });
-	}
-
-	function handleConfirmDelete() {
-		if (!pendingDeleteId) {
-			return;
-		}
-		const id = pendingDeleteId;
-		setPendingDeleteId(null);
-		commit(removeExperience(draftRef.current, id), { flush: true });
-	}
-
-	const pendingDelete = pendingDeleteId
-		? draftRef.current.find((entry) => entry.id === pendingDeleteId)
-		: undefined;
+	const {
+		entries,
+		pendingDelete,
+		patchEntry,
+		flush,
+		handleAdd,
+		moveEntry,
+		requestDelete,
+		cancelDelete,
+		confirmDelete,
+	} = useCvEntryList({
+		cv,
+		onPersisted,
+		initial: experiencesOf(cv.content),
+		isEqual: experiencesEqual,
+		apply: withExperiences,
+		canSave: experiencesHaveValidDateRanges,
+		createEmpty: createEmptyExperience,
+	});
 
 	return (
 		<>
@@ -183,14 +117,7 @@ export function ExperiencesSectionForm({
 													if (Number.isNaN(toIndex)) {
 														return;
 													}
-													commit(
-														moveExperienceTo(
-															draftRef.current,
-															entry.id,
-															toIndex,
-														),
-														{ flush: true },
-													);
+													moveEntry(entry.id, toIndex);
 												}}
 											>
 												{Array.from({ length: entries.length }, (_, position) =>
@@ -208,7 +135,7 @@ export function ExperiencesSectionForm({
 											type="button"
 											size="sm"
 											variant="ghost"
-											onClick={() => setPendingDeleteId(entry.id)}
+											onClick={() => requestDelete(entry.id)}
 										>
 											<Trash2Icon data-icon="inline-start" />
 											{t("cvEditor.experiences.delete")}
@@ -236,9 +163,8 @@ export function ExperiencesSectionForm({
 											<FieldLabel htmlFor={`experience-${entry.id}-startMonth`}>
 												{t("cvEditor.experiences.field.startMonth")}
 											</FieldLabel>
-											<Input
+											<MonthInput
 												id={`experience-${entry.id}-startMonth`}
-												type="month"
 												value={entry.startMonth}
 												aria-invalid={dateError ? true : undefined}
 												onBlur={flush}
@@ -277,9 +203,8 @@ export function ExperiencesSectionForm({
 												<FieldLabel htmlFor={`experience-${entry.id}-endMonth`}>
 													{t("cvEditor.experiences.field.endMonth")}
 												</FieldLabel>
-												<Input
+												<MonthInput
 													id={`experience-${entry.id}-endMonth`}
-													type="month"
 													value={entry.endMonth}
 													aria-invalid={dateError ? true : undefined}
 													onBlur={flush}
@@ -323,7 +248,7 @@ export function ExperiencesSectionForm({
 					open
 					onOpenChange={(open) => {
 						if (!open) {
-							setPendingDeleteId(null);
+							cancelDelete();
 						}
 					}}
 				>
@@ -340,18 +265,14 @@ export function ExperiencesSectionForm({
 							</DialogDescription>
 						</DialogHeader>
 						<DialogFooter>
-							<Button
-								type="button"
-								variant="outline"
-								onClick={() => setPendingDeleteId(null)}
-							>
+							<Button type="button" variant="outline" onClick={cancelDelete}>
 								<XIcon data-icon="inline-start" />
 								{t("cvEditor.experiences.deleteCancel")}
 							</Button>
 							<Button
 								type="button"
 								variant="destructive"
-								onClick={handleConfirmDelete}
+								onClick={confirmDelete}
 							>
 								<Trash2Icon data-icon="inline-start" />
 								{t("cvEditor.experiences.deleteConfirm")}

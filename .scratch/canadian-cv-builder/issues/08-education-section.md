@@ -4,7 +4,7 @@
 
 **Blocked by:** 06 — Form pattern + TipTap + Header
 
-**Status:** claimed
+**Status:** resolved
 
 **Maps to:** US-07
 

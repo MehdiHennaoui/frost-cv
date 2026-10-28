@@ -32,6 +32,6 @@ test.describe("education section", () => {
 			timeout: 5000,
 		});
 		await expect(preview.getByText("Montreal, Canada")).toBeVisible();
-		await expect(preview.getByText("09/2016 – 05/2020")).toBeVisible();
+		await expect(preview.getByText("Sep 2016 – May 2020")).toBeVisible();
 	});
 });

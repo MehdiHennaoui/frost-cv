@@ -1,9 +1,7 @@
 import { GraduationCapIcon, PlusIcon, Trash2Icon, XIcon } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
 
-import { type Cv, saveCv } from "@/entities/cv";
+import type { Cv } from "@/entities/cv";
 import { useAppTranslation } from "@/shared/i18n";
-import { createAutosave } from "@/shared/lib/autosave";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import {
@@ -24,10 +22,10 @@ import {
 	educationEqual,
 	educationHaveValidDateRanges,
 	educationOf,
-	moveEducationTo,
-	removeEducation,
 	withEducation,
 } from "../model/education-fields";
+import { useCvEntryList } from "../model/use-cv-entry-list";
+import { MonthInput } from "./month-input";
 
 type EducationSectionFormProps = {
 	cv: Cv;
@@ -45,89 +43,25 @@ export function EducationSectionForm({
 	onPersisted,
 }: EducationSectionFormProps) {
 	const { t } = useAppTranslation();
-	const cvRef = useRef(cv);
-	const onPersistedRef = useRef(onPersisted);
-	cvRef.current = cv;
-	onPersistedRef.current = onPersisted;
-
-	const initial = educationOf(cv.content);
-	const [entries, setEntries] = useState(initial);
-	const draftRef = useRef(initial);
-	const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
-
-	const autosaveRef = useRef(
-		createAutosave<EducationEntry[]>({
-			initialSaved: initial,
-			isEqual: educationEqual,
-			save: async (education) => {
-				const current = cvRef.current;
-				const next = await saveCv({
-					...current,
-					content: withEducation(current.content, education),
-				});
-				onPersistedRef.current(next);
-			},
-		}),
-	);
-
-	useEffect(() => {
-		const autosave = autosaveRef.current;
-		return () => {
-			if (educationHaveValidDateRanges(draftRef.current)) {
-				void autosave.flush();
-			} else {
-				autosave.cancel();
-			}
-		};
-	}, []);
-
-	function commit(next: EducationEntry[], options?: { flush?: boolean }) {
-		draftRef.current = next;
-		setEntries(next);
-		if (!educationHaveValidDateRanges(next)) {
-			autosaveRef.current.cancel();
-			return;
-		}
-		if (options?.flush) {
-			autosaveRef.current.schedule(next);
-			void autosaveRef.current.flush();
-			return;
-		}
-		autosaveRef.current.schedule(next);
-	}
-
-	function patchEntry(id: string, patch: Partial<EducationEntry>) {
-		commit(
-			draftRef.current.map((entry) =>
-				entry.id === id ? { ...entry, ...patch } : entry,
-			),
-		);
-	}
-
-	function flush() {
-		if (!educationHaveValidDateRanges(draftRef.current)) {
-			autosaveRef.current.cancel();
-			return;
-		}
-		void autosaveRef.current.flush();
-	}
-
-	function handleAdd() {
-		commit([...draftRef.current, createEmptyEducation()], { flush: true });
-	}
-
-	function handleConfirmDelete() {
-		if (!pendingDeleteId) {
-			return;
-		}
-		const id = pendingDeleteId;
-		setPendingDeleteId(null);
-		commit(removeEducation(draftRef.current, id), { flush: true });
-	}
-
-	const pendingDelete = pendingDeleteId
-		? draftRef.current.find((entry) => entry.id === pendingDeleteId)
-		: undefined;
+	const {
+		entries,
+		pendingDelete,
+		patchEntry,
+		flush,
+		handleAdd,
+		moveEntry,
+		requestDelete,
+		cancelDelete,
+		confirmDelete,
+	} = useCvEntryList({
+		cv,
+		onPersisted,
+		initial: educationOf(cv.content),
+		isEqual: educationEqual,
+		apply: withEducation,
+		canSave: educationHaveValidDateRanges,
+		createEmpty: createEmptyEducation,
+	});
 
 	return (
 		<>
@@ -181,14 +115,7 @@ export function EducationSectionForm({
 													if (Number.isNaN(toIndex)) {
 														return;
 													}
-													commit(
-														moveEducationTo(
-															draftRef.current,
-															entry.id,
-															toIndex,
-														),
-														{ flush: true },
-													);
+													moveEntry(entry.id, toIndex);
 												}}
 											>
 												{Array.from({ length: entries.length }, (_, position) =>
@@ -206,7 +133,7 @@ export function EducationSectionForm({
 											type="button"
 											size="sm"
 											variant="ghost"
-											onClick={() => setPendingDeleteId(entry.id)}
+											onClick={() => requestDelete(entry.id)}
 										>
 											<Trash2Icon data-icon="inline-start" />
 											{t("cvEditor.education.delete")}
@@ -234,9 +161,8 @@ export function EducationSectionForm({
 											<FieldLabel htmlFor={`education-${entry.id}-startMonth`}>
 												{t("cvEditor.education.field.startMonth")}
 											</FieldLabel>
-											<Input
+											<MonthInput
 												id={`education-${entry.id}-startMonth`}
-												type="month"
 												value={entry.startMonth}
 												aria-invalid={dateError ? true : undefined}
 												onBlur={flush}
@@ -255,9 +181,8 @@ export function EducationSectionForm({
 											<FieldLabel htmlFor={`education-${entry.id}-endMonth`}>
 												{t("cvEditor.education.field.endMonth")}
 											</FieldLabel>
-											<Input
+											<MonthInput
 												id={`education-${entry.id}-endMonth`}
-												type="month"
 												value={entry.endMonth}
 												aria-invalid={dateError ? true : undefined}
 												onBlur={flush}
@@ -284,7 +209,7 @@ export function EducationSectionForm({
 					open
 					onOpenChange={(open) => {
 						if (!open) {
-							setPendingDeleteId(null);
+							cancelDelete();
 						}
 					}}
 				>
@@ -301,18 +226,14 @@ export function EducationSectionForm({
 							</DialogDescription>
 						</DialogHeader>
 						<DialogFooter>
-							<Button
-								type="button"
-								variant="outline"
-								onClick={() => setPendingDeleteId(null)}
-							>
+							<Button type="button" variant="outline" onClick={cancelDelete}>
 								<XIcon data-icon="inline-start" />
 								{t("cvEditor.education.deleteCancel")}
 							</Button>
 							<Button
 								type="button"
 								variant="destructive"
-								onClick={handleConfirmDelete}
+								onClick={confirmDelete}
 							>
 								<Trash2Icon data-icon="inline-start" />
 								{t("cvEditor.education.deleteConfirm")}

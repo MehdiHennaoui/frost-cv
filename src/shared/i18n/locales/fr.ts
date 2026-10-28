@@ -14,7 +14,7 @@ export const fr = {
 	cvLocale: {
 		option: {
 			en: "Anglais",
-			"fr-CA": "Français (Canada)",
+			fr: "Français",
 		},
 	},
 	cvList: {

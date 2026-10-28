@@ -1,7 +1,8 @@
-export const UI_LOCALES = ["en", "fr"] as const;
+import { APP_LOCALES, type AppLocale, isAppLocale } from "./app-locale";
 
-export type UiLocale = (typeof UI_LOCALES)[number];
+export const UI_LOCALES = APP_LOCALES;
+export type UiLocale = AppLocale;
 
 export function isUiLocale(value: string): value is UiLocale {
-	return (UI_LOCALES as readonly string[]).includes(value);
+	return isAppLocale(value);
 }

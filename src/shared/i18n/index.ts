@@ -1,3 +1,4 @@
+export { APP_LOCALES, type AppLocale, isAppLocale } from "./app-locale";
 export {
 	changeUiLocale,
 	i18n,

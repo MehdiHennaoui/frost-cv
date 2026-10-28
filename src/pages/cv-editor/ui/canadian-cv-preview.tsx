@@ -17,8 +17,7 @@ type CanadianCvPreviewProps = {
 };
 
 function presentLabelForCvLocale(locale: Cv["locale"]): string {
-	const uiLng = locale === "fr-CA" ? "fr" : "en";
-	return i18n.getFixedT(uiLng)("cvEditor.preview.present");
+	return i18n.getFixedT(locale)("cvEditor.preview.present");
 }
 
 export function CanadianCvPreview({ cv }: CanadianCvPreviewProps) {
@@ -89,6 +88,7 @@ export function CanadianCvPreview({ cv }: CanadianCvPreviewProps) {
 											{experiences.map((entry) => {
 												const range = experienceDateRangeLabel(
 													entry,
+													cv.locale,
 													presentLabel,
 												);
 												const bodyHtml = sanitizeCvHtml(entry.description);
@@ -141,7 +141,7 @@ export function CanadianCvPreview({ cv }: CanadianCvPreviewProps) {
 									) : (
 										<ul className="space-y-3">
 											{education.map((entry) => {
-												const range = educationDateRangeLabel(entry);
+												const range = educationDateRangeLabel(entry, cv.locale);
 												return (
 													<li key={entry.id} className="space-y-1">
 														<div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">

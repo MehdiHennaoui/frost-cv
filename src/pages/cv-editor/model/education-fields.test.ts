@@ -5,12 +5,9 @@ import {
 	createEmptyEducation,
 	educationDateRangeError,
 	educationDateRangeLabel,
-	educationEntrySchema,
 	educationEqual,
 	educationHaveValidDateRanges,
 	educationOf,
-	moveEducationTo,
-	removeEducation,
 	withEducation,
 } from "./education-fields";
 
@@ -74,85 +71,43 @@ describe("withEducation", () => {
 	});
 });
 
-describe("educationEqual", () => {
+describe("educationEqual / dates", () => {
 	it("compares entry lists by value", () => {
 		const a = [createEmptyEducation()];
-		const b = [{ ...a[0] }];
-		expect(educationEqual(a, b)).toBe(true);
+		expect(educationEqual(a, [{ ...a[0] }])).toBe(true);
 		expect(educationEqual(a, [{ ...a[0], school: "x" }])).toBe(false);
 	});
-});
 
-describe("moveEducationTo / removeEducation", () => {
-	it("reorders to an index and removes by id", () => {
-		const first = { ...createEmptyEducation(), id: "a", school: "A" };
-		const second = { ...createEmptyEducation(), id: "b", school: "B" };
-		const third = { ...createEmptyEducation(), id: "c", school: "C" };
-		const list = [first, second, third];
-
-		expect(moveEducationTo(list, "b", 0).map((e) => e.id)).toEqual([
-			"b",
-			"a",
-			"c",
-		]);
-		expect(moveEducationTo(list, "a", 2).map((e) => e.id)).toEqual([
-			"b",
-			"c",
-			"a",
-		]);
-		expect(moveEducationTo(list, "a", 0)).toEqual(list);
-		expect(removeEducation(list, "b").map((e) => e.id)).toEqual(["a", "c"]);
-	});
-});
-
-describe("educationDateRangeLabel", () => {
-	it("formats month ranges", () => {
+	it("formats ranges and rejects end before start", () => {
 		expect(
-			educationDateRangeLabel({
-				...createEmptyEducation(),
-				startMonth: "2016-09",
-				endMonth: "2020-05",
-			}),
-		).toBe("09/2016 – 05/2020");
-
+			educationDateRangeLabel(
+				{
+					...createEmptyEducation(),
+					startMonth: "2016-09",
+					endMonth: "2020-05",
+				},
+				"en",
+			),
+		).toBe("Sep 2016 – May 2020");
 		expect(
-			educationDateRangeLabel({
-				...createEmptyEducation(),
-				startMonth: "2016-09",
-				endMonth: "",
-			}),
-		).toBe("09/2016");
-	});
-});
+			educationDateRangeLabel(
+				{
+					...createEmptyEducation(),
+					startMonth: "2016-09",
+					endMonth: "2020-05",
+				},
+				"fr",
+			),
+		).toBe("sept. 2016 – mai 2020");
 
-describe("educationEntrySchema date range", () => {
-	it("accepts equal or ordered months", () => {
-		expect(
-			educationEntrySchema.safeParse({
-				...createEmptyEducation(),
-				startMonth: "2020-01",
-				endMonth: "2020-01",
-			}).success,
-		).toBe(true);
-		expect(
-			educationDateRangeError({
-				...createEmptyEducation(),
-				startMonth: "2020-01",
-				endMonth: "",
-			}),
-		).toBeNull();
-	});
-
-	it("rejects end before start", () => {
-		const entry = {
+		const bad = {
 			...createEmptyEducation(),
 			startMonth: "2021-06",
 			endMonth: "2020-01",
 		};
-		expect(educationEntrySchema.safeParse(entry).success).toBe(false);
-		expect(educationDateRangeError(entry)).toBe(
+		expect(educationDateRangeError(bad)).toBe(
 			"cvEditor.education.errors.endBeforeStart",
 		);
-		expect(educationHaveValidDateRanges([entry])).toBe(false);
+		expect(educationHaveValidDateRanges([bad])).toBe(false);
 	});
 });

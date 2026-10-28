@@ -1,10 +1,9 @@
 import { useForm } from "@tanstack/react-form";
 import { UserIcon } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 
-import { type Cv, saveCv } from "@/entities/cv";
+import type { Cv } from "@/entities/cv";
 import { useAppTranslation } from "@/shared/i18n";
-import { createAutosave } from "@/shared/lib/autosave";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Field, FieldGroup, FieldLabel } from "@/shared/ui/field";
 import { Input } from "@/shared/ui/input";
@@ -14,6 +13,7 @@ import {
 	identityFieldsOf,
 	withIdentity,
 } from "../model/identity-fields";
+import { useCvAutosave } from "../model/use-cv-autosave";
 import { RichTextEditor } from "./rich-text-editor";
 
 type IdentityHeaderFormProps = {
@@ -38,46 +38,26 @@ export function IdentityHeaderForm({
 	onPersisted,
 }: IdentityHeaderFormProps) {
 	const { t } = useAppTranslation();
-	const cvRef = useRef(cv);
-	const onPersistedRef = useRef(onPersisted);
-	cvRef.current = cv;
-	onPersistedRef.current = onPersisted;
-
-	const autosaveRef = useRef(
-		createAutosave<IdentityFields>({
-			initialSaved: identityFieldsOf(cv.content),
-			isEqual: identityFieldsEqual,
-			save: async (identity) => {
-				const current = cvRef.current;
-				const next = await saveCv({
-					...current,
-					content: withIdentity(current.content, identity),
-				});
-				onPersistedRef.current(next);
-			},
-		}),
-	);
-
-	useEffect(() => {
-		const autosave = autosaveRef.current;
-		return () => {
-			void autosave.flush();
-		};
-	}, []);
-
 	const initial = identityFieldsOf(cv.content);
 	const draftRef = useRef(initial);
+	const autosave = useCvAutosave({
+		cv,
+		onPersisted,
+		initialSaved: initial,
+		isEqual: identityFieldsEqual,
+		apply: withIdentity,
+	});
 	const form = useForm({
 		defaultValues: initial,
 	});
 
 	function schedule(patch: Partial<IdentityFields>) {
 		draftRef.current = { ...draftRef.current, ...patch };
-		autosaveRef.current.schedule(draftRef.current);
+		autosave.schedule(draftRef.current);
 	}
 
 	function flush() {
-		void autosaveRef.current.flush();
+		autosave.flush();
 	}
 
 	return (
