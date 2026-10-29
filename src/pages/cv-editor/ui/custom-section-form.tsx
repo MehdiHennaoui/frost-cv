@@ -1,18 +1,10 @@
-import { LayoutListIcon, Trash2Icon, XIcon } from "lucide-react";
-import { useRef, useState } from "react";
+import { LayoutListIcon, Trash2Icon } from "lucide-react";
+import { useState } from "react";
 
 import { type Cv, saveCv } from "@/entities/cv";
 import { useAppTranslation } from "@/shared/i18n";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-} from "@/shared/ui/dialog";
 import { Field, FieldGroup, FieldLabel } from "@/shared/ui/field";
 import { Input } from "@/shared/ui/input";
 import {
@@ -22,7 +14,8 @@ import {
 	removeCustomSection,
 	withCustomSection,
 } from "../model/custom-section-fields";
-import { useCvAutosave } from "../model/use-cv-autosave";
+import { useCvSectionDraft } from "../model/use-cv-section-draft";
+import { CvDeleteConfirmDialog } from "./cv-delete-confirm-dialog";
 import { RichTextEditor } from "./rich-text-editor";
 
 type CustomSectionFormProps = {
@@ -44,31 +37,17 @@ export function CustomSectionForm({
 			title: "",
 			description: "",
 		} satisfies CustomSection);
-	const draftRef = useRef(initial);
-	const [draft, setDraft] = useState(initial);
 	const [pendingDelete, setPendingDelete] = useState(false);
-
-	const autosave = useCvAutosave({
+	const { draft, schedule, flush, cancel } = useCvSectionDraft({
 		cv,
 		onPersisted,
-		initialSaved: initial,
+		initial,
 		isEqual: customSectionEqual,
 		apply: withCustomSection,
 	});
 
-	function schedule(patch: Partial<CustomSection>) {
-		const next = { ...draftRef.current, ...patch };
-		draftRef.current = next;
-		setDraft(next);
-		autosave.schedule(next);
-	}
-
-	function flush() {
-		autosave.flush();
-	}
-
 	async function confirmDelete() {
-		autosave.cancel();
+		cancel();
 		setPendingDelete(false);
 		const next = await saveCv({
 			...cv,
@@ -132,45 +111,18 @@ export function CustomSectionForm({
 			</form>
 
 			{pendingDelete && (
-				<Dialog
-					open
-					onOpenChange={(open) => {
-						if (!open) {
-							setPendingDelete(false);
-						}
+				<CvDeleteConfirmDialog
+					title={t("cvEditor.customs.deleteTitle")}
+					description={t("cvEditor.customs.deleteDescription", {
+						title: heading,
+					})}
+					cancelLabel={t("cvEditor.customs.deleteCancel")}
+					confirmLabel={t("cvEditor.customs.deleteConfirm")}
+					onCancel={() => setPendingDelete(false)}
+					onConfirm={() => {
+						void confirmDelete();
 					}}
-				>
-					<DialogContent>
-						<DialogHeader>
-							<DialogTitle>{t("cvEditor.customs.deleteTitle")}</DialogTitle>
-							<DialogDescription>
-								{t("cvEditor.customs.deleteDescription", {
-									title: heading,
-								})}
-							</DialogDescription>
-						</DialogHeader>
-						<DialogFooter>
-							<Button
-								type="button"
-								variant="outline"
-								onClick={() => setPendingDelete(false)}
-							>
-								<XIcon data-icon="inline-start" />
-								{t("cvEditor.customs.deleteCancel")}
-							</Button>
-							<Button
-								type="button"
-								variant="destructive"
-								onClick={() => {
-									void confirmDelete();
-								}}
-							>
-								<Trash2Icon data-icon="inline-start" />
-								{t("cvEditor.customs.deleteConfirm")}
-							</Button>
-						</DialogFooter>
-					</DialogContent>
-				</Dialog>
+				/>
 			)}
 		</>
 	);

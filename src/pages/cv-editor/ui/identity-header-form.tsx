@@ -1,6 +1,5 @@
 import { useForm } from "@tanstack/react-form";
 import { UserIcon } from "lucide-react";
-import { useRef } from "react";
 
 import type { Cv } from "@/entities/cv";
 import { useAppTranslation } from "@/shared/i18n";
@@ -13,7 +12,7 @@ import {
 	identityFieldsOf,
 	withIdentity,
 } from "../model/identity-fields";
-import { useCvAutosave } from "../model/use-cv-autosave";
+import { useCvSectionDraft } from "../model/use-cv-section-draft";
 import { RichTextEditor } from "./rich-text-editor";
 
 type IdentityHeaderFormProps = {
@@ -39,26 +38,16 @@ export function IdentityHeaderForm({
 }: IdentityHeaderFormProps) {
 	const { t } = useAppTranslation();
 	const initial = identityFieldsOf(cv.content);
-	const draftRef = useRef(initial);
-	const autosave = useCvAutosave({
+	const { schedule, flush } = useCvSectionDraft({
 		cv,
 		onPersisted,
-		initialSaved: initial,
+		initial,
 		isEqual: identityFieldsEqual,
 		apply: withIdentity,
 	});
 	const form = useForm({
 		defaultValues: initial,
 	});
-
-	function schedule(patch: Partial<IdentityFields>) {
-		draftRef.current = { ...draftRef.current, ...patch };
-		autosave.schedule(draftRef.current);
-	}
-
-	function flush() {
-		autosave.flush();
-	}
 
 	return (
 		<form
