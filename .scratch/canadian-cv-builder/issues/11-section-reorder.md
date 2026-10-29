@@ -4,12 +4,12 @@
 
 **Blocked by:** 07 — Experiences section; 08 — Education section; 09 — Languages section; 10 — Custom sections
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Maps to:** US-10
 
-- [ ] Header cannot be moved from the first position
-- [ ] Drag-and-drop (@dnd-kit) reorders eligible sections
-- [ ] Position selector can move a section to a chosen slot among eligible sections
-- [ ] Order is written to IndexedDB immediately (no per-block Save required for order-only changes)
-- [ ] Preview section order matches persisted order after reorder
+- [x] Header cannot be moved from the first position
+- [x] Drag-and-drop (@dnd-kit) reorders eligible sections
+- [x] Position selector can move a section to a chosen slot among eligible sections
+- [x] Order is written to IndexedDB immediately (no per-block Save required for order-only changes)
+- [x] Preview section order matches persisted order after reorder
