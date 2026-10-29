@@ -73,19 +73,19 @@ export function CvListPage({
 	const { t } = useAppTranslation();
 	const { onCreated, onDeleted } = useCvListNavigation();
 	const [isCreateOpen, setIsCreateOpen] = useState(false);
-	const [pendingDelete, setPendingDelete] = useState<Cv | null>(null);
+	const [cvToDelete, setCvToDelete] = useState<Cv | null>(null);
 
 	function handleOpenCreate() {
 		setIsCreateOpen(true);
 	}
 
 	function handleRequestDelete(cv: Cv) {
-		setPendingDelete(cv);
+		setCvToDelete(cv);
 	}
 
 	function handleDeleteOpenChange(open: boolean) {
 		if (!open) {
-			setPendingDelete(null);
+			setCvToDelete(null);
 		}
 	}
 
@@ -117,11 +117,11 @@ export function CvListPage({
 				onCreated={onCreated}
 			/>
 
-			{pendingDelete && (
+			{cvToDelete && (
 				<DeleteCvConfirmModal
 					open
-					cvId={pendingDelete.id}
-					cvTitle={pendingDelete.title}
+					cvId={cvToDelete.id}
+					cvTitle={cvToDelete.title}
 					onOpenChange={handleDeleteOpenChange}
 					deleteCv={deleteCv}
 					onDeleted={onDeleted}

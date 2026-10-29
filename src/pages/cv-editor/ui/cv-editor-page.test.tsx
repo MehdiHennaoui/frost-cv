@@ -133,13 +133,13 @@ describe("CvEditorPage", () => {
 		expect(
 			within(host).getByLabelText("cvEditor.identity.field.firstName"),
 		).toBeTruthy();
-		const positions = within(host).getAllByLabelText(
-			"cvEditor.sections.position",
+		fireEvent.click(
+			within(host).getAllByRole("button", {
+				name: "cvEditor.sections.position",
+			})[0],
 		);
-		expect(positions).toHaveLength(3);
-
 		await act(async () => {
-			fireEvent.change(positions[0], { target: { value: "2" } });
+			fireEvent.click(screen.getAllByRole("menuitem")[2]);
 		});
 
 		expect(saveCvMock).toHaveBeenCalledTimes(1);
@@ -160,5 +160,44 @@ describe("CvEditorPage", () => {
 			"cvEditor.section.languages",
 			"cvEditor.section.experiences",
 		]);
+	});
+
+	it("locks fields and reorder while a save is in flight", async () => {
+		let release: (cv: Cv) => void = () => {};
+		saveCvMock.mockImplementation(
+			(next: Cv) =>
+				new Promise<Cv>((resolve) => {
+					release = () => resolve({ ...next, updatedAt: 2 });
+				}),
+		);
+
+		const { host } = renderEditor(sampleCv());
+		fireEvent.click(
+			within(host).getAllByRole("button", {
+				name: "cvEditor.sections.position",
+			})[0],
+		);
+		await act(async () => {
+			fireEvent.click(screen.getAllByRole("menuitem")[2]);
+		});
+
+		expect(within(host).getByText("cvEditor.saving")).toBeTruthy();
+		expect(
+			within(host)
+				.getByLabelText("cvEditor.identity.field.firstName")
+				.closest("[inert]"),
+		).toBeTruthy();
+		expect(
+			within(host)
+				.getAllByRole("button", { name: "cvEditor.sections.position" })[0]
+				?.closest("[inert]"),
+		).toBeTruthy();
+
+		await act(async () => {
+			release(saveCvMock.mock.calls[0]?.[0] as Cv);
+		});
+
+		expect(within(host).queryByText("cvEditor.saving")).toBeNull();
+		expect(host.querySelector("[inert]")).toBeNull();
 	});
 });

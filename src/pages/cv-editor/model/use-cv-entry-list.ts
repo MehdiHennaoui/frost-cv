@@ -26,7 +26,7 @@ export function useCvEntryList<T extends { id: string }>({
 }: UseCvEntryListOptions<T>) {
 	const [entries, setEntries] = useState(initial);
 	const draftRef = useRef(initial);
-	const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+	const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
 	const autosave = useCvAutosave({
 		cv,
@@ -63,29 +63,29 @@ export function useCvEntryList<T extends { id: string }>({
 	}
 
 	function requestDelete(id: string) {
-		setPendingDeleteId(id);
+		setDeleteTargetId(id);
 	}
 
 	function cancelDelete() {
-		setPendingDeleteId(null);
+		setDeleteTargetId(null);
 	}
 
 	function confirmDelete() {
-		if (!pendingDeleteId) {
+		if (!deleteTargetId) {
 			return;
 		}
-		const id = pendingDeleteId;
-		setPendingDeleteId(null);
+		const id = deleteTargetId;
+		setDeleteTargetId(null);
 		commit(removeEntry(draftRef.current, id), { flush: true });
 	}
 
-	const pendingDelete = pendingDeleteId
-		? draftRef.current.find((entry) => entry.id === pendingDeleteId)
+	const entryToDelete = deleteTargetId
+		? draftRef.current.find((entry) => entry.id === deleteTargetId)
 		: undefined;
 
 	return {
 		entries,
-		pendingDelete,
+		entryToDelete,
 		patchEntry,
 		flush: autosave.flush,
 		handleAdd,

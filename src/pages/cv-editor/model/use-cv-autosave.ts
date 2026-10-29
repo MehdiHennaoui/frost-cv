@@ -2,6 +2,7 @@ import { useEffect, useEffectEvent, useRef } from "react";
 
 import { type Cv, type CvContent, saveCv } from "@/entities/cv";
 import { createAutosave } from "@/shared/lib/autosave";
+import { useCvSavePending } from "./cv-save-pending";
 
 type UseCvAutosaveOptions<T> = {
 	cv: Cv;
@@ -23,13 +24,16 @@ export function useCvAutosave<T>({
 	canSave = () => true,
 }: UseCvAutosaveOptions<T>) {
 	const latestRef = useRef(initialSaved);
+	const { withCvSavePending } = useCvSavePending();
 
 	const persist = useEffectEvent(async (value: T) => {
-		const next = await saveCv({
-			...cv,
-			content: apply(cv.content, value),
+		await withCvSavePending(async () => {
+			const next = await saveCv({
+				...cv,
+				content: apply(cv.content, value),
+			});
+			onPersisted(next);
 		});
-		onPersisted(next);
 	});
 
 	const allowSave = useEffectEvent((value: T) => canSave(value));
@@ -75,4 +79,22 @@ export function useCvAutosave<T>({
 	}
 
 	return { schedule, flush, cancel };
+}
+
+/** Skip the blur flush while focus stays in the same form, so the save lock does not drop the next field. */
+export function flushOnFormLeave(
+	event:
+		| {
+				currentTarget: HTMLElement;
+				relatedTarget: EventTarget | null;
+		  }
+		| undefined,
+	flush: () => void,
+) {
+	const next = event?.relatedTarget;
+	const form = event?.currentTarget.closest("form");
+	if (next instanceof Node && form?.contains(next)) {
+		return;
+	}
+	flush();
 }

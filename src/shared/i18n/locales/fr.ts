@@ -45,6 +45,7 @@ export const fr = {
 	},
 	cvEditor: {
 		loading: "Chargement du CV…",
+		saving: "Enregistrement du CV…",
 		notFound: "CV introuvable",
 		notFoundHint: "Ce CV est absent ou a été supprimé.",
 		backToList: "Retour à la liste des CV",

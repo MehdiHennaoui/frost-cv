@@ -12,6 +12,7 @@ import {
 	identityFieldsOf,
 	withIdentity,
 } from "../model/identity-fields";
+import { flushOnFormLeave } from "../model/use-cv-autosave";
 import { useCvSectionDraft } from "../model/use-cv-section-draft";
 import { RichTextEditor } from "./rich-text-editor";
 
@@ -75,9 +76,9 @@ export function IdentityHeaderForm({
 											id={`identity-${name}`}
 											name={field.name}
 											value={field.state.value}
-											onBlur={() => {
+											onBlur={(event) => {
 												field.handleBlur();
-												flush();
+												flushOnFormLeave(event, flush);
 											}}
 											onChange={(event) => {
 												const value = event.target.value;
@@ -101,7 +102,7 @@ export function IdentityHeaderForm({
 										value={field.state.value}
 										onBlur={() => {
 											field.handleBlur();
-											flush();
+											flushOnFormLeave(undefined, flush);
 										}}
 										onChange={(html) => {
 											field.handleChange(html);

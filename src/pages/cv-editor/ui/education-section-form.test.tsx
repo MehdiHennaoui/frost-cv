@@ -201,11 +201,11 @@ describe("EducationSectionForm", () => {
 
 		render(<EducationSectionForm cv={cv} onPersisted={vi.fn()} />);
 
+		fireEvent.click(
+			screen.getAllByRole("button", { name: "cvEditor.education.position" })[0],
+		);
 		await act(async () => {
-			fireEvent.change(
-				screen.getAllByLabelText("cvEditor.education.position")[0],
-				{ target: { value: "1" } },
-			);
+			fireEvent.click(screen.getAllByRole("menuitem")[1]);
 		});
 
 		expect(saveCvMock).toHaveBeenCalledTimes(1);

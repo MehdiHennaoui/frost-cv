@@ -3,6 +3,7 @@ export {
 	changeUiLocale,
 	i18n,
 	useAppTranslation,
+	useStoredUiLocale,
 	useUiLocale,
 } from "./instance";
 export { useTranslationKeys } from "./test";

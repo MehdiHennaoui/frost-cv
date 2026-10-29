@@ -43,6 +43,7 @@ export const en = {
 	},
 	cvEditor: {
 		loading: "Loading CV…",
+		saving: "Saving CV…",
 		notFound: "CV not found",
 		notFoundHint: "This CV is missing or was deleted.",
 		backToList: "Back to CV list",

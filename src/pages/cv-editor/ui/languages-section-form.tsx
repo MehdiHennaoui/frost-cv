@@ -1,12 +1,11 @@
 import { LanguagesIcon, PlusIcon, Trash2Icon } from "lucide-react";
+import type { ReactNode } from "react";
 
 import type { Cv } from "@/entities/cv";
 import { useAppTranslation } from "@/shared/i18n";
-import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Field, FieldGroup, FieldLabel } from "@/shared/ui/field";
 import { Input } from "@/shared/ui/input";
-import { NativeSelect, NativeSelectOption } from "@/shared/ui/native-select";
 import {
 	createEmptyLanguage,
 	type LanguageEntry,
@@ -14,12 +13,16 @@ import {
 	languagesOf,
 	withLanguages,
 } from "../model/language-fields";
+import { flushOnFormLeave } from "../model/use-cv-autosave";
 import { useCvEntryList } from "../model/use-cv-entry-list";
 import { CvDeleteConfirmDialog } from "./cv-delete-confirm-dialog";
+import { IconTooltipButton } from "./icon-tooltip-button";
+import { PositionMenu } from "./position-menu";
 
 type LanguagesSectionFormProps = {
 	cv: Cv;
 	onPersisted: (cv: Cv) => void;
+	reorder?: ReactNode;
 };
 
 const TEXT_FIELDS = ["language", "level"] as const satisfies ReadonlyArray<
@@ -29,11 +32,12 @@ const TEXT_FIELDS = ["language", "level"] as const satisfies ReadonlyArray<
 export function LanguagesSectionForm({
 	cv,
 	onPersisted,
+	reorder,
 }: LanguagesSectionFormProps) {
 	const { t } = useAppTranslation();
 	const {
 		entries,
-		pendingDelete,
+		entryToDelete,
 		patchEntry,
 		flush,
 		handleAdd,
@@ -59,19 +63,19 @@ export function LanguagesSectionForm({
 			>
 				<Card size="sm">
 					<CardHeader className="flex flex-row items-center justify-between gap-2">
-						<CardTitle className="flex items-center gap-2">
+						<CardTitle className="flex min-w-0 items-center gap-2">
 							<LanguagesIcon aria-hidden className="size-4 shrink-0" />
 							{t("cvEditor.section.languages")}
 						</CardTitle>
-						<Button
-							type="button"
-							size="sm"
-							variant="outline"
-							onClick={handleAdd}
-						>
-							<PlusIcon data-icon="inline-start" />
-							{t("cvEditor.languages.add")}
-						</Button>
+						<div className="flex shrink-0 items-center gap-1">
+							{reorder}
+							<IconTooltipButton
+								label={t("cvEditor.languages.add")}
+								onClick={handleAdd}
+							>
+								<PlusIcon />
+							</IconTooltipButton>
+						</div>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						{entries.length === 0 && (
@@ -84,45 +88,24 @@ export function LanguagesSectionForm({
 								key={entry.id}
 								className="space-y-3 rounded-lg border border-border p-3"
 							>
-								<div className="flex flex-wrap items-end justify-between gap-2">
-									<Field className="w-auto gap-1.5">
-										<FieldLabel htmlFor={`language-${entry.id}-position`}>
-											{t("cvEditor.languages.position")}
-										</FieldLabel>
-										<NativeSelect
-											id={`language-${entry.id}-position`}
-											size="sm"
-											disabled={entries.length < 2}
-											value={String(index)}
-											aria-label={t("cvEditor.languages.position")}
-											onChange={(event) => {
-												const toIndex = Number(event.target.value);
-												if (Number.isNaN(toIndex)) {
-													return;
-												}
-												moveEntry(entry.id, toIndex);
-											}}
-										>
-											{Array.from({ length: entries.length }, (_, position) =>
-												String(position),
-											).map((value) => (
-												<NativeSelectOption key={value} value={value}>
-													{t("cvEditor.languages.positionOption", {
-														n: Number(value) + 1,
-													})}
-												</NativeSelectOption>
-											))}
-										</NativeSelect>
-									</Field>
-									<Button
-										type="button"
-										size="sm"
-										variant="ghost"
+								<div className="flex flex-wrap items-center justify-between gap-2">
+									<PositionMenu
+										label={t("cvEditor.languages.position")}
+										index={index}
+										count={entries.length}
+										onMove={(toIndex) => moveEntry(entry.id, toIndex)}
+										optionLabel={(position) =>
+											t("cvEditor.languages.positionOption", {
+												n: position + 1,
+											})
+										}
+									/>
+									<IconTooltipButton
+										label={t("cvEditor.languages.delete")}
 										onClick={() => requestDelete(entry.id)}
 									>
-										<Trash2Icon data-icon="inline-start" />
-										{t("cvEditor.languages.delete")}
-									</Button>
+										<Trash2Icon />
+									</IconTooltipButton>
 								</div>
 
 								<FieldGroup className="gap-3">
@@ -134,7 +117,7 @@ export function LanguagesSectionForm({
 											<Input
 												id={`language-${entry.id}-${name}`}
 												value={entry[name]}
-												onBlur={flush}
+												onBlur={(event) => flushOnFormLeave(event, flush)}
 												onChange={(event) =>
 													patchEntry(entry.id, { [name]: event.target.value })
 												}
@@ -148,13 +131,13 @@ export function LanguagesSectionForm({
 				</Card>
 			</form>
 
-			{pendingDelete && (
+			{entryToDelete && (
 				<CvDeleteConfirmDialog
 					title={t("cvEditor.languages.deleteTitle")}
 					description={t("cvEditor.languages.deleteDescription", {
 						title:
-							pendingDelete.language ||
-							pendingDelete.level ||
+							entryToDelete.language ||
+							entryToDelete.level ||
 							t("cvEditor.languages.untitled"),
 					})}
 					cancelLabel={t("cvEditor.languages.deleteCancel")}

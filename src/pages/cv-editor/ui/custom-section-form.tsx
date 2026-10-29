@@ -1,9 +1,8 @@
 import { LayoutListIcon, Trash2Icon } from "lucide-react";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 
 import { type Cv, saveCv } from "@/entities/cv";
 import { useAppTranslation } from "@/shared/i18n";
-import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Field, FieldGroup, FieldLabel } from "@/shared/ui/field";
 import { Input } from "@/shared/ui/input";
@@ -14,22 +13,28 @@ import {
 	removeCustomSection,
 	withCustomSection,
 } from "../model/custom-section-fields";
+import { useCvSavePending } from "../model/cv-save-pending";
+import { flushOnFormLeave } from "../model/use-cv-autosave";
 import { useCvSectionDraft } from "../model/use-cv-section-draft";
 import { CvDeleteConfirmDialog } from "./cv-delete-confirm-dialog";
+import { IconTooltipButton } from "./icon-tooltip-button";
 import { RichTextEditor } from "./rich-text-editor";
 
 type CustomSectionFormProps = {
 	cv: Cv;
 	sectionId: string;
 	onPersisted: (cv: Cv) => void;
+	reorder?: ReactNode;
 };
 
 export function CustomSectionForm({
 	cv,
 	sectionId,
 	onPersisted,
+	reorder,
 }: CustomSectionFormProps) {
 	const { t } = useAppTranslation();
+	const { withCvSavePending } = useCvSavePending();
 	const initial =
 		customSectionOf(cv.content, sectionId) ??
 		({
@@ -37,7 +42,7 @@ export function CustomSectionForm({
 			title: "",
 			description: "",
 		} satisfies CustomSection);
-	const [pendingDelete, setPendingDelete] = useState(false);
+	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 	const { draft, schedule, flush, cancel } = useCvSectionDraft({
 		cv,
 		onPersisted,
@@ -48,12 +53,14 @@ export function CustomSectionForm({
 
 	async function confirmDelete() {
 		cancel();
-		setPendingDelete(false);
-		const next = await saveCv({
-			...cv,
-			content: removeCustomSection(cv.content, sectionId),
+		setDeleteDialogOpen(false);
+		await withCvSavePending(async () => {
+			const next = await saveCv({
+				...cv,
+				content: removeCustomSection(cv.content, sectionId),
+			});
+			onPersisted(next);
 		});
-		onPersisted(next);
 	}
 
 	const heading = draft.title.trim() || t("cvEditor.customs.untitled");
@@ -71,15 +78,15 @@ export function CustomSectionForm({
 							<LayoutListIcon aria-hidden className="size-4 shrink-0" />
 							<span className="truncate">{heading}</span>
 						</CardTitle>
-						<Button
-							type="button"
-							size="sm"
-							variant="ghost"
-							onClick={() => setPendingDelete(true)}
-						>
-							<Trash2Icon data-icon="inline-start" />
-							{t("cvEditor.customs.delete")}
-						</Button>
+						<div className="flex shrink-0 items-center gap-1">
+							{reorder}
+							<IconTooltipButton
+								label={t("cvEditor.customs.delete")}
+								onClick={() => setDeleteDialogOpen(true)}
+							>
+								<Trash2Icon />
+							</IconTooltipButton>
+						</div>
 					</CardHeader>
 					<CardContent>
 						<FieldGroup className="gap-3">
@@ -90,7 +97,7 @@ export function CustomSectionForm({
 								<Input
 									id={`custom-${sectionId}-title`}
 									value={draft.title}
-									onBlur={flush}
+									onBlur={(event) => flushOnFormLeave(event, flush)}
 									onChange={(event) => schedule({ title: event.target.value })}
 								/>
 							</Field>
@@ -101,7 +108,7 @@ export function CustomSectionForm({
 								<RichTextEditor
 									id={`custom-${sectionId}-description`}
 									value={draft.description}
-									onBlur={flush}
+									onBlur={() => flushOnFormLeave(undefined, flush)}
 									onChange={(html) => schedule({ description: html })}
 								/>
 							</Field>
@@ -110,7 +117,7 @@ export function CustomSectionForm({
 				</Card>
 			</form>
 
-			{pendingDelete && (
+			{deleteDialogOpen && (
 				<CvDeleteConfirmDialog
 					title={t("cvEditor.customs.deleteTitle")}
 					description={t("cvEditor.customs.deleteDescription", {
@@ -118,7 +125,7 @@ export function CustomSectionForm({
 					})}
 					cancelLabel={t("cvEditor.customs.deleteCancel")}
 					confirmLabel={t("cvEditor.customs.deleteConfirm")}
-					onCancel={() => setPendingDelete(false)}
+					onCancel={() => setDeleteDialogOpen(false)}
 					onConfirm={() => {
 						void confirmDelete();
 					}}

@@ -4,7 +4,7 @@ import { act, cleanup, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { type Cv, createEmptyCvContent } from "@/entities/cv";
-import { useCvAutosave } from "./use-cv-autosave";
+import { flushOnFormLeave, useCvAutosave } from "./use-cv-autosave";
 
 const saveCvMock = vi.fn();
 
@@ -92,5 +92,21 @@ describe("useCvAutosave", () => {
 			result.current.flush();
 		});
 		expect(saveCvMock).not.toHaveBeenCalled();
+	});
+});
+
+describe("flushOnFormLeave", () => {
+	it("skips flush when focus stays inside the form", () => {
+		const form = document.createElement("form");
+		const from = document.createElement("input");
+		const to = document.createElement("input");
+		form.append(from, to);
+		const flush = vi.fn();
+
+		flushOnFormLeave({ currentTarget: from, relatedTarget: to }, flush);
+		expect(flush).not.toHaveBeenCalled();
+
+		flushOnFormLeave({ currentTarget: from, relatedTarget: null }, flush);
+		expect(flush).toHaveBeenCalledOnce();
 	});
 });

@@ -1,7 +1,11 @@
 import { useRouterState } from "@tanstack/react-router";
 import type { CSSProperties } from "react";
 
-import { UiLocaleSwitch, useAppTranslation } from "@/shared/i18n";
+import {
+	UiLocaleSwitch,
+	useAppTranslation,
+	useStoredUiLocale,
+} from "@/shared/i18n";
 import {
 	SidebarPortalProvider,
 	useSidebarPortalHost,
@@ -46,6 +50,7 @@ function useRoutePageTitle(): string {
 }
 
 function AppShell({ children }: { children: React.ReactNode }) {
+	useStoredUiLocale();
 	const { setHost } = useSidebarPortalHost();
 	const isCvEditor = useIsCvEditorRoute();
 	const title = useRoutePageTitle();

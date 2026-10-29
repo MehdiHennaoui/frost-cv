@@ -1,3 +1,4 @@
+import { cn } from "@/shared/lib/cn";
 import { Button } from "@/shared/ui/button";
 import {
 	DropdownMenu,
@@ -58,9 +59,7 @@ export function UiLocaleSwitch() {
 							data-active={isSelected ? "" : undefined}
 						>
 							<span aria-hidden>{flag}</span>
-							<span className={isSelected ? "font-bold" : undefined}>
-								{label}
-							</span>
+							<span className={cn(isSelected && "font-bold")}>{label}</span>
 						</DropdownMenuItem>
 					);
 				})}
