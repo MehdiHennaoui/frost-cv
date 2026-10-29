@@ -155,6 +155,11 @@ export const fr = {
 				description: "Description",
 			},
 		},
+		sections: {
+			position: "Position : {{section}}",
+			positionOption: "Position {{n}}",
+			drag: "Réordonner {{section}}",
+		},
 
 		preview: {
 			label: "Aperçu du CV canadien",
