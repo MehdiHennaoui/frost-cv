@@ -6,10 +6,12 @@ Local skills live under `.agents/skills/` (and `.claude/skills/` symlinks). Befo
 
 These rules apply on every task, for any agent. Source of truth: `.agents/rules/`. Read each file and follow it.
 
+- [Comments only when tricky](.agents/rules/comments-only-when-tricky.md)
 - [English only](.agents/rules/english-only.md)
 - [FSD CLI scaffolding](.agents/rules/fsd-cli.md)
 - [Git branch naming](.agents/rules/git-branch-naming.md)
 - [Lint after edits](.agents/rules/lint-after-edits.md)
+- [No legacy CV before prod](.agents/rules/no-legacy-cv-pre-prod.md)
 - [React conditional render](.agents/rules/react-conditional-render.md)
 - [shadcn UI only](.agents/rules/shadcn-ui-only.md)
 

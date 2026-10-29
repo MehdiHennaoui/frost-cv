@@ -2,15 +2,12 @@ import { z } from "zod";
 
 import { APP_LOCALES, type AppLocale } from "@/shared/i18n";
 
-/** CV content payload; section shapes fill in on later tickets. */
 export type CvContent = Record<string, unknown>;
 
-/** Same codes as UI i18n (`APP_LOCALES`). */
 export const cvLocaleSchema = z.enum(APP_LOCALES);
 
 export type CvLocale = AppLocale;
 
-/** Built-in top-level sections. Identity is always first; others reorder later. */
 export const DEFAULT_SECTION_ORDER = [
 	"identity",
 	"experiences",
@@ -20,7 +17,6 @@ export const DEFAULT_SECTION_ORDER = [
 
 export type BuiltinSectionKey = (typeof DEFAULT_SECTION_ORDER)[number];
 
-/** One order slot per custom section: `custom:<uuid>`. */
 export type CustomSectionOrderKey = `custom:${string}`;
 
 export type SectionKey = BuiltinSectionKey | CustomSectionOrderKey;
@@ -68,6 +64,17 @@ export function customSectionIdFromKey(key: CustomSectionOrderKey): string {
 	return key.slice("custom:".length);
 }
 
+function isBuiltinSectionKey(value: string): value is BuiltinSectionKey {
+	return BUILTIN_KEYS.has(value);
+}
+
+function isSectionKey(value: unknown): value is SectionKey {
+	return (
+		typeof value === "string" &&
+		(isBuiltinSectionKey(value) || isCustomSectionKey(value))
+	);
+}
+
 function customSectionIdsOf(content: CvContent): string[] {
 	const raw = content.customSections;
 	if (!Array.isArray(raw)) {
@@ -86,61 +93,18 @@ function customSectionIdsOf(content: CvContent): string[] {
 	return ids;
 }
 
-function isBuiltinSectionKey(value: string): value is BuiltinSectionKey {
-	return BUILTIN_KEYS.has(value);
-}
-
-/**
- * Reads persisted section order. Identity stays first; legacy `"customs"` is
- * dropped; each `customSections` id gets a `custom:<id>` slot.
- */
 export function sectionOrderOf(content: CvContent): SectionKey[] {
-	const customIds = customSectionIdsOf(content);
-	const customIdSet = new Set(customIds);
-	const persisted = Array.isArray(content.sectionOrder)
-		? content.sectionOrder
-		: [];
-
-	const result: SectionKey[] = ["identity"];
-	const seen = new Set<string>(["identity"]);
-
-	for (const entry of persisted) {
-		if (typeof entry !== "string") {
-			continue;
-		}
-		if (entry === "identity" || entry === "customs" || seen.has(entry)) {
-			continue;
-		}
-		if (isBuiltinSectionKey(entry)) {
-			result.push(entry);
-			seen.add(entry);
-			continue;
-		}
-		if (isCustomSectionKey(entry)) {
-			const id = customSectionIdFromKey(entry);
-			if (customIdSet.has(id)) {
-				result.push(entry);
-				seen.add(entry);
-			}
-		}
+	const order = content.sectionOrder;
+	if (
+		Array.isArray(order) &&
+		order[0] === "identity" &&
+		order.every(isSectionKey)
+	) {
+		return order;
 	}
 
-	for (const key of DEFAULT_SECTION_ORDER) {
-		if (key === "identity" || seen.has(key)) {
-			continue;
-		}
-		result.push(key);
-		seen.add(key);
-	}
-
-	for (const id of customIds) {
-		const key = customSectionKey(id);
-		if (seen.has(key)) {
-			continue;
-		}
-		result.push(key);
-		seen.add(key);
-	}
-
-	return result;
+	return [
+		...DEFAULT_SECTION_ORDER,
+		...customSectionIdsOf(content).map(customSectionKey),
+	];
 }

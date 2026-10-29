@@ -73,7 +73,6 @@ export function withCustomSection(
 	return withCustomSections(content, next);
 }
 
-/** Appends a custom section and its top-level `custom:<id>` order slot. */
 export function addCustomSection(content: CvContent): {
 	content: CvContent;
 	section: CustomSection;
@@ -93,7 +92,6 @@ export function addCustomSection(content: CvContent): {
 	};
 }
 
-/** Removes a custom section and its order slot. */
 export function removeCustomSection(content: CvContent, id: string): CvContent {
 	const customSections = removeEntry(customSectionsOf(content), id);
 	const sectionOrder = sectionOrderOf(content).filter(

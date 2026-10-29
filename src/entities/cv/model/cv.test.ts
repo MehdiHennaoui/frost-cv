@@ -36,36 +36,24 @@ describe("sectionOrderOf", () => {
 	it("returns the persisted order when identity is first", () => {
 		expect(
 			sectionOrderOf({
-				sectionOrder: ["identity", "languages", "experiences", "education"],
-			}),
-		).toEqual(["identity", "languages", "experiences", "education"]);
-	});
-
-	it("drops legacy customs and syncs custom:<id> slots to customSections", () => {
-		expect(
-			sectionOrderOf({
-				customSections: [{ id: "c1" }, { id: "c2" }],
 				sectionOrder: [
 					"identity",
-					"experiences",
-					"custom:c1",
-					"education",
 					"languages",
-					"customs",
-					"custom:orphan",
+					"custom:c1",
+					"experiences",
+					"education",
 				],
 			}),
 		).toEqual([
 			"identity",
-			"experiences",
-			"custom:c1",
-			"education",
 			"languages",
-			"custom:c2",
+			"custom:c1",
+			"experiences",
+			"education",
 		]);
 	});
 
-	it("falls back to builtins then custom ids when order is missing or incomplete", () => {
+	it("falls back to builtins then custom ids when order is missing or invalid", () => {
 		expect(sectionOrderOf({})).toEqual([...DEFAULT_SECTION_ORDER]);
 		expect(
 			sectionOrderOf({ sectionOrder: ["experiences", "identity"] }),
@@ -73,14 +61,8 @@ describe("sectionOrderOf", () => {
 		expect(
 			sectionOrderOf({
 				customSections: [{ id: "c1" }],
-				sectionOrder: ["identity", "languages"],
+				sectionOrder: ["identity", "languages", "customs"],
 			}),
-		).toEqual([
-			"identity",
-			"languages",
-			"experiences",
-			"education",
-			"custom:c1",
-		]);
+		).toEqual([...DEFAULT_SECTION_ORDER, "custom:c1"]);
 	});
 });
