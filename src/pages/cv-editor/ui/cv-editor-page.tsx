@@ -1,10 +1,19 @@
+import { PlusIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { type Cv, sectionOrderOf } from "@/entities/cv";
+import {
+	type Cv,
+	customSectionIdFromKey,
+	isCustomSectionKey,
+	saveCv,
+	sectionOrderOf,
+} from "@/entities/cv";
 import { useAppTranslation } from "@/shared/i18n";
 import { SidebarPortal } from "@/shared/lib/sidebar-portal";
-import { buttonVariants } from "@/shared/ui/button";
+import { Button, buttonVariants } from "@/shared/ui/button";
+import { addCustomSection } from "../model/custom-section-fields";
 import { CanadianCvPreview } from "./canadian-cv-preview";
+import { CustomSectionForm } from "./custom-section-form";
 import { EducationSectionForm } from "./education-section-form";
 import { ExperiencesSectionForm } from "./experiences-section-form";
 import { IdentityHeaderForm } from "./identity-header-form";
@@ -23,6 +32,12 @@ function EditorSidebarSections({
 }) {
 	const { t } = useAppTranslation();
 	const order = sectionOrderOf(cv.content).filter((key) => key !== "identity");
+
+	async function handleAddCustomSection() {
+		const { content } = addCustomSection(cv.content);
+		const next = await saveCv({ ...cv, content });
+		onPersisted(next);
+	}
 
 	return (
 		<div className="flex flex-col gap-4">
@@ -49,15 +64,30 @@ function EditorSidebarSections({
 					);
 				}
 
-				return (
-					<div
-						key={key}
-						className="rounded-lg border border-muted-foreground/40 border-dashed px-4 py-3 text-sm"
-					>
-						{t(`cvEditor.section.${key}`)}
-					</div>
-				);
+				if (isCustomSectionKey(key)) {
+					return (
+						<CustomSectionForm
+							key={key}
+							cv={cv}
+							sectionId={customSectionIdFromKey(key)}
+							onPersisted={onPersisted}
+						/>
+					);
+				}
+
+				return null;
 			})}
+			<Button
+				type="button"
+				size="sm"
+				variant="outline"
+				onClick={() => {
+					void handleAddCustomSection();
+				}}
+			>
+				<PlusIcon data-icon="inline-start" />
+				{t("cvEditor.customs.add")}
+			</Button>
 		</div>
 	);
 }

@@ -141,6 +141,20 @@ export const fr = {
 				level: "Niveau",
 			},
 		},
+		customs: {
+			add: "Ajouter une section personnalisée",
+			untitled: "Section sans titre",
+			delete: "Supprimer cette section",
+			deleteTitle: "Supprimer la section personnalisée",
+			deleteDescription:
+				"Supprimer « {{title}} » ? Cette action est irréversible.",
+			deleteCancel: "Annuler",
+			deleteConfirm: "Supprimer cette section",
+			field: {
+				title: "Titre de la section",
+				description: "Description",
+			},
+		},
 
 		preview: {
 			label: "Aperçu du CV canadien",
@@ -153,7 +167,6 @@ export const fr = {
 			experiences: "Expériences",
 			education: "Formation",
 			languages: "Langues",
-			customs: "Sections personnalisées",
 		},
 	},
 } satisfies typeof en;

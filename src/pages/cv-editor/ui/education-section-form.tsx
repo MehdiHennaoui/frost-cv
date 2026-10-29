@@ -1,17 +1,9 @@
-import { GraduationCapIcon, PlusIcon, Trash2Icon, XIcon } from "lucide-react";
+import { GraduationCapIcon, PlusIcon, Trash2Icon } from "lucide-react";
 
 import type { Cv } from "@/entities/cv";
 import { useAppTranslation } from "@/shared/i18n";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-} from "@/shared/ui/dialog";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/shared/ui/field";
 import { Input } from "@/shared/ui/input";
 import { NativeSelect, NativeSelectOption } from "@/shared/ui/native-select";
@@ -25,6 +17,7 @@ import {
 	withEducation,
 } from "../model/education-fields";
 import { useCvEntryList } from "../model/use-cv-entry-list";
+import { CvDeleteConfirmDialog } from "./cv-delete-confirm-dialog";
 import { MonthInput } from "./month-input";
 
 type EducationSectionFormProps = {
@@ -205,42 +198,19 @@ export function EducationSectionForm({
 			</form>
 
 			{pendingDelete && (
-				<Dialog
-					open
-					onOpenChange={(open) => {
-						if (!open) {
-							cancelDelete();
-						}
-					}}
-				>
-					<DialogContent>
-						<DialogHeader>
-							<DialogTitle>{t("cvEditor.education.deleteTitle")}</DialogTitle>
-							<DialogDescription>
-								{t("cvEditor.education.deleteDescription", {
-									title:
-										pendingDelete.school ||
-										pendingDelete.degree ||
-										t("cvEditor.education.untitled"),
-								})}
-							</DialogDescription>
-						</DialogHeader>
-						<DialogFooter>
-							<Button type="button" variant="outline" onClick={cancelDelete}>
-								<XIcon data-icon="inline-start" />
-								{t("cvEditor.education.deleteCancel")}
-							</Button>
-							<Button
-								type="button"
-								variant="destructive"
-								onClick={confirmDelete}
-							>
-								<Trash2Icon data-icon="inline-start" />
-								{t("cvEditor.education.deleteConfirm")}
-							</Button>
-						</DialogFooter>
-					</DialogContent>
-				</Dialog>
+				<CvDeleteConfirmDialog
+					title={t("cvEditor.education.deleteTitle")}
+					description={t("cvEditor.education.deleteDescription", {
+						title:
+							pendingDelete.school ||
+							pendingDelete.degree ||
+							t("cvEditor.education.untitled"),
+					})}
+					cancelLabel={t("cvEditor.education.deleteCancel")}
+					confirmLabel={t("cvEditor.education.deleteConfirm")}
+					onCancel={cancelDelete}
+					onConfirm={confirmDelete}
+				/>
 			)}
 		</>
 	);

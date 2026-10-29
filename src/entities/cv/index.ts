@@ -8,14 +8,19 @@ export {
 	saveCv,
 } from "./api/cv-repository";
 export {
+	type BuiltinSectionKey,
 	type CreateCvInput,
+	type CustomSectionOrderKey,
 	type Cv,
 	type CvContent,
 	type CvLocale,
 	createCvInputSchema,
 	createEmptyCvContent,
+	customSectionIdFromKey,
+	customSectionKey,
 	cvLocaleSchema,
 	DEFAULT_SECTION_ORDER,
+	isCustomSectionKey,
 	type SectionKey,
 	sectionOrderOf,
 } from "./model/cv";

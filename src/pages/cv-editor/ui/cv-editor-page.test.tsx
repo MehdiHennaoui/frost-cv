@@ -85,7 +85,9 @@ describe("CvEditorPage", () => {
 		expect(
 			within(host).getByRole("button", { name: "cvEditor.languages.add" }),
 		).toBeTruthy();
-		expect(within(host).getByText("cvEditor.section.customs")).toBeTruthy();
+		expect(
+			within(host).getByRole("button", { name: "cvEditor.customs.add" }),
+		).toBeTruthy();
 
 		const preview = screen.getByLabelText("cvEditor.preview.label");
 		expect(

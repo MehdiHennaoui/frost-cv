@@ -2,24 +2,24 @@ import { z } from "zod";
 
 import { APP_LOCALES, type AppLocale } from "@/shared/i18n";
 
-/** CV content payload; section shapes fill in on later tickets. */
 export type CvContent = Record<string, unknown>;
 
-/** Same codes as UI i18n (`APP_LOCALES`). */
 export const cvLocaleSchema = z.enum(APP_LOCALES);
 
 export type CvLocale = AppLocale;
 
-/** Identity is always first; other slots are reorderable later. */
 export const DEFAULT_SECTION_ORDER = [
 	"identity",
 	"experiences",
 	"education",
 	"languages",
-	"customs",
 ] as const;
 
-export type SectionKey = (typeof DEFAULT_SECTION_ORDER)[number];
+export type BuiltinSectionKey = (typeof DEFAULT_SECTION_ORDER)[number];
+
+export type CustomSectionOrderKey = `custom:${string}`;
+
+export type SectionKey = BuiltinSectionKey | CustomSectionOrderKey;
 
 export type Cv = {
 	id: string;
@@ -48,33 +48,63 @@ export function createEmptyCvContent(): CvContent {
 	};
 }
 
+const BUILTIN_KEYS = new Set<string>(DEFAULT_SECTION_ORDER);
+
+export function isCustomSectionKey(
+	value: string,
+): value is CustomSectionOrderKey {
+	return value.startsWith("custom:") && value.length > "custom:".length;
+}
+
+export function customSectionKey(id: string): CustomSectionOrderKey {
+	return `custom:${id}`;
+}
+
+export function customSectionIdFromKey(key: CustomSectionOrderKey): string {
+	return key.slice("custom:".length);
+}
+
+function isBuiltinSectionKey(value: string): value is BuiltinSectionKey {
+	return BUILTIN_KEYS.has(value);
+}
+
 function isSectionKey(value: unknown): value is SectionKey {
 	return (
 		typeof value === "string" &&
-		(DEFAULT_SECTION_ORDER as readonly string[]).includes(value)
+		(isBuiltinSectionKey(value) || isCustomSectionKey(value))
 	);
 }
 
-function isCompleteSectionOrder(value: unknown): value is SectionKey[] {
-	if (!Array.isArray(value)) {
-		return false;
+function customSectionIdsOf(content: CvContent): string[] {
+	const raw = content.customSections;
+	if (!Array.isArray(raw)) {
+		return [];
 	}
-	if (value.length !== DEFAULT_SECTION_ORDER.length) {
-		return false;
+	const ids: string[] = [];
+	for (const item of raw) {
+		if (!item || typeof item !== "object" || Array.isArray(item)) {
+			continue;
+		}
+		const id = (item as { id?: unknown }).id;
+		if (typeof id === "string" && id.length > 0) {
+			ids.push(id);
+		}
 	}
-	if (value[0] !== "identity") {
-		return false;
-	}
-	if (!value.every(isSectionKey)) {
-		return false;
-	}
-	return DEFAULT_SECTION_ORDER.every((key) => value.includes(key));
+	return ids;
 }
 
-/** Reads persisted section order; Identity must stay first with all placeholder slots. */
 export function sectionOrderOf(content: CvContent): SectionKey[] {
-	if (isCompleteSectionOrder(content.sectionOrder)) {
-		return content.sectionOrder;
+	const order = content.sectionOrder;
+	if (
+		Array.isArray(order) &&
+		order[0] === "identity" &&
+		order.every(isSectionKey)
+	) {
+		return order;
 	}
-	return [...DEFAULT_SECTION_ORDER];
+
+	return [
+		...DEFAULT_SECTION_ORDER,
+		...customSectionIdsOf(content).map(customSectionKey),
+	];
 }

@@ -1,7 +1,12 @@
 import type { Cv } from "@/entities/cv";
-import { sectionOrderOf } from "@/entities/cv";
+import {
+	customSectionIdFromKey,
+	isCustomSectionKey,
+	sectionOrderOf,
+} from "@/entities/cv";
 import { i18n, useAppTranslation } from "@/shared/i18n";
 import { sanitizeCvHtml } from "@/shared/lib/sanitize-html";
+import { customSectionOf } from "../model/custom-section-fields";
 import {
 	educationDateRangeLabel,
 	educationOf,
@@ -198,16 +203,36 @@ export function CanadianCvPreview({ cv }: CanadianCvPreviewProps) {
 							);
 						}
 
-						return (
-							<section key={key} className="space-y-1">
-								<h2 className="border-neutral-300 border-b font-semibold text-xs uppercase tracking-wide">
-									{t(`cvEditor.section.${key}`)}
-								</h2>
-								<p className="text-neutral-500 text-xs">
-									{t("cvEditor.preview.sectionEmpty")}
-								</p>
-							</section>
-						);
+						if (isCustomSectionKey(key)) {
+							const section = customSectionOf(
+								cv.content,
+								customSectionIdFromKey(key),
+							);
+							if (!section) {
+								return null;
+							}
+							const bodyHtml = sanitizeCvHtml(section.description);
+							return (
+								<section key={key} className="space-y-3">
+									<h2 className="border-neutral-300 border-b font-semibold text-xs uppercase tracking-wide">
+										{section.title.trim() || t("cvEditor.customs.untitled")}
+									</h2>
+									{bodyHtml ? (
+										<div
+											className="text-neutral-800 text-sm [&_a]:underline [&_ol]:list-decimal [&_ol]:pl-5 [&_ul]:list-disc [&_ul]:pl-5"
+											// biome-ignore lint/security/noDangerouslySetInnerHtml: TipTap HTML sanitized via sanitizeCvHtml
+											dangerouslySetInnerHTML={{ __html: bodyHtml }}
+										/>
+									) : (
+										<p className="text-neutral-500 text-xs">
+											{t("cvEditor.preview.sectionEmpty")}
+										</p>
+									)}
+								</section>
+							);
+						}
+
+						return null;
 					})}
 			</div>
 		</article>

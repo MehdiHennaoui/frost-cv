@@ -1,18 +1,10 @@
-import { BriefcaseIcon, PlusIcon, Trash2Icon, XIcon } from "lucide-react";
+import { BriefcaseIcon, PlusIcon, Trash2Icon } from "lucide-react";
 
 import type { Cv } from "@/entities/cv";
 import { useAppTranslation } from "@/shared/i18n";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Checkbox } from "@/shared/ui/checkbox";
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-} from "@/shared/ui/dialog";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/shared/ui/field";
 import { Input } from "@/shared/ui/input";
 import { NativeSelect, NativeSelectOption } from "@/shared/ui/native-select";
@@ -26,6 +18,7 @@ import {
 	withExperiences,
 } from "../model/experience-fields";
 import { useCvEntryList } from "../model/use-cv-entry-list";
+import { CvDeleteConfirmDialog } from "./cv-delete-confirm-dialog";
 import { MonthInput } from "./month-input";
 import { RichTextEditor } from "./rich-text-editor";
 
@@ -244,42 +237,19 @@ export function ExperiencesSectionForm({
 			</form>
 
 			{pendingDelete && (
-				<Dialog
-					open
-					onOpenChange={(open) => {
-						if (!open) {
-							cancelDelete();
-						}
-					}}
-				>
-					<DialogContent>
-						<DialogHeader>
-							<DialogTitle>{t("cvEditor.experiences.deleteTitle")}</DialogTitle>
-							<DialogDescription>
-								{t("cvEditor.experiences.deleteDescription", {
-									title:
-										pendingDelete.jobTitle ||
-										pendingDelete.company ||
-										t("cvEditor.experiences.untitled"),
-								})}
-							</DialogDescription>
-						</DialogHeader>
-						<DialogFooter>
-							<Button type="button" variant="outline" onClick={cancelDelete}>
-								<XIcon data-icon="inline-start" />
-								{t("cvEditor.experiences.deleteCancel")}
-							</Button>
-							<Button
-								type="button"
-								variant="destructive"
-								onClick={confirmDelete}
-							>
-								<Trash2Icon data-icon="inline-start" />
-								{t("cvEditor.experiences.deleteConfirm")}
-							</Button>
-						</DialogFooter>
-					</DialogContent>
-				</Dialog>
+				<CvDeleteConfirmDialog
+					title={t("cvEditor.experiences.deleteTitle")}
+					description={t("cvEditor.experiences.deleteDescription", {
+						title:
+							pendingDelete.jobTitle ||
+							pendingDelete.company ||
+							t("cvEditor.experiences.untitled"),
+					})}
+					cancelLabel={t("cvEditor.experiences.deleteCancel")}
+					confirmLabel={t("cvEditor.experiences.deleteConfirm")}
+					onCancel={cancelDelete}
+					onConfirm={confirmDelete}
+				/>
 			)}
 		</>
 	);

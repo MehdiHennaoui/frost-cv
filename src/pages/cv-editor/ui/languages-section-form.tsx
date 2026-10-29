@@ -1,17 +1,9 @@
-import { LanguagesIcon, PlusIcon, Trash2Icon, XIcon } from "lucide-react";
+import { LanguagesIcon, PlusIcon, Trash2Icon } from "lucide-react";
 
 import type { Cv } from "@/entities/cv";
 import { useAppTranslation } from "@/shared/i18n";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-} from "@/shared/ui/dialog";
 import { Field, FieldGroup, FieldLabel } from "@/shared/ui/field";
 import { Input } from "@/shared/ui/input";
 import { NativeSelect, NativeSelectOption } from "@/shared/ui/native-select";
@@ -23,6 +15,7 @@ import {
 	withLanguages,
 } from "../model/language-fields";
 import { useCvEntryList } from "../model/use-cv-entry-list";
+import { CvDeleteConfirmDialog } from "./cv-delete-confirm-dialog";
 
 type LanguagesSectionFormProps = {
 	cv: Cv;
@@ -156,42 +149,19 @@ export function LanguagesSectionForm({
 			</form>
 
 			{pendingDelete && (
-				<Dialog
-					open
-					onOpenChange={(open) => {
-						if (!open) {
-							cancelDelete();
-						}
-					}}
-				>
-					<DialogContent>
-						<DialogHeader>
-							<DialogTitle>{t("cvEditor.languages.deleteTitle")}</DialogTitle>
-							<DialogDescription>
-								{t("cvEditor.languages.deleteDescription", {
-									title:
-										pendingDelete.language ||
-										pendingDelete.level ||
-										t("cvEditor.languages.untitled"),
-								})}
-							</DialogDescription>
-						</DialogHeader>
-						<DialogFooter>
-							<Button type="button" variant="outline" onClick={cancelDelete}>
-								<XIcon data-icon="inline-start" />
-								{t("cvEditor.languages.deleteCancel")}
-							</Button>
-							<Button
-								type="button"
-								variant="destructive"
-								onClick={confirmDelete}
-							>
-								<Trash2Icon data-icon="inline-start" />
-								{t("cvEditor.languages.deleteConfirm")}
-							</Button>
-						</DialogFooter>
-					</DialogContent>
-				</Dialog>
+				<CvDeleteConfirmDialog
+					title={t("cvEditor.languages.deleteTitle")}
+					description={t("cvEditor.languages.deleteDescription", {
+						title:
+							pendingDelete.language ||
+							pendingDelete.level ||
+							t("cvEditor.languages.untitled"),
+					})}
+					cancelLabel={t("cvEditor.languages.deleteCancel")}
+					confirmLabel={t("cvEditor.languages.deleteConfirm")}
+					onCancel={cancelDelete}
+					onConfirm={confirmDelete}
+				/>
 			)}
 		</>
 	);
