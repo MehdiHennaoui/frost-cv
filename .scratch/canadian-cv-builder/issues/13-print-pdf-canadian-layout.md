@@ -4,12 +4,12 @@
 
 **Blocked by:** 11 — Section reorder
 
-**Status:** claimed
+**Status:** resolved
 
 **Maps to:** US-12
 
-- [ ] User-facing control triggers browser print for the preview
-- [ ] Print stylesheet hides editor chrome and UI chrome; preview content is what prints
-- [ ] Layout follows settled Canadian rules (no photo; header contacts/links; section order respected)
-- [ ] Section labels / Present-Présent follow the CV locale, not necessarily the UI locale
-- [ ] No enforced max page count (length recommendation is backlog US-15)
+- [x] User-facing control triggers browser print for the preview
+- [x] Print stylesheet hides editor chrome and UI chrome; preview content is what prints
+- [x] Layout follows settled Canadian rules (no photo; header contacts/links; section order respected)
+- [x] Section labels / Present-Présent follow the CV locale, not necessarily the UI locale
+- [x] No enforced max page count (length recommendation is backlog US-15)
