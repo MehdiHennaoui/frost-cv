@@ -63,6 +63,17 @@ describe("CvListPage", () => {
 		expect(screen.getByLabelText("createCv.fieldLocale")).toBeTruthy();
 	});
 
+	it("opens the import modal from the Import JSON button", () => {
+		render(<CvListPage cvs={[]} />);
+
+		fireEvent.click(screen.getByRole("button", { name: "cvList.import" }));
+
+		expect(
+			screen.getByRole("heading", { name: "cvExport.importTitle" }),
+		).toBeTruthy();
+		expect(screen.getByText("cvExport.importDescription")).toBeTruthy();
+	});
+
 	it("opens a delete confirmation naming the CV", () => {
 		render(<CvListPage cvs={sampleCvs} />);
 
@@ -76,5 +87,25 @@ describe("CvListPage", () => {
 			screen.getByRole("heading", { name: "deleteCv.title" }),
 		).toBeTruthy();
 		expect(screen.getByText("deleteCv.description")).toBeTruthy();
+	});
+
+	it("exports a CV from its card via the download helper", () => {
+		const downloadFile = vi.fn();
+		render(<CvListPage cvs={sampleCvs} downloadFile={downloadFile} />);
+
+		const [exportButton] = screen.getAllByRole("button", {
+			name: "cvList.exportNamed",
+		});
+		fireEvent.click(exportButton);
+
+		expect(downloadFile).toHaveBeenCalledTimes(1);
+		expect(downloadFile.mock.calls[0]?.[0]).toBe("Frontend-CV.json");
+		expect(JSON.parse(downloadFile.mock.calls[0]?.[1] as string)).toEqual(
+			expect.objectContaining({
+				schemaVersion: 1,
+				title: "Frontend CV",
+				locale: "en",
+			}),
+		);
 	});
 });

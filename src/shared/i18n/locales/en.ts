@@ -22,12 +22,32 @@ export const en = {
 	cvList: {
 		heading: "Your CVs",
 		create: "Create new CV",
+		import: "Import JSON",
 		empty: "No CVs yet.",
 		loading: "Loading CVs…",
 		meta: "CV locale: {{locale}} · Updated {{updatedAt}}",
 		delete: "Delete this CV",
 		deleteNamed: "Delete this CV: {{title}}",
+		export: "Export this CV",
+		exportNamed: "Export this CV as JSON: {{title}}",
 		unknownDate: "Unknown date",
+	},
+	cvExport: {
+		export: "Export JSON",
+		importTitle: "Import CV from JSON",
+		importDescription:
+			"Choose a Frost CV JSON file. A new CV will be created from it.",
+		replaceTitle: "Replace CV from JSON",
+		replaceDescription:
+			"Importing will replace “{{title}}” with the file contents. This cannot be undone.",
+		replaceReady: "Ready to replace with “{{title}}”.",
+		replaceConfirm: "Replace CV",
+		chooseFile: "Choose JSON file",
+		cancel: "Cancel",
+		invalidJson: "That file is not valid JSON.",
+		unsupportedVersion: "This JSON export version is not supported.",
+		invalidSchema: "That JSON file does not match the CV export schema.",
+		importFailed: "Could not import this CV.",
 	},
 	createCv: {
 		title: "Create new CV",

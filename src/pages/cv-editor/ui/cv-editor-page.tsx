@@ -2,19 +2,28 @@ import type {
 	DraggableAttributes,
 	DraggableSyntheticListeners,
 } from "@dnd-kit/core";
-import { GripVerticalIcon, PlusIcon } from "lucide-react";
+import {
+	DownloadIcon,
+	FileUpIcon,
+	GripVerticalIcon,
+	PlusIcon,
+} from "lucide-react";
 import { type ReactNode, useEffect, useState } from "react";
 
 import {
 	type Cv,
+	type CvImportPayload,
 	customSectionIdFromKey,
+	cvExportFile,
 	isCustomSectionKey,
+	replaceCvFromImport as replaceCvFromImportInDb,
 	type SectionKey,
 	saveCv,
 	sectionOrderOf,
 } from "@/entities/cv";
 import { useAppTranslation } from "@/shared/i18n";
 import { cn } from "@/shared/lib/cn";
+import { downloadTextFile } from "@/shared/lib/download-text-file";
 import { SidebarPortal } from "@/shared/lib/sidebar-portal";
 import { Button, buttonVariants } from "@/shared/ui/button";
 import { Spinner } from "@/shared/ui/spinner";
@@ -33,11 +42,14 @@ import { IdentityHeaderForm } from "./identity-header-form";
 import { LanguagesSectionForm } from "./languages-section-form";
 import { PositionMenu } from "./position-menu";
 import { ReorderList } from "./reorder-list";
+import { ReplaceCvImportDialog } from "./replace-cv-import-dialog";
 
 type MovableSectionKey = Exclude<SectionKey, "identity">;
 
 type CvEditorPageProps = {
 	cv: Cv | undefined;
+	replaceCvFromImport?: (id: string, payload: CvImportPayload) => Promise<Cv>;
+	downloadFile?: (filename: string, text: string) => void;
 };
 
 function SectionReorderControls({
@@ -208,12 +220,19 @@ function EditorSidebarSections({
 function EditorSidebarContent({
 	cv,
 	onPersisted,
+	onExport,
+	onOpenImport,
+	isImportOpen,
 }: {
 	cv: Cv;
 	onPersisted: (cv: Cv) => void;
+	onExport: () => void;
+	onOpenImport: () => void;
+	isImportOpen: boolean;
 }) {
 	const { t } = useAppTranslation();
 	const { isCvSavePending } = useCvSavePending();
+	const isLocked = isCvSavePending || isImportOpen;
 
 	return (
 		<div className="flex h-full flex-col gap-3 p-2">
@@ -229,18 +248,35 @@ function EditorSidebarContent({
 				)}
 			</div>
 			<div
-				aria-busy={isCvSavePending || undefined}
-				className={cn(
-					"min-h-0 flex-1 space-y-4 overflow-y-auto px-2",
-					isCvSavePending && "opacity-60",
-				)}
-				inert={isCvSavePending || undefined}
+				aria-busy={isLocked || undefined}
+				className={cn("min-h-0 flex-1 space-y-4 overflow-y-auto px-2", {
+					"opacity-60": isLocked,
+				})}
+				inert={isLocked || undefined}
 			>
 				<p className="font-medium text-xs">{t("cvEditor.edit.label")}</p>
 				<IdentityHeaderForm cv={cv} onPersisted={onPersisted} />
 				<EditorSidebarSections cv={cv} onPersisted={onPersisted} />
 			</div>
-			<div className="border-sidebar-border border-t p-2">
+			<div className="flex flex-col gap-2 border-sidebar-border border-t p-2">
+				<Button
+					type="button"
+					variant="outline"
+					disabled={isLocked}
+					onClick={onExport}
+				>
+					<DownloadIcon data-icon="inline-start" />
+					{t("cvExport.export")}
+				</Button>
+				<Button
+					type="button"
+					variant="outline"
+					disabled={isLocked}
+					onClick={onOpenImport}
+				>
+					<FileUpIcon data-icon="inline-start" />
+					{t("cvList.import")}
+				</Button>
 				<a href="/cvs" className={buttonVariants({ variant: "outline" })}>
 					{t("cvEditor.backToList")}
 				</a>
@@ -249,15 +285,67 @@ function EditorSidebarContent({
 	);
 }
 
-export function CvEditorPage({ cv }: CvEditorPageProps) {
-	const { t } = useAppTranslation();
+function CvEditorLoaded({
+	cv,
+	replaceCvFromImport,
+	downloadFile,
+}: {
+	cv: Cv;
+	replaceCvFromImport: (id: string, payload: CvImportPayload) => Promise<Cv>;
+	downloadFile: (filename: string, text: string) => void;
+}) {
 	const [persistedCv, setPersistedCv] = useState(cv);
+	const [isImportOpen, setIsImportOpen] = useState(false);
+	const { withCvSavePending } = useCvSavePending();
 
 	useEffect(() => {
 		setPersistedCv(cv);
 	}, [cv]);
 
-	if (!persistedCv) {
+	function handleExport() {
+		const file = cvExportFile(persistedCv);
+		downloadFile(file.filename, file.text);
+	}
+
+	function handleOpenImport() {
+		setIsImportOpen(true);
+	}
+
+	return (
+		<>
+			<SidebarPortal>
+				<EditorSidebarContent
+					cv={persistedCv}
+					onPersisted={setPersistedCv}
+					onExport={handleExport}
+					onOpenImport={handleOpenImport}
+					isImportOpen={isImportOpen}
+				/>
+			</SidebarPortal>
+			<main className="flex flex-1 justify-center bg-muted/40 p-4 md:p-8">
+				<CanadianCvPreview cv={persistedCv} />
+			</main>
+			<ReplaceCvImportDialog
+				open={isImportOpen}
+				cvTitle={persistedCv.title}
+				onOpenChange={setIsImportOpen}
+				replaceCvFromImport={(payload) =>
+					withCvSavePending(() => replaceCvFromImport(persistedCv.id, payload))
+				}
+				onReplaced={setPersistedCv}
+			/>
+		</>
+	);
+}
+
+export function CvEditorPage({
+	cv,
+	replaceCvFromImport = replaceCvFromImportInDb,
+	downloadFile = downloadTextFile,
+}: CvEditorPageProps) {
+	const { t } = useAppTranslation();
+
+	if (!cv) {
 		return (
 			<main className="mx-auto flex max-w-6xl flex-col gap-4 p-4 md:p-8">
 				<p className="text-muted-foreground">{t("cvEditor.notFoundHint")}</p>
@@ -270,12 +358,11 @@ export function CvEditorPage({ cv }: CvEditorPageProps) {
 
 	return (
 		<CvSavePendingProvider>
-			<SidebarPortal>
-				<EditorSidebarContent cv={persistedCv} onPersisted={setPersistedCv} />
-			</SidebarPortal>
-			<main className="flex flex-1 justify-center bg-muted/40 p-4 md:p-8">
-				<CanadianCvPreview cv={persistedCv} />
-			</main>
+			<CvEditorLoaded
+				cv={cv}
+				replaceCvFromImport={replaceCvFromImport}
+				downloadFile={downloadFile}
+			/>
 		</CvSavePendingProvider>
 	);
 }

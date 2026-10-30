@@ -39,7 +39,18 @@ export type CreateCvInput = z.infer<typeof createCvInputSchema>;
 
 export function createEmptyCvContent(): CvContent {
 	return {
-		identity: {},
+		identity: {
+			firstName: "",
+			lastName: "",
+			jobTitle: "",
+			email: "",
+			phone: "",
+			postalCode: "",
+			linkedin: "",
+			github: "",
+			website: "",
+			description: "",
+		},
 		experiences: [],
 		education: [],
 		languages: [],

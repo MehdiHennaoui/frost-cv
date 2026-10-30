@@ -1,9 +1,11 @@
 export {
 	createCv,
+	createCvFromImport,
 	deleteCv,
 	getCv,
 	listCvs,
 	putCv,
+	replaceCvFromImport,
 	resetCvDatabase,
 	saveCv,
 } from "./api/cv-repository";
@@ -24,3 +26,13 @@ export {
 	type SectionKey,
 	sectionOrderOf,
 } from "./model/cv";
+export {
+	CV_EXPORT_SCHEMA_VERSION,
+	type CvExportDocument,
+	type CvImportPayload,
+	cvExportFile,
+	cvExportFilename,
+	type ParseCvExportResult,
+	parseCvExportDocument,
+	toCvExportDocument,
+} from "./model/cv-export";

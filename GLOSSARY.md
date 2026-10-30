@@ -44,9 +44,21 @@ _Avoid_: Certification (distinct, out of v1), Formation (UI-only synonym)
 Form values that have changed since the last successful persist. They flush to local storage after 1s of idle typing, or immediately on blur / leaving the editor route. Not a separate CV.
 _Avoid_: Explicit save, temporary CV, scratch CV
 
+**Library**:
+The full set of CVs stored locally for the user. Not a separate document beyond that collection.
+_Avoid_: Collection, vault, workspace, account (when meaning the set of CVs)
+
 **Import**:
-Loading a CV from a JSON file into local storage. The operation is all-or-nothing: invalid or unsupported files make no change to stored CVs.
+Loading CV data from a JSON file into local storage. Covers a single CV file or a library file. All-or-nothing: invalid or unsupported files make no change to stored CVs.
 _Avoid_: Partial import, merge import (unless a future decision defines merge)
+
+**Library export**:
+Downloading every CV in the library as one JSON backup file.
+_Avoid_: Bulk export, batch export (prefer Library export; UI may say “Export all”)
+
+**Library import**:
+Loading a library JSON file into local storage. Two modes: **add** (create new CVs from the file) and **replace** (clear the library, then load the file). Still all-or-nothing.
+_Avoid_: Bulk import, restore (say replace when the library is wiped), merge import
 
 **Letter page**:
 The print and preview page size for a Canadian CV: US Letter, 8.5 × 11 inches. Not A4.
