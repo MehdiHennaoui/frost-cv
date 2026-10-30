@@ -44,7 +44,10 @@ function HostBinder({ host }: { host: HTMLElement }) {
 	return null;
 }
 
-function renderEditor(cv: Cv | undefined) {
+function renderEditor(
+	cv: Cv | undefined,
+	props: Omit<Parameters<typeof CvEditorPage>[0], "cv"> = {},
+) {
 	const host = document.createElement("div");
 	host.setAttribute("data-testid", "app-sidebar-portal");
 	document.body.appendChild(host);
@@ -52,7 +55,7 @@ function renderEditor(cv: Cv | undefined) {
 	const view = render(
 		<SidebarPortalProvider>
 			<HostBinder host={host} />
-			<CvEditorPage cv={cv} />
+			<CvEditorPage cv={cv} {...props} />
 		</SidebarPortalProvider>,
 	);
 
@@ -160,6 +163,38 @@ describe("CvEditorPage", () => {
 			"cvEditor.section.languages",
 			"cvEditor.section.experiences",
 		]);
+	});
+
+	it("exports the current CV as JSON via the download helper", () => {
+		const downloadFile = vi.fn();
+		const { host } = renderEditor(sampleCv(), { downloadFile });
+
+		fireEvent.click(
+			within(host).getByRole("button", { name: "cvExport.export" }),
+		);
+
+		expect(downloadFile).toHaveBeenCalledTimes(1);
+		expect(downloadFile.mock.calls[0]?.[0]).toBe("Frontend-CV.json");
+		expect(JSON.parse(downloadFile.mock.calls[0]?.[1] as string)).toEqual(
+			expect.objectContaining({
+				schemaVersion: 1,
+				title: "Frontend CV",
+				locale: "en",
+			}),
+		);
+	});
+
+	it("opens replace-import confirmation from the import button", () => {
+		const { host } = renderEditor(sampleCv());
+
+		fireEvent.click(
+			within(host).getByRole("button", { name: "cvList.import" }),
+		);
+
+		expect(
+			screen.getByRole("heading", { name: "cvExport.replaceTitle" }),
+		).toBeTruthy();
+		expect(screen.getByText("cvExport.replaceDescription")).toBeTruthy();
 	});
 
 	it("locks fields and reorder while a save is in flight", async () => {

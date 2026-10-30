@@ -6,6 +6,7 @@ import {
 	createCvInputSchema,
 	createEmptyCvContent,
 } from "../model/cv";
+import type { CvImportPayload } from "../model/cv-export";
 
 const DB_NAME = "frost-cv";
 
@@ -59,6 +60,41 @@ export async function deleteCv(id: string): Promise<void> {
 export async function saveCv(cv: Cv): Promise<Cv> {
 	const next: Cv = {
 		...cv,
+		updatedAt: Date.now(),
+	};
+	await db.cvs.put(next);
+	return next;
+}
+
+export async function createCvFromImport(
+	payload: CvImportPayload,
+): Promise<Cv> {
+	const now = Date.now();
+	const cv: Cv = {
+		id: crypto.randomUUID(),
+		title: payload.title,
+		locale: payload.locale,
+		content: payload.content,
+		createdAt: now,
+		updatedAt: now,
+	};
+	await db.cvs.put(cv);
+	return cv;
+}
+
+export async function replaceCvFromImport(
+	id: string,
+	payload: CvImportPayload,
+): Promise<Cv> {
+	const existing = await db.cvs.get(id);
+	if (!existing) {
+		throw new Error("cvExport.replaceMissing");
+	}
+	const next: Cv = {
+		...existing,
+		title: payload.title,
+		locale: payload.locale,
+		content: payload.content,
 		updatedAt: Date.now(),
 	};
 	await db.cvs.put(next);

@@ -3,12 +3,15 @@ import "fake-indexeddb/auto";
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { createEmptyCvContent } from "../model/cv";
+import { parseCvExportDocument, toCvExportDocument } from "../model/cv-export";
 import {
 	createCv,
+	createCvFromImport,
 	deleteCv,
 	getCv,
 	listCvs,
 	putCv,
+	replaceCvFromImport,
 	resetCvDatabase,
 	saveCv,
 } from "./cv-repository";
@@ -138,5 +141,102 @@ describe("saveCv", () => {
 			firstName: "Ada",
 			description: "<p>Hi</p>",
 		});
+	});
+});
+
+describe("createCvFromImport / replaceCvFromImport", () => {
+	beforeEach(async () => {
+		await resetCvDatabase();
+	});
+
+	it("creates a new CV from a parsed export payload", async () => {
+		const source = await createCv({ title: "Source", locale: "fr" });
+		const withContent = await saveCv({
+			...source,
+			content: {
+				...createEmptyCvContent(),
+				identity: {
+					firstName: "Ada",
+					lastName: "Lovelace",
+					jobTitle: "",
+					email: "",
+					phone: "",
+					postalCode: "",
+					linkedin: "",
+					github: "",
+					website: "",
+					description: "",
+				},
+				sectionOrder: ["identity", "languages", "experiences", "education"],
+			},
+		});
+		const parsed = parseCvExportDocument(
+			JSON.stringify(toCvExportDocument(withContent)),
+		);
+		expect(parsed.ok).toBe(true);
+		if (!parsed.ok) {
+			return;
+		}
+
+		const created = await createCvFromImport(parsed.value);
+
+		expect(created.id).not.toBe(withContent.id);
+		expect(created.title).toBe("Source");
+		expect(created.locale).toBe("fr");
+		expect(created.content.identity).toEqual(
+			expect.objectContaining({ firstName: "Ada", lastName: "Lovelace" }),
+		);
+		expect(created.content.sectionOrder).toEqual([
+			"identity",
+			"languages",
+			"experiences",
+			"education",
+		]);
+		await expect(getCv(created.id)).resolves.toEqual(created);
+	});
+
+	it("replaces an existing CV title, locale, and content while keeping id", async () => {
+		const existing = await createCv({ title: "Old", locale: "en" });
+		const payload = {
+			title: "Imported",
+			locale: "fr" as const,
+			content: {
+				...createEmptyCvContent(),
+				identity: {
+					firstName: "Grace",
+					lastName: "Hopper",
+					jobTitle: "",
+					email: "",
+					phone: "",
+					postalCode: "",
+					linkedin: "",
+					github: "",
+					website: "",
+					description: "",
+				},
+			},
+		};
+
+		const replaced = await replaceCvFromImport(existing.id, payload);
+
+		expect(replaced.id).toBe(existing.id);
+		expect(replaced.createdAt).toBe(existing.createdAt);
+		expect(replaced.title).toBe("Imported");
+		expect(replaced.locale).toBe("fr");
+		expect(replaced.content.identity).toEqual(
+			expect.objectContaining({ firstName: "Grace" }),
+		);
+		expect(replaced.updatedAt).toBeGreaterThanOrEqual(existing.updatedAt);
+		await expect(getCv(existing.id)).resolves.toEqual(replaced);
+	});
+
+	it("throws when replacing a missing CV", async () => {
+		await expect(
+			replaceCvFromImport("missing-id", {
+				title: "X",
+				locale: "en",
+				content: createEmptyCvContent(),
+			}),
+		).rejects.toThrow("cvExport.replaceMissing");
 	});
 });

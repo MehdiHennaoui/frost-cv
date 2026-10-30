@@ -63,6 +63,17 @@ describe("CvListPage", () => {
 		expect(screen.getByLabelText("createCv.fieldLocale")).toBeTruthy();
 	});
 
+	it("opens the import modal from the Import JSON button", () => {
+		render(<CvListPage cvs={[]} />);
+
+		fireEvent.click(screen.getByRole("button", { name: "cvList.import" }));
+
+		expect(
+			screen.getByRole("heading", { name: "cvExport.importTitle" }),
+		).toBeTruthy();
+		expect(screen.getByText("cvExport.importDescription")).toBeTruthy();
+	});
+
 	it("opens a delete confirmation naming the CV", () => {
 		render(<CvListPage cvs={sampleCvs} />);
 

@@ -12,7 +12,18 @@ import {
 describe("createEmptyCvContent", () => {
 	it("returns empty section defaults with identity-first section order", () => {
 		expect(createEmptyCvContent()).toEqual({
-			identity: {},
+			identity: {
+				firstName: "",
+				lastName: "",
+				jobTitle: "",
+				email: "",
+				phone: "",
+				postalCode: "",
+				linkedin: "",
+				github: "",
+				website: "",
+				description: "",
+			},
 			experiences: [],
 			education: [],
 			languages: [],
