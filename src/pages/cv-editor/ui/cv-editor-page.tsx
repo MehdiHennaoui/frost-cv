@@ -3,6 +3,7 @@ import type {
 	DraggableSyntheticListeners,
 } from "@dnd-kit/core";
 import {
+	ArrowLeftIcon,
 	DownloadIcon,
 	FileUpIcon,
 	GripVerticalIcon,
@@ -237,16 +238,43 @@ function EditorSidebarContent({
 
 	return (
 		<div className="flex h-full flex-col gap-3 p-2">
-			<div className="min-w-0 px-2">
-				<p className="text-muted-foreground text-xs">
-					{t("cvEditor.meta", { locale: cv.locale })}
-				</p>
-				{isCvSavePending && (
-					<output className="mt-1 flex items-center gap-1.5 text-muted-foreground text-xs">
-						<Spinner aria-hidden className="size-3" role="presentation" />
-						{t("cvEditor.saving")}
-					</output>
-				)}
+			<div className="flex items-start justify-between gap-2 px-2">
+				<div className="min-w-0">
+					<p className="text-muted-foreground text-xs">
+						{t("cvEditor.meta", { locale: cv.locale })}
+					</p>
+					{isCvSavePending && (
+						<output className="mt-1 flex items-center gap-1.5 text-muted-foreground text-xs">
+							<Spinner aria-hidden className="size-3" role="presentation" />
+							{t("cvEditor.saving")}
+						</output>
+					)}
+				</div>
+				<div className="flex shrink-0 items-center gap-1">
+					<IconTooltipButton
+						label={t("cvExport.print")}
+						disabled={isLocked}
+						onClick={() => {
+							window.print();
+						}}
+					>
+						<PrinterIcon />
+					</IconTooltipButton>
+					<IconTooltipButton
+						label={t("cvExport.export")}
+						disabled={isLocked}
+						onClick={onExport}
+					>
+						<DownloadIcon />
+					</IconTooltipButton>
+					<IconTooltipButton
+						label={t("cvList.import")}
+						disabled={isLocked}
+						onClick={onOpenImport}
+					>
+						<FileUpIcon />
+					</IconTooltipButton>
+				</div>
 			</div>
 			<div
 				aria-busy={isLocked || undefined}
@@ -259,37 +287,9 @@ function EditorSidebarContent({
 				<IdentityHeaderForm cv={cv} onPersisted={onPersisted} />
 				<EditorSidebarSections cv={cv} onPersisted={onPersisted} />
 			</div>
-			<div className="flex flex-col gap-2 border-sidebar-border border-t p-2">
-				<Button
-					type="button"
-					variant="outline"
-					disabled={isLocked}
-					onClick={() => {
-						window.print();
-					}}
-				>
-					<PrinterIcon data-icon="inline-start" />
-					{t("cvExport.print")}
-				</Button>
-				<Button
-					type="button"
-					variant="outline"
-					disabled={isLocked}
-					onClick={onExport}
-				>
-					<DownloadIcon data-icon="inline-start" />
-					{t("cvExport.export")}
-				</Button>
-				<Button
-					type="button"
-					variant="outline"
-					disabled={isLocked}
-					onClick={onOpenImport}
-				>
-					<FileUpIcon data-icon="inline-start" />
-					{t("cvList.import")}
-				</Button>
+			<div className="border-sidebar-border border-t p-2">
 				<a href="/cvs" className={buttonVariants({ variant: "outline" })}>
+					<ArrowLeftIcon data-icon="inline-start" />
 					{t("cvEditor.backToList")}
 				</a>
 			</div>

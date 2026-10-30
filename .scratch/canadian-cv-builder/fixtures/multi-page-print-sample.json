@@ -1,0 +1,185 @@
+{
+  "schemaVersion": 1,
+  "title": "Multi-page print sample",
+  "locale": "en",
+  "content": {
+    "identity": {
+      "firstName": "Ada",
+      "lastName": "Lovelace",
+      "jobTitle": "Staff Software Engineer",
+      "email": "ada.lovelace@example.com",
+      "phone": "+1 514 555 0100",
+      "postalCode": "H2X 1Y4",
+      "linkedin": "linkedin.com/in/ada-lovelace",
+      "github": "github.com/ada",
+      "website": "ada.example.com",
+      "description": "<p>Builder focused on reliable product delivery, clear technical writing, and mentoring engineers across Canada.</p>"
+    },
+    "experiences": [
+      {
+        "id": "exp-1",
+        "jobTitle": "Staff Software Engineer",
+        "company": "Northern Lights Labs",
+        "location": "Montreal, QC",
+        "startMonth": "2010-01",
+        "endMonth": "2010-12",
+        "isCurrent": false,
+        "description": "<p>Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform.</p><p>Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle.</p>"
+      },
+      {
+        "id": "exp-2",
+        "jobTitle": "Senior Software Engineer",
+        "company": "Maple Systems",
+        "location": "Toronto, ON",
+        "startMonth": "2011-01",
+        "endMonth": "2011-12",
+        "isCurrent": false,
+        "description": "<p>Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform.</p><p>Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle.</p>"
+      },
+      {
+        "id": "exp-3",
+        "jobTitle": "Software Engineer",
+        "company": "St. Lawrence Digital",
+        "location": "Montreal, QC",
+        "startMonth": "2012-01",
+        "endMonth": "2012-12",
+        "isCurrent": false,
+        "description": "<p>Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform.</p><p>Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle.</p>"
+      },
+      {
+        "id": "exp-4",
+        "jobTitle": "Platform Engineer",
+        "company": "Hudson Bay Soft",
+        "location": "Toronto, ON",
+        "startMonth": "2013-01",
+        "endMonth": "2013-12",
+        "isCurrent": false,
+        "description": "<p>Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform.</p><p>Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle.</p>"
+      },
+      {
+        "id": "exp-5",
+        "jobTitle": "Frontend Engineer",
+        "company": "Laurentian Cloud",
+        "location": "Montreal, QC",
+        "startMonth": "2014-01",
+        "endMonth": "2014-12",
+        "isCurrent": false,
+        "description": "<p>Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform.</p><p>Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle.</p>"
+      },
+      {
+        "id": "exp-6",
+        "jobTitle": "Backend Engineer",
+        "company": "Ottawa Analytics",
+        "location": "Toronto, ON",
+        "startMonth": "2015-01",
+        "endMonth": "2015-12",
+        "isCurrent": false,
+        "description": "<p>Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform.</p><p>Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle.</p>"
+      },
+      {
+        "id": "exp-7",
+        "jobTitle": "Staff Software Engineer",
+        "company": "Northern Lights Labs",
+        "location": "Montreal, QC",
+        "startMonth": "2016-01",
+        "endMonth": "2016-12",
+        "isCurrent": false,
+        "description": "<p>Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform.</p><p>Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle.</p>"
+      },
+      {
+        "id": "exp-8",
+        "jobTitle": "Senior Software Engineer",
+        "company": "Maple Systems",
+        "location": "Toronto, ON",
+        "startMonth": "2017-01",
+        "endMonth": "2017-12",
+        "isCurrent": false,
+        "description": "<p>Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform.</p><p>Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle.</p>"
+      },
+      {
+        "id": "exp-9",
+        "jobTitle": "Software Engineer",
+        "company": "St. Lawrence Digital",
+        "location": "Montreal, QC",
+        "startMonth": "2018-01",
+        "endMonth": "2018-12",
+        "isCurrent": false,
+        "description": "<p>Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform.</p><p>Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle.</p>"
+      },
+      {
+        "id": "exp-10",
+        "jobTitle": "Platform Engineer",
+        "company": "Hudson Bay Soft",
+        "location": "Toronto, ON",
+        "startMonth": "2019-01",
+        "endMonth": "2019-12",
+        "isCurrent": false,
+        "description": "<p>Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform.</p><p>Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle.</p>"
+      },
+      {
+        "id": "exp-11",
+        "jobTitle": "Frontend Engineer",
+        "company": "Laurentian Cloud",
+        "location": "Montreal, QC",
+        "startMonth": "2020-01",
+        "endMonth": "2020-12",
+        "isCurrent": false,
+        "description": "<p>Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform.</p><p>Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle.</p>"
+      },
+      {
+        "id": "exp-12",
+        "jobTitle": "Backend Engineer",
+        "company": "Ottawa Analytics",
+        "location": "Toronto, ON",
+        "startMonth": "2021-01",
+        "endMonth": "",
+        "isCurrent": true,
+        "description": "<p>Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform. Led cross-functional delivery with measurable impact across product and platform.</p><p>Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle. Owned roadmap, mentoring, and stakeholder alignment through the full delivery cycle.</p>"
+      }
+    ],
+    "education": [
+      {
+        "id": "edu-1",
+        "school": "McGill University",
+        "degree": "B.Sc. Computer Science",
+        "location": "Montreal, QC",
+        "startMonth": "2006-09",
+        "endMonth": "2010-05"
+      },
+      {
+        "id": "edu-2",
+        "school": "University of Toronto",
+        "degree": "M.Sc. Software Engineering",
+        "location": "Toronto, ON",
+        "startMonth": "2010-09",
+        "endMonth": "2012-05"
+      }
+    ],
+    "languages": [
+      {
+        "id": "lang-1",
+        "language": "English",
+        "level": "Native"
+      },
+      {
+        "id": "lang-2",
+        "language": "French",
+        "level": "Fluent"
+      }
+    ],
+    "customSections": [
+      {
+        "id": "skills",
+        "title": "Skills",
+        "description": "<p>TypeScript, React, Node.js, PostgreSQL, system design, technical leadership, CI/CD, observability.</p>"
+      }
+    ],
+    "sectionOrder": [
+      "identity",
+      "experiences",
+      "education",
+      "languages",
+      "custom:skills"
+    ]
+  }
+}

@@ -63,7 +63,7 @@ function AppShell({ children }: { children: React.ReactNode }) {
 				className="min-h-dvh print:min-h-0"
 				style={
 					{
-						"--sidebar-width": "24rem",
+						"--sidebar-width": isCvEditor ? "50vw" : "24rem",
 						"--sidebar-width-mobile": "20rem",
 					} as CSSProperties
 				}
