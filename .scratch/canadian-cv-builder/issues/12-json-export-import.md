@@ -4,7 +4,7 @@
 
 **Blocked by:** 10 — Custom sections
 
-**Status:** claimed
+**Status:** resolved
 
 **Maps to:** US-13, US-14
 
