@@ -2,6 +2,10 @@ export const en = {
 	dialog: {
 		close: "Close",
 	},
+	notFound: {
+		title: "Page not found",
+		home: "Back to your CVs",
+	},
 	uiLocale: {
 		label: "UI locale",
 		option: {
@@ -43,6 +47,7 @@ export const en = {
 	},
 	cvEditor: {
 		loading: "Loading CV…",
+		saving: "Saving CV…",
 		notFound: "CV not found",
 		notFoundHint: "This CV is missing or was deleted.",
 		backToList: "Back to CV list",
@@ -81,8 +86,9 @@ export const en = {
 			deleteDescription: "Delete “{{title}}”? This cannot be undone.",
 			deleteCancel: "Cancel",
 			deleteConfirm: "Delete this experience",
-			position: "Position",
+			position: "Choose a position",
 			positionOption: "Position {{n}}",
+			drag: "Drag to reorder",
 			field: {
 				jobTitle: "Job title",
 				company: "Company",
@@ -105,8 +111,9 @@ export const en = {
 			deleteDescription: "Delete “{{title}}”? This cannot be undone.",
 			deleteCancel: "Cancel",
 			deleteConfirm: "Delete this education",
-			position: "Position",
+			position: "Choose a position",
 			positionOption: "Position {{n}}",
+			drag: "Drag to reorder",
 			field: {
 				school: "School name",
 				degree: "Degree name",
@@ -127,8 +134,9 @@ export const en = {
 			deleteDescription: "Delete “{{title}}”? This cannot be undone.",
 			deleteCancel: "Cancel",
 			deleteConfirm: "Delete this language",
-			position: "Position",
+			position: "Choose a position",
 			positionOption: "Position {{n}}",
+			drag: "Drag to reorder",
 			field: {
 				language: "Language",
 				level: "Level",
@@ -146,6 +154,11 @@ export const en = {
 				title: "Section title",
 				description: "Description",
 			},
+		},
+		sections: {
+			position: "Choose a position",
+			positionOption: "Position {{n}}",
+			drag: "Drag to reorder",
 		},
 
 		preview: {

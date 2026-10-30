@@ -1,13 +1,17 @@
-import { BriefcaseIcon, PlusIcon, Trash2Icon } from "lucide-react";
+import {
+	BriefcaseIcon,
+	GripVerticalIcon,
+	PlusIcon,
+	Trash2Icon,
+} from "lucide-react";
+import type { ReactNode } from "react";
 
 import type { Cv } from "@/entities/cv";
 import { useAppTranslation } from "@/shared/i18n";
-import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Checkbox } from "@/shared/ui/checkbox";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/shared/ui/field";
 import { Input } from "@/shared/ui/input";
-import { NativeSelect, NativeSelectOption } from "@/shared/ui/native-select";
 import {
 	createEmptyExperience,
 	type ExperienceEntry,
@@ -17,14 +21,19 @@ import {
 	experiencesOf,
 	withExperiences,
 } from "../model/experience-fields";
+import { flushOnFormLeave } from "../model/use-cv-autosave";
 import { useCvEntryList } from "../model/use-cv-entry-list";
 import { CvDeleteConfirmDialog } from "./cv-delete-confirm-dialog";
+import { IconTooltipButton } from "./icon-tooltip-button";
 import { MonthInput } from "./month-input";
+import { PositionMenu } from "./position-menu";
+import { ReorderList } from "./reorder-list";
 import { RichTextEditor } from "./rich-text-editor";
 
 type ExperiencesSectionFormProps = {
 	cv: Cv;
 	onPersisted: (cv: Cv) => void;
+	reorder?: ReactNode;
 };
 
 const TEXT_FIELDS = [
@@ -36,11 +45,12 @@ const TEXT_FIELDS = [
 export function ExperiencesSectionForm({
 	cv,
 	onPersisted,
+	reorder,
 }: ExperiencesSectionFormProps) {
 	const { t } = useAppTranslation();
 	const {
 		entries,
-		pendingDelete,
+		entryToDelete,
 		patchEntry,
 		flush,
 		handleAdd,
@@ -67,19 +77,19 @@ export function ExperiencesSectionForm({
 			>
 				<Card size="sm">
 					<CardHeader className="flex flex-row items-center justify-between gap-2">
-						<CardTitle className="flex items-center gap-2">
+						<CardTitle className="flex min-w-0 items-center gap-2">
 							<BriefcaseIcon aria-hidden className="size-4 shrink-0" />
 							{t("cvEditor.section.experiences")}
 						</CardTitle>
-						<Button
-							type="button"
-							size="sm"
-							variant="outline"
-							onClick={handleAdd}
-						>
-							<PlusIcon data-icon="inline-start" />
-							{t("cvEditor.experiences.add")}
-						</Button>
+						<div className="flex shrink-0 items-center gap-1">
+							<IconTooltipButton
+								label={t("cvEditor.experiences.add")}
+								onClick={handleAdd}
+							>
+								<PlusIcon />
+							</IconTooltipButton>
+							{reorder}
+						</div>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						{entries.length === 0 && (
@@ -87,162 +97,163 @@ export function ExperiencesSectionForm({
 								{t("cvEditor.experiences.empty")}
 							</p>
 						)}
-						{entries.map((entry, index) => {
-							const dateError = experienceDateRangeError(entry);
-							return (
-								<div
-									key={entry.id}
-									className="space-y-3 rounded-lg border border-border p-3"
-								>
-									<div className="flex flex-wrap items-end justify-between gap-2">
-										<Field className="w-auto gap-1.5">
-											<FieldLabel htmlFor={`experience-${entry.id}-position`}>
-												{t("cvEditor.experiences.position")}
-											</FieldLabel>
-											<NativeSelect
-												id={`experience-${entry.id}-position`}
-												size="sm"
-												disabled={entries.length < 2}
-												value={String(index)}
-												aria-label={t("cvEditor.experiences.position")}
-												onChange={(event) => {
-													const toIndex = Number(event.target.value);
-													if (Number.isNaN(toIndex)) {
-														return;
-													}
-													moveEntry(entry.id, toIndex);
-												}}
-											>
-												{Array.from({ length: entries.length }, (_, position) =>
-													String(position),
-												).map((value) => (
-													<NativeSelectOption key={value} value={value}>
-														{t("cvEditor.experiences.positionOption", {
-															n: Number(value) + 1,
-														})}
-													</NativeSelectOption>
-												))}
-											</NativeSelect>
-										</Field>
-										<Button
-											type="button"
-											size="sm"
-											variant="ghost"
-											onClick={() => requestDelete(entry.id)}
-										>
-											<Trash2Icon data-icon="inline-start" />
-											{t("cvEditor.experiences.delete")}
-										</Button>
-									</div>
-
-									<FieldGroup className="gap-3">
-										{TEXT_FIELDS.map((name) => (
-											<Field key={name}>
-												<FieldLabel htmlFor={`experience-${entry.id}-${name}`}>
-													{t(`cvEditor.experiences.field.${name}`)}
-												</FieldLabel>
-												<Input
-													id={`experience-${entry.id}-${name}`}
-													value={entry[name]}
-													onBlur={flush}
-													onChange={(event) =>
-														patchEntry(entry.id, { [name]: event.target.value })
-													}
-												/>
-											</Field>
-										))}
-
-										<Field data-invalid={dateError ? true : undefined}>
-											<FieldLabel htmlFor={`experience-${entry.id}-startMonth`}>
-												{t("cvEditor.experiences.field.startMonth")}
-											</FieldLabel>
-											<MonthInput
-												id={`experience-${entry.id}-startMonth`}
-												value={entry.startMonth}
-												aria-invalid={dateError ? true : undefined}
-												onBlur={flush}
-												onChange={(event) =>
-													patchEntry(entry.id, {
-														startMonth: event.target.value,
-													})
-												}
-											/>
-											{dateError && (
-												<FieldError errors={[{ message: t(dateError) }]} />
-											)}
-										</Field>
-
-										<Field orientation="horizontal">
-											<Checkbox
-												id={`experience-${entry.id}-isCurrent`}
-												checked={entry.isCurrent}
-												onBlur={flush}
-												onCheckedChange={(checked) => {
-													const isCurrent = checked === true;
-													patchEntry(entry.id, {
-														isCurrent,
-														endMonth: isCurrent ? "" : entry.endMonth,
-													});
-													flush();
-												}}
-											/>
-											<FieldLabel htmlFor={`experience-${entry.id}-isCurrent`}>
-												{t("cvEditor.experiences.field.isCurrent")}
-											</FieldLabel>
-										</Field>
-
-										{!entry.isCurrent && (
-											<Field data-invalid={dateError ? true : undefined}>
-												<FieldLabel htmlFor={`experience-${entry.id}-endMonth`}>
-													{t("cvEditor.experiences.field.endMonth")}
-												</FieldLabel>
-												<MonthInput
-													id={`experience-${entry.id}-endMonth`}
-													value={entry.endMonth}
-													aria-invalid={dateError ? true : undefined}
-													onBlur={flush}
-													onChange={(event) =>
-														patchEntry(entry.id, {
-															endMonth: event.target.value,
+						{entries.length > 0 && (
+							<ReorderList
+								items={entries}
+								onMove={moveEntry}
+								renderItem={(entry, index, drag) => {
+									const dateError = experienceDateRangeError(entry);
+									return (
+										<div className="space-y-3 rounded-lg border border-border p-3">
+											<div className="flex items-center justify-end gap-1">
+												<IconTooltipButton
+													label={t("cvEditor.experiences.delete")}
+													onClick={() => requestDelete(entry.id)}
+												>
+													<Trash2Icon />
+												</IconTooltipButton>
+												<PositionMenu
+													label={t("cvEditor.experiences.position")}
+													index={index}
+													count={entries.length}
+													onMove={(toIndex) => moveEntry(entry.id, toIndex)}
+													optionLabel={(position) =>
+														t("cvEditor.experiences.positionOption", {
+															n: position + 1,
 														})
 													}
 												/>
-												{dateError && (
-													<FieldError errors={[{ message: t(dateError) }]} />
-												)}
-											</Field>
-										)}
+												<IconTooltipButton
+													label={t("cvEditor.experiences.drag")}
+													{...drag.attributes}
+													{...drag.listeners}
+												>
+													<GripVerticalIcon />
+												</IconTooltipButton>
+											</div>
 
-										<Field>
-											<FieldLabel
-												htmlFor={`experience-${entry.id}-description`}
-											>
-												{t("cvEditor.experiences.field.description")}
-											</FieldLabel>
-											<RichTextEditor
-												id={`experience-${entry.id}-description`}
-												value={entry.description}
-												onBlur={flush}
-												onChange={(html) =>
-													patchEntry(entry.id, { description: html })
-												}
-											/>
-										</Field>
-									</FieldGroup>
-								</div>
-							);
-						})}
+											<FieldGroup className="gap-3">
+												{TEXT_FIELDS.map((name) => (
+													<Field key={name}>
+														<FieldLabel
+															htmlFor={`experience-${entry.id}-${name}`}
+														>
+															{t(`cvEditor.experiences.field.${name}`)}
+														</FieldLabel>
+														<Input
+															id={`experience-${entry.id}-${name}`}
+															value={entry[name]}
+															onBlur={(event) => flushOnFormLeave(event, flush)}
+															onChange={(event) =>
+																patchEntry(entry.id, {
+																	[name]: event.target.value,
+																})
+															}
+														/>
+													</Field>
+												))}
+
+												<Field data-invalid={dateError ? true : undefined}>
+													<FieldLabel
+														htmlFor={`experience-${entry.id}-startMonth`}
+													>
+														{t("cvEditor.experiences.field.startMonth")}
+													</FieldLabel>
+													<MonthInput
+														id={`experience-${entry.id}-startMonth`}
+														value={entry.startMonth}
+														aria-invalid={dateError ? true : undefined}
+														onBlur={(event) => flushOnFormLeave(event, flush)}
+														onChange={(event) =>
+															patchEntry(entry.id, {
+																startMonth: event.target.value,
+															})
+														}
+													/>
+													{dateError && (
+														<FieldError errors={[{ message: t(dateError) }]} />
+													)}
+												</Field>
+
+												<Field orientation="horizontal">
+													<Checkbox
+														id={`experience-${entry.id}-isCurrent`}
+														checked={entry.isCurrent}
+														onBlur={(event) => flushOnFormLeave(event, flush)}
+														onCheckedChange={(checked) => {
+															const isCurrent = checked === true;
+															patchEntry(entry.id, {
+																isCurrent,
+																endMonth: isCurrent ? "" : entry.endMonth,
+															});
+															flush();
+														}}
+													/>
+													<FieldLabel
+														htmlFor={`experience-${entry.id}-isCurrent`}
+													>
+														{t("cvEditor.experiences.field.isCurrent")}
+													</FieldLabel>
+												</Field>
+
+												{!entry.isCurrent && (
+													<Field data-invalid={dateError ? true : undefined}>
+														<FieldLabel
+															htmlFor={`experience-${entry.id}-endMonth`}
+														>
+															{t("cvEditor.experiences.field.endMonth")}
+														</FieldLabel>
+														<MonthInput
+															id={`experience-${entry.id}-endMonth`}
+															value={entry.endMonth}
+															aria-invalid={dateError ? true : undefined}
+															onBlur={(event) => flushOnFormLeave(event, flush)}
+															onChange={(event) =>
+																patchEntry(entry.id, {
+																	endMonth: event.target.value,
+																})
+															}
+														/>
+														{dateError && (
+															<FieldError
+																errors={[{ message: t(dateError) }]}
+															/>
+														)}
+													</Field>
+												)}
+
+												<Field>
+													<FieldLabel
+														htmlFor={`experience-${entry.id}-description`}
+													>
+														{t("cvEditor.experiences.field.description")}
+													</FieldLabel>
+													<RichTextEditor
+														id={`experience-${entry.id}-description`}
+														value={entry.description}
+														onBlur={() => flushOnFormLeave(undefined, flush)}
+														onChange={(html) =>
+															patchEntry(entry.id, { description: html })
+														}
+													/>
+												</Field>
+											</FieldGroup>
+										</div>
+									);
+								}}
+							/>
+						)}
 					</CardContent>
 				</Card>
 			</form>
 
-			{pendingDelete && (
+			{entryToDelete && (
 				<CvDeleteConfirmDialog
 					title={t("cvEditor.experiences.deleteTitle")}
 					description={t("cvEditor.experiences.deleteDescription", {
 						title:
-							pendingDelete.jobTitle ||
-							pendingDelete.company ||
+							entryToDelete.jobTitle ||
+							entryToDelete.company ||
 							t("cvEditor.experiences.untitled"),
 					})}
 					cancelLabel={t("cvEditor.experiences.deleteCancel")}

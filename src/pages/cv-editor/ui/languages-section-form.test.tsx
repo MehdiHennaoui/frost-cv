@@ -166,11 +166,11 @@ describe("LanguagesSectionForm", () => {
 
 		render(<LanguagesSectionForm cv={cv} onPersisted={vi.fn()} />);
 
+		fireEvent.click(
+			screen.getAllByRole("button", { name: "cvEditor.languages.position" })[0],
+		);
 		await act(async () => {
-			fireEvent.change(
-				screen.getAllByLabelText("cvEditor.languages.position")[0],
-				{ target: { value: "1" } },
-			);
+			fireEvent.click(screen.getAllByRole("menuitem")[1]);
 		});
 
 		expect(saveCvMock).toHaveBeenCalledTimes(1);

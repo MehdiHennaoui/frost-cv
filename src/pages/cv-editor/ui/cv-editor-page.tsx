@@ -1,27 +1,132 @@
-import { PlusIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import type {
+	DraggableAttributes,
+	DraggableSyntheticListeners,
+} from "@dnd-kit/core";
+import { GripVerticalIcon, PlusIcon } from "lucide-react";
+import { type ReactNode, useEffect, useState } from "react";
 
 import {
 	type Cv,
 	customSectionIdFromKey,
 	isCustomSectionKey,
+	type SectionKey,
 	saveCv,
 	sectionOrderOf,
 } from "@/entities/cv";
 import { useAppTranslation } from "@/shared/i18n";
+import { cn } from "@/shared/lib/cn";
 import { SidebarPortal } from "@/shared/lib/sidebar-portal";
 import { Button, buttonVariants } from "@/shared/ui/button";
+import { Spinner } from "@/shared/ui/spinner";
 import { addCustomSection } from "../model/custom-section-fields";
+import {
+	CvSavePendingProvider,
+	useCvSavePending,
+} from "../model/cv-save-pending";
+import { moveSection } from "../model/section-order";
 import { CanadianCvPreview } from "./canadian-cv-preview";
 import { CustomSectionForm } from "./custom-section-form";
 import { EducationSectionForm } from "./education-section-form";
 import { ExperiencesSectionForm } from "./experiences-section-form";
+import { IconTooltipButton } from "./icon-tooltip-button";
 import { IdentityHeaderForm } from "./identity-header-form";
 import { LanguagesSectionForm } from "./languages-section-form";
+import { PositionMenu } from "./position-menu";
+import { ReorderList } from "./reorder-list";
+
+type MovableSectionKey = Exclude<SectionKey, "identity">;
 
 type CvEditorPageProps = {
 	cv: Cv | undefined;
 };
+
+function SectionReorderControls({
+	index,
+	count,
+	onMove,
+	dragAttributes,
+	dragListeners,
+}: {
+	index: number;
+	count: number;
+	onMove: (toIndex: number) => void;
+	dragAttributes: DraggableAttributes;
+	dragListeners: DraggableSyntheticListeners | undefined;
+}) {
+	const { t } = useAppTranslation();
+
+	return (
+		<>
+			<PositionMenu
+				label={t("cvEditor.sections.position")}
+				index={index}
+				count={count}
+				onMove={onMove}
+				optionLabel={(position) =>
+					t("cvEditor.sections.positionOption", { n: position + 1 })
+				}
+			/>
+			<IconTooltipButton
+				label={t("cvEditor.sections.drag")}
+				{...dragAttributes}
+				{...dragListeners}
+			>
+				<GripVerticalIcon />
+			</IconTooltipButton>
+		</>
+	);
+}
+
+function SectionBlock({
+	sectionKey,
+	cv,
+	onPersisted,
+	reorder,
+}: {
+	sectionKey: MovableSectionKey;
+	cv: Cv;
+	onPersisted: (cv: Cv) => void;
+	reorder: ReactNode;
+}) {
+	if (sectionKey === "experiences") {
+		return (
+			<ExperiencesSectionForm
+				cv={cv}
+				onPersisted={onPersisted}
+				reorder={reorder}
+			/>
+		);
+	}
+	if (sectionKey === "education") {
+		return (
+			<EducationSectionForm
+				cv={cv}
+				onPersisted={onPersisted}
+				reorder={reorder}
+			/>
+		);
+	}
+	if (sectionKey === "languages") {
+		return (
+			<LanguagesSectionForm
+				cv={cv}
+				onPersisted={onPersisted}
+				reorder={reorder}
+			/>
+		);
+	}
+	if (isCustomSectionKey(sectionKey)) {
+		return (
+			<CustomSectionForm
+				cv={cv}
+				sectionId={customSectionIdFromKey(sectionKey)}
+				onPersisted={onPersisted}
+				reorder={reorder}
+			/>
+		);
+	}
+	return null;
+}
 
 function EditorSidebarSections({
 	cv,
@@ -31,52 +136,60 @@ function EditorSidebarSections({
 	onPersisted: (cv: Cv) => void;
 }) {
 	const { t } = useAppTranslation();
-	const order = sectionOrderOf(cv.content).filter((key) => key !== "identity");
+	const { withCvSavePending } = useCvSavePending();
+	const order = sectionOrderOf(cv.content).filter(
+		(key): key is MovableSectionKey => key !== "identity",
+	);
+
+	async function persistSectionOrder(key: MovableSectionKey, toIndex: number) {
+		const content = moveSection(cv.content, key, toIndex);
+		if (content === cv.content) {
+			return;
+		}
+		await withCvSavePending(async () => {
+			const next = await saveCv({ ...cv, content });
+			onPersisted(next);
+		});
+	}
 
 	async function handleAddCustomSection() {
 		const { content } = addCustomSection(cv.content);
-		const next = await saveCv({ ...cv, content });
-		onPersisted(next);
+		await withCvSavePending(async () => {
+			const next = await saveCv({ ...cv, content });
+			onPersisted(next);
+		});
 	}
 
 	return (
 		<div className="flex flex-col gap-4">
-			{order.map((key) => {
-				if (key === "experiences") {
-					return (
-						<ExperiencesSectionForm
-							key={key}
-							cv={cv}
-							onPersisted={onPersisted}
-						/>
-					);
-				}
-
-				if (key === "education") {
-					return (
-						<EducationSectionForm key={key} cv={cv} onPersisted={onPersisted} />
-					);
-				}
-
-				if (key === "languages") {
-					return (
-						<LanguagesSectionForm key={key} cv={cv} onPersisted={onPersisted} />
-					);
-				}
-
-				if (isCustomSectionKey(key)) {
-					return (
-						<CustomSectionForm
-							key={key}
-							cv={cv}
-							sectionId={customSectionIdFromKey(key)}
-							onPersisted={onPersisted}
-						/>
-					);
-				}
-
-				return null;
-			})}
+			<ReorderList
+				items={order.map((id) => ({ id }))}
+				onMove={(id, toIndex) => {
+					const key = order.find((item) => item === id);
+					if (!key) {
+						return;
+					}
+					void persistSectionOrder(key, toIndex);
+				}}
+				renderItem={(item, index, drag) => (
+					<SectionBlock
+						sectionKey={item.id}
+						cv={cv}
+						onPersisted={onPersisted}
+						reorder={
+							<SectionReorderControls
+								index={index}
+								count={order.length}
+								onMove={(toIndex) => {
+									void persistSectionOrder(item.id, toIndex);
+								}}
+								dragAttributes={drag.attributes}
+								dragListeners={drag.listeners}
+							/>
+						}
+					/>
+				)}
+			/>
 			<Button
 				type="button"
 				size="sm"
@@ -100,6 +213,7 @@ function EditorSidebarContent({
 	onPersisted: (cv: Cv) => void;
 }) {
 	const { t } = useAppTranslation();
+	const { isCvSavePending } = useCvSavePending();
 
 	return (
 		<div className="flex h-full flex-col gap-3 p-2">
@@ -107,8 +221,21 @@ function EditorSidebarContent({
 				<p className="text-muted-foreground text-xs">
 					{t("cvEditor.meta", { locale: cv.locale })}
 				</p>
+				{isCvSavePending && (
+					<output className="mt-1 flex items-center gap-1.5 text-muted-foreground text-xs">
+						<Spinner aria-hidden className="size-3" role="presentation" />
+						{t("cvEditor.saving")}
+					</output>
+				)}
 			</div>
-			<div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-2">
+			<div
+				aria-busy={isCvSavePending || undefined}
+				className={cn(
+					"min-h-0 flex-1 space-y-4 overflow-y-auto px-2",
+					isCvSavePending && "opacity-60",
+				)}
+				inert={isCvSavePending || undefined}
+			>
 				<p className="font-medium text-xs">{t("cvEditor.edit.label")}</p>
 				<IdentityHeaderForm cv={cv} onPersisted={onPersisted} />
 				<EditorSidebarSections cv={cv} onPersisted={onPersisted} />
@@ -142,13 +269,13 @@ export function CvEditorPage({ cv }: CvEditorPageProps) {
 	}
 
 	return (
-		<>
+		<CvSavePendingProvider>
 			<SidebarPortal>
 				<EditorSidebarContent cv={persistedCv} onPersisted={setPersistedCv} />
 			</SidebarPortal>
 			<main className="flex flex-1 justify-center bg-muted/40 p-4 md:p-8">
 				<CanadianCvPreview cv={persistedCv} />
 			</main>
-		</>
+		</CvSavePendingProvider>
 	);
 }

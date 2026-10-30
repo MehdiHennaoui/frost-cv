@@ -1,8 +1,15 @@
 /** @vitest-environment jsdom */
 
-import { cleanup, render, screen, within } from "@testing-library/react";
+import {
+	act,
+	cleanup,
+	fireEvent,
+	render,
+	screen,
+	within,
+} from "@testing-library/react";
 import { useEffect } from "react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { type Cv, createEmptyCvContent } from "@/entities/cv";
 import {
@@ -11,8 +18,19 @@ import {
 } from "@/shared/lib/sidebar-portal";
 import { CvEditorPage } from "./cv-editor-page";
 
+const saveCvMock = vi.fn();
+
+vi.mock("@/entities/cv", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("@/entities/cv")>();
+	return {
+		...actual,
+		saveCv: (...args: unknown[]) => saveCvMock(...args),
+	};
+});
+
 afterEach(() => {
 	cleanup();
+	saveCvMock.mockReset();
 });
 
 function HostBinder({ host }: { host: HTMLElement }) {
@@ -102,5 +120,84 @@ describe("CvEditorPage", () => {
 		expect(within(preview).getByText("Ada Lovelace")).toBeTruthy();
 		expect(within(preview).getByText("Analyst")).toBeTruthy();
 		expect(within(preview).getByText("Built engines")).toBeTruthy();
+	});
+
+	it("saves a new section order immediately and updates the preview", async () => {
+		saveCvMock.mockImplementation(async (next: Cv) => ({
+			...next,
+			updatedAt: 2,
+		}));
+
+		const { host } = renderEditor(sampleCv());
+
+		expect(
+			within(host).getByLabelText("cvEditor.identity.field.firstName"),
+		).toBeTruthy();
+		fireEvent.click(
+			within(host).getAllByRole("button", {
+				name: "cvEditor.sections.position",
+			})[0],
+		);
+		await act(async () => {
+			fireEvent.click(screen.getAllByRole("menuitem")[2]);
+		});
+
+		expect(saveCvMock).toHaveBeenCalledTimes(1);
+		expect(saveCvMock.mock.calls[0]?.[0].content.sectionOrder).toEqual([
+			"identity",
+			"education",
+			"languages",
+			"experiences",
+		]);
+
+		const preview = screen.getByLabelText("cvEditor.preview.label");
+		expect(
+			within(preview)
+				.getAllByRole("heading", { level: 2 })
+				.map((heading) => heading.textContent),
+		).toEqual([
+			"cvEditor.section.education",
+			"cvEditor.section.languages",
+			"cvEditor.section.experiences",
+		]);
+	});
+
+	it("locks fields and reorder while a save is in flight", async () => {
+		let release: (cv: Cv) => void = () => {};
+		saveCvMock.mockImplementation(
+			(next: Cv) =>
+				new Promise<Cv>((resolve) => {
+					release = () => resolve({ ...next, updatedAt: 2 });
+				}),
+		);
+
+		const { host } = renderEditor(sampleCv());
+		fireEvent.click(
+			within(host).getAllByRole("button", {
+				name: "cvEditor.sections.position",
+			})[0],
+		);
+		await act(async () => {
+			fireEvent.click(screen.getAllByRole("menuitem")[2]);
+		});
+
+		expect(within(host).getByText("cvEditor.saving")).toBeTruthy();
+		expect(
+			within(host)
+				.getByLabelText("cvEditor.identity.field.firstName")
+				.closest("[inert]"),
+		).toBeTruthy();
+		expect(
+			within(host)
+				.getAllByRole("button", { name: "cvEditor.sections.position" })[0]
+				?.closest("[inert]"),
+		).toBeTruthy();
+
+		await act(async () => {
+			release(saveCvMock.mock.calls[0]?.[0] as Cv);
+		});
+
+		expect(within(host).queryByText("cvEditor.saving")).toBeNull();
+		expect(host.querySelector("[inert]")).toBeNull();
 	});
 });

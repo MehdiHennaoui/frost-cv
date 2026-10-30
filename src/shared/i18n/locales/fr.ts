@@ -4,6 +4,10 @@ export const fr = {
 	dialog: {
 		close: "Fermer",
 	},
+	notFound: {
+		title: "Page introuvable",
+		home: "Retour à vos CV",
+	},
 	uiLocale: {
 		label: "Langue de l’interface",
 		option: {
@@ -45,6 +49,7 @@ export const fr = {
 	},
 	cvEditor: {
 		loading: "Chargement du CV…",
+		saving: "Enregistrement du CV…",
 		notFound: "CV introuvable",
 		notFoundHint: "Ce CV est absent ou a été supprimé.",
 		backToList: "Retour à la liste des CV",
@@ -84,8 +89,9 @@ export const fr = {
 				"Supprimer « {{title}} » ? Cette action est irréversible.",
 			deleteCancel: "Annuler",
 			deleteConfirm: "Supprimer cette expérience",
-			position: "Position",
+			position: "Choisir une position",
 			positionOption: "Position {{n}}",
+			drag: "Glisser pour réordonner",
 			field: {
 				jobTitle: "Titre du poste",
 				company: "Entreprise",
@@ -110,8 +116,9 @@ export const fr = {
 				"Supprimer « {{title}} » ? Cette action est irréversible.",
 			deleteCancel: "Annuler",
 			deleteConfirm: "Supprimer cette formation",
-			position: "Position",
+			position: "Choisir une position",
 			positionOption: "Position {{n}}",
+			drag: "Glisser pour réordonner",
 			field: {
 				school: "Établissement",
 				degree: "Diplôme",
@@ -134,8 +141,9 @@ export const fr = {
 				"Supprimer « {{title}} » ? Cette action est irréversible.",
 			deleteCancel: "Annuler",
 			deleteConfirm: "Supprimer cette langue",
-			position: "Position",
+			position: "Choisir une position",
 			positionOption: "Position {{n}}",
+			drag: "Glisser pour réordonner",
 			field: {
 				language: "Langue",
 				level: "Niveau",
@@ -154,6 +162,11 @@ export const fr = {
 				title: "Titre de la section",
 				description: "Description",
 			},
+		},
+		sections: {
+			position: "Choisir une position",
+			positionOption: "Position {{n}}",
+			drag: "Glisser pour réordonner",
 		},
 
 		preview: {

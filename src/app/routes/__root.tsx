@@ -1,7 +1,13 @@
 import { TanStackDevtools } from "@tanstack/react-devtools";
-import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import {
+	createRootRoute,
+	HeadContent,
+	Link,
+	Scripts,
+} from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
+import { useAppTranslation } from "@/shared/i18n";
 import { AppLayout } from "../app-layout";
 import appCss from "../styles.css?url";
 
@@ -27,7 +33,24 @@ export const Route = createRootRoute({
 		],
 	}),
 	shellComponent: RootDocument,
+	notFoundComponent: NotFound,
 });
+
+function NotFound() {
+	const { t } = useAppTranslation();
+
+	return (
+		<div className="mx-auto flex max-w-lg flex-col gap-3 p-8">
+			<h2 className="font-semibold text-lg">{t("notFound.title")}</h2>
+			<Link
+				to="/cvs"
+				className="text-primary text-sm underline-offset-4 hover:underline"
+			>
+				{t("notFound.home")}
+			</Link>
+		</div>
+	);
+}
 
 function RootDocument({ children }: { children: React.ReactNode }) {
 	return (
