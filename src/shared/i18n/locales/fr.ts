@@ -30,6 +30,8 @@ export const fr = {
 		meta: "Langue du CV : {{locale}} · Mis à jour {{updatedAt}}",
 		delete: "Supprimer ce CV",
 		deleteNamed: "Supprimer ce CV : {{title}}",
+		export: "Exporter ce CV",
+		exportNamed: "Exporter ce CV en JSON : {{title}}",
 		unknownDate: "Date inconnue",
 	},
 	cvExport: {

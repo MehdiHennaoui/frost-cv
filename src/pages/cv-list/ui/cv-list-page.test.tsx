@@ -88,4 +88,24 @@ describe("CvListPage", () => {
 		).toBeTruthy();
 		expect(screen.getByText("deleteCv.description")).toBeTruthy();
 	});
+
+	it("exports a CV from its card via the download helper", () => {
+		const downloadFile = vi.fn();
+		render(<CvListPage cvs={sampleCvs} downloadFile={downloadFile} />);
+
+		const [exportButton] = screen.getAllByRole("button", {
+			name: "cvList.exportNamed",
+		});
+		fireEvent.click(exportButton);
+
+		expect(downloadFile).toHaveBeenCalledTimes(1);
+		expect(downloadFile.mock.calls[0]?.[0]).toBe("Frontend-CV.json");
+		expect(JSON.parse(downloadFile.mock.calls[0]?.[1] as string)).toEqual(
+			expect.objectContaining({
+				schemaVersion: 1,
+				title: "Frontend CV",
+				locale: "en",
+			}),
+		);
+	});
 });
