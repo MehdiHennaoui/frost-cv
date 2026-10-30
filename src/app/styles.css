@@ -135,13 +135,15 @@ body {
 @media print {
   @page {
     size: letter;
-    margin: 0;
+    margin: 0.6in;
   }
 
-  /* Sidebar slot includes the desktop gap; the sheet is the mobile sidebar. Devtools sit outside the app shell. */
+  /* Sidebar slot includes the desktop gap; the sheet is the mobile sidebar. Dialogs and devtools sit outside the app shell. */
   [data-slot="sidebar"],
   [data-slot="sheet-overlay"],
   [data-slot="sheet-content"],
+  [data-slot="dialog-overlay"],
+  [data-slot="dialog-content"],
   [data-testid="tanstack_devtools"] {
     display: none;
   }

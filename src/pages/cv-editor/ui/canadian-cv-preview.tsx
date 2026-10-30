@@ -47,13 +47,13 @@ export function CanadianCvPreview({ cv }: CanadianCvPreviewProps) {
 	return (
 		<article
 			aria-label={t("cvEditor.preview.label")}
-			className="mx-auto w-full max-w-[8.5in] bg-white text-black shadow-sm ring-1 ring-black/10 print:shadow-none print:ring-0 print:[print-color-adjust:exact]"
+			className="mx-auto w-full max-w-[8.5in] bg-white text-black shadow-sm ring-1 ring-black/10 print:max-w-none print:shadow-none print:ring-0 print:[print-color-adjust:exact]"
 			data-cv-preview
 		>
-			<div className="min-h-[11in] space-y-6 p-[0.6in] text-sm leading-relaxed print:min-h-0">
+			<div className="min-h-[11in] space-y-6 p-[0.6in] text-sm leading-relaxed print:min-h-0 print:p-0">
 				<header className="space-y-1 border-black border-b pb-3">
 					<h1 className="font-semibold text-2xl tracking-tight">
-						{fullName || t("cvEditor.preview.unnamed")}
+						{fullName || cvT("cvEditor.preview.unnamed")}
 					</h1>
 					{identity.jobTitle && (
 						<p className="text-base">{identity.jobTitle}</p>
@@ -85,7 +85,7 @@ export function CanadianCvPreview({ cv }: CanadianCvPreviewProps) {
 									</h2>
 									{experiences.length === 0 ? (
 										<p className="text-neutral-500 text-xs">
-											{t("cvEditor.preview.sectionEmpty")}
+											{cvT("cvEditor.preview.sectionEmpty")}
 										</p>
 									) : (
 										<ul className="space-y-3">
@@ -103,7 +103,7 @@ export function CanadianCvPreview({ cv }: CanadianCvPreviewProps) {
 																{[entry.jobTitle, entry.company]
 																	.filter(Boolean)
 																	.join(" · ") ||
-																	t("cvEditor.experiences.untitled")}
+																	cvT("cvEditor.experiences.untitled")}
 															</p>
 															{range && (
 																<p className="text-neutral-600 text-xs">
@@ -140,7 +140,7 @@ export function CanadianCvPreview({ cv }: CanadianCvPreviewProps) {
 									</h2>
 									{education.length === 0 ? (
 										<p className="text-neutral-500 text-xs">
-											{t("cvEditor.preview.sectionEmpty")}
+											{cvT("cvEditor.preview.sectionEmpty")}
 										</p>
 									) : (
 										<ul className="space-y-3">
@@ -153,7 +153,7 @@ export function CanadianCvPreview({ cv }: CanadianCvPreviewProps) {
 																{[entry.degree, entry.school]
 																	.filter(Boolean)
 																	.join(" · ") ||
-																	t("cvEditor.education.untitled")}
+																	cvT("cvEditor.education.untitled")}
 															</p>
 															{range && (
 																<p className="text-neutral-600 text-xs">
@@ -183,7 +183,7 @@ export function CanadianCvPreview({ cv }: CanadianCvPreviewProps) {
 									</h2>
 									{languages.length === 0 ? (
 										<p className="text-neutral-500 text-xs">
-											{t("cvEditor.preview.sectionEmpty")}
+											{cvT("cvEditor.preview.sectionEmpty")}
 										</p>
 									) : (
 										<ul className="space-y-1">
@@ -191,7 +191,7 @@ export function CanadianCvPreview({ cv }: CanadianCvPreviewProps) {
 												<li key={entry.id}>
 													{[entry.language, entry.level]
 														.filter(Boolean)
-														.join(" — ") || t("cvEditor.languages.untitled")}
+														.join(" — ") || cvT("cvEditor.languages.untitled")}
 												</li>
 											))}
 										</ul>
@@ -212,7 +212,7 @@ export function CanadianCvPreview({ cv }: CanadianCvPreviewProps) {
 							return (
 								<section key={key} className="space-y-3">
 									<h2 className="border-neutral-300 border-b font-semibold text-xs uppercase tracking-wide">
-										{section.title.trim() || t("cvEditor.customs.untitled")}
+										{section.title.trim() || cvT("cvEditor.customs.untitled")}
 									</h2>
 									{bodyHtml ? (
 										<div
@@ -222,7 +222,7 @@ export function CanadianCvPreview({ cv }: CanadianCvPreviewProps) {
 										/>
 									) : (
 										<p className="text-neutral-500 text-xs">
-											{t("cvEditor.preview.sectionEmpty")}
+											{cvT("cvEditor.preview.sectionEmpty")}
 										</p>
 									)}
 								</section>
