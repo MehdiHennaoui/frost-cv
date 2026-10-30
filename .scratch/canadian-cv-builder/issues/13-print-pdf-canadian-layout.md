@@ -4,7 +4,7 @@
 
 **Blocked by:** 11 — Section reorder
 
-**Status:** resolved
+**Status:** claimed
 
 **Maps to:** US-12
 
@@ -19,3 +19,4 @@
 - [x] Editor sidebar: Export PDF, Export JSON, and Import are icon-only with tooltips; placed at the top
 - [x] Editor sidebar: Back to list stays at the bottom with an icon plus the existing label text
 - [x] Editor route desktop: sidebar takes half the page width; mobile sheet width unchanged
+- [x] Download basename from identity first/last/job + locale (omit empty, slug lowercase, fallback frost-cv); shared by JSON export and print PDF title

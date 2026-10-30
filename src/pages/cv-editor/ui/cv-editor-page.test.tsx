@@ -163,6 +163,7 @@ describe("CvEditorPage", () => {
 
 	it("prints the Canadian preview from the export PDF control", () => {
 		const print = vi.spyOn(window, "print").mockImplementation(() => {});
+		document.title = "Frost CV";
 		const { host } = renderEditor(sampleCv());
 
 		fireEvent.click(
@@ -170,6 +171,9 @@ describe("CvEditorPage", () => {
 		);
 
 		expect(print).toHaveBeenCalledOnce();
+		expect(document.title).toBe("ada-lovelace-analyst-en");
+		window.dispatchEvent(new Event("afterprint"));
+		expect(document.title).toBe("Frost CV");
 		print.mockRestore();
 	});
 
@@ -182,7 +186,9 @@ describe("CvEditorPage", () => {
 		);
 
 		expect(downloadFile).toHaveBeenCalledTimes(1);
-		expect(downloadFile.mock.calls[0]?.[0]).toBe("Frontend-CV.json");
+		expect(downloadFile.mock.calls[0]?.[0]).toBe(
+			"ada-lovelace-analyst-en.json",
+		);
 		expect(JSON.parse(downloadFile.mock.calls[0]?.[1] as string)).toEqual(
 			expect.objectContaining({
 				schemaVersion: 1,

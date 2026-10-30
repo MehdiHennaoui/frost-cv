@@ -30,9 +30,11 @@ export {
 	CV_EXPORT_SCHEMA_VERSION,
 	type CvExportDocument,
 	type CvImportPayload,
+	cvDownloadStem,
 	cvExportFile,
 	cvExportFilename,
 	type ParseCvExportResult,
 	parseCvExportDocument,
+	slugifyCvFilenamePart,
 	toCvExportDocument,
 } from "./model/cv-export";

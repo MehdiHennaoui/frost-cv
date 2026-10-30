@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { type Cv, createEmptyCvContent } from "./cv";
 import {
+	cvDownloadStem,
 	cvExportFile,
 	cvExportFilename,
 	parseCvExportDocument,
@@ -98,13 +99,52 @@ describe("toCvExportDocument", () => {
 	});
 });
 
+describe("cvDownloadStem", () => {
+	it("joins slugified identity parts and locale in lowercase", () => {
+		expect(cvDownloadStem(SAMPLE_CV)).toBe("ada-lovelace-analyst-en");
+	});
+
+	it("omits empty identity parts and slugifies job titles", () => {
+		expect(
+			cvDownloadStem({
+				...SAMPLE_CV,
+				locale: "fr",
+				content: {
+					...SAMPLE_CV.content,
+					identity: {
+						firstName: "José",
+						lastName: "",
+						jobTitle: "Staff Software Engineer",
+						email: "",
+						phone: "",
+						postalCode: "",
+						linkedin: "",
+						github: "",
+						website: "",
+						description: "",
+					},
+				},
+			}),
+		).toBe("jose-staff-software-engineer-fr");
+	});
+
+	it("falls back to frost-cv when identity name fields are empty", () => {
+		expect(
+			cvDownloadStem({
+				...SAMPLE_CV,
+				locale: "en",
+				content: createEmptyCvContent(),
+			}),
+		).toBe("frost-cv");
+	});
+});
+
 describe("cvExportFile", () => {
-	it("builds a downloadable filename and JSON text", () => {
-		expect(cvExportFilename("  My CV / v1  ")).toBe("My-CV-v1.json");
-		expect(cvExportFilename("   ")).toBe("cv.json");
+	it("builds a downloadable filename and JSON text from identity", () => {
+		expect(cvExportFilename(SAMPLE_CV)).toBe("ada-lovelace-analyst-en.json");
 
 		const file = cvExportFile(SAMPLE_CV);
-		expect(file.filename).toBe("Software-Engineer.json");
+		expect(file.filename).toBe("ada-lovelace-analyst-en.json");
 		expect(JSON.parse(file.text)).toEqual(toCvExportDocument(SAMPLE_CV));
 	});
 });

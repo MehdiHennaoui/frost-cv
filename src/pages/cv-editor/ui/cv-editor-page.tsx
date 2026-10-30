@@ -34,6 +34,7 @@ import {
 	CvSavePendingProvider,
 	useCvSavePending,
 } from "../model/cv-save-pending";
+import { printCv } from "../model/print-cv";
 import { moveSection } from "../model/section-order";
 import { CanadianCvPreview } from "./canadian-cv-preview";
 import { CustomSectionForm } from "./custom-section-form";
@@ -223,12 +224,14 @@ function EditorSidebarContent({
 	cv,
 	onPersisted,
 	onExport,
+	onPrint,
 	onOpenImport,
 	isImportOpen,
 }: {
 	cv: Cv;
 	onPersisted: (cv: Cv) => void;
 	onExport: () => void;
+	onPrint: () => void;
 	onOpenImport: () => void;
 	isImportOpen: boolean;
 }) {
@@ -254,9 +257,7 @@ function EditorSidebarContent({
 					<IconTooltipButton
 						label={t("cvExport.print")}
 						disabled={isLocked}
-						onClick={() => {
-							window.print();
-						}}
+						onClick={onPrint}
 					>
 						<PrinterIcon />
 					</IconTooltipButton>
@@ -319,6 +320,10 @@ function CvEditorLoaded({
 		downloadFile(file.filename, file.text);
 	}
 
+	function handlePrint() {
+		printCv(persistedCv);
+	}
+
 	function handleOpenImport() {
 		setIsImportOpen(true);
 	}
@@ -330,6 +335,7 @@ function CvEditorLoaded({
 					cv={persistedCv}
 					onPersisted={setPersistedCv}
 					onExport={handleExport}
+					onPrint={handlePrint}
 					onOpenImport={handleOpenImport}
 					isImportOpen={isImportOpen}
 				/>
