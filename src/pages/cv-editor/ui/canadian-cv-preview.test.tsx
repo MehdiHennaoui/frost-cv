@@ -81,6 +81,19 @@ describe("CanadianCvPreview experiences", () => {
 	});
 });
 
+describe("CanadianCvPreview section labels", () => {
+	it("follows the CV locale when the UI locale differs", () => {
+		render(<CanadianCvPreview cv={sampleCv({ locale: "fr" })} />);
+
+		const preview = screen.getByLabelText("cvEditor.preview.label");
+		expect(
+			within(preview)
+				.getAllByRole("heading", { level: 2 })
+				.map((heading) => heading.textContent),
+		).toEqual(["Expériences", "Formation", "Langues"]);
+	});
+});
+
 describe("CanadianCvPreview custom sections", () => {
 	it("renders each custom section title and sanitized HTML body", () => {
 		render(

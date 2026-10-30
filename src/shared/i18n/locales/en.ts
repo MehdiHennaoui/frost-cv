@@ -34,6 +34,7 @@ export const en = {
 	},
 	cvExport: {
 		export: "Export JSON",
+		print: "Export PDF",
 		importTitle: "Import CV from JSON",
 		importDescription:
 			"Choose a Frost CV JSON file. A new CV will be created from it.",

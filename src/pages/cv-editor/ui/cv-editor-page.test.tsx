@@ -158,11 +158,19 @@ describe("CvEditorPage", () => {
 			within(preview)
 				.getAllByRole("heading", { level: 2 })
 				.map((heading) => heading.textContent),
-		).toEqual([
-			"cvEditor.section.education",
-			"cvEditor.section.languages",
-			"cvEditor.section.experiences",
-		]);
+		).toEqual(["Education", "Languages", "Experiences"]);
+	});
+
+	it("prints the Canadian preview from the export PDF control", () => {
+		const print = vi.spyOn(window, "print").mockImplementation(() => {});
+		const { host } = renderEditor(sampleCv());
+
+		fireEvent.click(
+			within(host).getByRole("button", { name: "cvExport.print" }),
+		);
+
+		expect(print).toHaveBeenCalledOnce();
+		print.mockRestore();
 	});
 
 	it("exports the current CV as JSON via the download helper", () => {

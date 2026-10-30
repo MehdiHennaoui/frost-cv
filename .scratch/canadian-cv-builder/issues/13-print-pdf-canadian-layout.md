@@ -4,7 +4,7 @@
 
 **Blocked by:** 11 — Section reorder
 
-**Status:** ready-for-agent
+**Status:** claimed
 
 **Maps to:** US-12
 

@@ -132,6 +132,21 @@ body {
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+@media print {
+  @page {
+    size: letter;
+    margin: 0;
+  }
+
+  /* Sidebar slot includes the desktop gap; the sheet is the mobile sidebar. Devtools sit outside the app shell. */
+  [data-slot="sidebar"],
+  [data-slot="sheet-overlay"],
+  [data-slot="sheet-content"],
+  [data-testid="tanstack_devtools"] {
+    display: none;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

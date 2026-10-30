@@ -7,6 +7,7 @@ import {
 	FileUpIcon,
 	GripVerticalIcon,
 	PlusIcon,
+	PrinterIcon,
 } from "lucide-react";
 import { type ReactNode, useEffect, useState } from "react";
 
@@ -263,6 +264,17 @@ function EditorSidebarContent({
 					type="button"
 					variant="outline"
 					disabled={isLocked}
+					onClick={() => {
+						window.print();
+					}}
+				>
+					<PrinterIcon data-icon="inline-start" />
+					{t("cvExport.print")}
+				</Button>
+				<Button
+					type="button"
+					variant="outline"
+					disabled={isLocked}
 					onClick={onExport}
 				>
 					<DownloadIcon data-icon="inline-start" />
@@ -322,7 +334,7 @@ function CvEditorLoaded({
 					isImportOpen={isImportOpen}
 				/>
 			</SidebarPortal>
-			<main className="flex flex-1 justify-center bg-muted/40 p-4 md:p-8">
+			<main className="flex flex-1 justify-center bg-muted/40 p-4 md:p-8 print:bg-white print:p-0">
 				<CanadianCvPreview cv={persistedCv} />
 			</main>
 			<ReplaceCvImportDialog
