@@ -59,7 +59,7 @@ export function UiLocaleSwitch() {
 							data-active={isSelected ? "" : undefined}
 						>
 							<span aria-hidden>{flag}</span>
-							<span className={cn(isSelected && "font-bold")}>{label}</span>
+							<span className={cn({ "font-bold": isSelected })}>{label}</span>
 						</DropdownMenuItem>
 					);
 				})}

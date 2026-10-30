@@ -1,4 +1,9 @@
-import { GraduationCapIcon, PlusIcon, Trash2Icon } from "lucide-react";
+import {
+	GraduationCapIcon,
+	GripVerticalIcon,
+	PlusIcon,
+	Trash2Icon,
+} from "lucide-react";
 import type { ReactNode } from "react";
 
 import type { Cv } from "@/entities/cv";
@@ -21,6 +26,7 @@ import { CvDeleteConfirmDialog } from "./cv-delete-confirm-dialog";
 import { IconTooltipButton } from "./icon-tooltip-button";
 import { MonthInput } from "./month-input";
 import { PositionMenu } from "./position-menu";
+import { ReorderList } from "./reorder-list";
 
 type EducationSectionFormProps = {
 	cv: Cv;
@@ -89,93 +95,113 @@ export function EducationSectionForm({
 								{t("cvEditor.education.empty")}
 							</p>
 						)}
-						{entries.map((entry, index) => {
-							const dateError = educationDateRangeError(entry);
-							return (
-								<div
-									key={entry.id}
-									className="space-y-3 rounded-lg border border-border p-3"
-								>
-									<div className="flex flex-wrap items-center justify-between gap-2">
-										<PositionMenu
-											label={t("cvEditor.education.position")}
-											index={index}
-											count={entries.length}
-											onMove={(toIndex) => moveEntry(entry.id, toIndex)}
-											optionLabel={(position) =>
-												t("cvEditor.education.positionOption", {
-													n: position + 1,
-												})
-											}
-										/>
-										<IconTooltipButton
-											label={t("cvEditor.education.delete")}
-											onClick={() => requestDelete(entry.id)}
-										>
-											<Trash2Icon />
-										</IconTooltipButton>
-									</div>
+						{entries.length > 0 && (
+							<ReorderList
+								items={entries}
+								onMove={moveEntry}
+								renderItem={(entry, index, drag) => {
+									const dateError = educationDateRangeError(entry);
+									return (
+										<div className="space-y-3 rounded-lg border border-border p-3">
+											<div className="flex flex-wrap items-center justify-between gap-2">
+												<div className="flex items-center gap-1">
+													<IconTooltipButton
+														label={t("cvEditor.education.drag")}
+														{...drag.attributes}
+														{...drag.listeners}
+													>
+														<GripVerticalIcon />
+													</IconTooltipButton>
+													<PositionMenu
+														label={t("cvEditor.education.position")}
+														index={index}
+														count={entries.length}
+														onMove={(toIndex) => moveEntry(entry.id, toIndex)}
+														optionLabel={(position) =>
+															t("cvEditor.education.positionOption", {
+																n: position + 1,
+															})
+														}
+													/>
+												</div>
+												<IconTooltipButton
+													label={t("cvEditor.education.delete")}
+													onClick={() => requestDelete(entry.id)}
+												>
+													<Trash2Icon />
+												</IconTooltipButton>
+											</div>
 
-									<FieldGroup className="gap-3">
-										{TEXT_FIELDS.map((name) => (
-											<Field key={name}>
-												<FieldLabel htmlFor={`education-${entry.id}-${name}`}>
-													{t(`cvEditor.education.field.${name}`)}
-												</FieldLabel>
-												<Input
-													id={`education-${entry.id}-${name}`}
-													value={entry[name]}
-													onBlur={(event) => flushOnFormLeave(event, flush)}
-													onChange={(event) =>
-														patchEntry(entry.id, { [name]: event.target.value })
-													}
-												/>
-											</Field>
-										))}
+											<FieldGroup className="gap-3">
+												{TEXT_FIELDS.map((name) => (
+													<Field key={name}>
+														<FieldLabel
+															htmlFor={`education-${entry.id}-${name}`}
+														>
+															{t(`cvEditor.education.field.${name}`)}
+														</FieldLabel>
+														<Input
+															id={`education-${entry.id}-${name}`}
+															value={entry[name]}
+															onBlur={(event) => flushOnFormLeave(event, flush)}
+															onChange={(event) =>
+																patchEntry(entry.id, {
+																	[name]: event.target.value,
+																})
+															}
+														/>
+													</Field>
+												))}
 
-										<Field data-invalid={dateError ? true : undefined}>
-											<FieldLabel htmlFor={`education-${entry.id}-startMonth`}>
-												{t("cvEditor.education.field.startMonth")}
-											</FieldLabel>
-											<MonthInput
-												id={`education-${entry.id}-startMonth`}
-												value={entry.startMonth}
-												aria-invalid={dateError ? true : undefined}
-												onBlur={(event) => flushOnFormLeave(event, flush)}
-												onChange={(event) =>
-													patchEntry(entry.id, {
-														startMonth: event.target.value,
-													})
-												}
-											/>
-											{dateError && (
-												<FieldError errors={[{ message: t(dateError) }]} />
-											)}
-										</Field>
+												<Field data-invalid={dateError ? true : undefined}>
+													<FieldLabel
+														htmlFor={`education-${entry.id}-startMonth`}
+													>
+														{t("cvEditor.education.field.startMonth")}
+													</FieldLabel>
+													<MonthInput
+														id={`education-${entry.id}-startMonth`}
+														value={entry.startMonth}
+														aria-invalid={dateError ? true : undefined}
+														onBlur={(event) => flushOnFormLeave(event, flush)}
+														onChange={(event) =>
+															patchEntry(entry.id, {
+																startMonth: event.target.value,
+															})
+														}
+													/>
+													{dateError && (
+														<FieldError errors={[{ message: t(dateError) }]} />
+													)}
+												</Field>
 
-										<Field data-invalid={dateError ? true : undefined}>
-											<FieldLabel htmlFor={`education-${entry.id}-endMonth`}>
-												{t("cvEditor.education.field.endMonth")}
-											</FieldLabel>
-											<MonthInput
-												id={`education-${entry.id}-endMonth`}
-												value={entry.endMonth}
-												aria-invalid={dateError ? true : undefined}
-												onBlur={(event) => flushOnFormLeave(event, flush)}
-												onChange={(event) =>
-													patchEntry(entry.id, {
-														endMonth: event.target.value,
-													})
-												}
-											/>
-											{dateError && (
-												<FieldError errors={[{ message: t(dateError) }]} />
-											)}
-										</Field>
-									</FieldGroup>
-								</div>
-							);
-						})}
+												<Field data-invalid={dateError ? true : undefined}>
+													<FieldLabel
+														htmlFor={`education-${entry.id}-endMonth`}
+													>
+														{t("cvEditor.education.field.endMonth")}
+													</FieldLabel>
+													<MonthInput
+														id={`education-${entry.id}-endMonth`}
+														value={entry.endMonth}
+														aria-invalid={dateError ? true : undefined}
+														onBlur={(event) => flushOnFormLeave(event, flush)}
+														onChange={(event) =>
+															patchEntry(entry.id, {
+																endMonth: event.target.value,
+															})
+														}
+													/>
+													{dateError && (
+														<FieldError errors={[{ message: t(dateError) }]} />
+													)}
+												</Field>
+											</FieldGroup>
+										</div>
+									);
+								}}
+							/>
+						)}
 					</CardContent>
 				</Card>
 			</form>

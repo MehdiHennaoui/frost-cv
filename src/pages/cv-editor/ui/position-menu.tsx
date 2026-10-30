@@ -62,7 +62,7 @@ export function PositionMenu({
 								<DropdownMenuItem
 									// biome-ignore lint/suspicious/noArrayIndexKey: the position number is the item
 									key={position}
-									className={cn(selected && "font-bold")}
+									className={cn({ "font-bold": selected })}
 									aria-current={selected ? "true" : undefined}
 									onClick={() => onMove(position)}
 								>

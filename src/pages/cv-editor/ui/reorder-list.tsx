@@ -104,7 +104,7 @@ function ReorderRow({
 	return (
 		<div
 			ref={setNodeRef}
-			className={cn(isDragging && "relative z-10")}
+			className={cn({ "relative z-10": isDragging })}
 			style={{
 				// Translate drops scale so a tall card keeps its size while following the pointer.
 				transform: CSS.Translate.toString(transform),

@@ -4,6 +4,10 @@ export const fr = {
 	dialog: {
 		close: "Fermer",
 	},
+	notFound: {
+		title: "Page introuvable",
+		home: "Retour à vos CV",
+	},
 	uiLocale: {
 		label: "Langue de l’interface",
 		option: {
@@ -87,6 +91,7 @@ export const fr = {
 			deleteConfirm: "Supprimer cette expérience",
 			position: "Position",
 			positionOption: "Position {{n}}",
+			drag: "Réordonner cette expérience",
 			field: {
 				jobTitle: "Titre du poste",
 				company: "Entreprise",
@@ -113,6 +118,7 @@ export const fr = {
 			deleteConfirm: "Supprimer cette formation",
 			position: "Position",
 			positionOption: "Position {{n}}",
+			drag: "Réordonner cette formation",
 			field: {
 				school: "Établissement",
 				degree: "Diplôme",
@@ -137,6 +143,7 @@ export const fr = {
 			deleteConfirm: "Supprimer cette langue",
 			position: "Position",
 			positionOption: "Position {{n}}",
+			drag: "Réordonner cette langue",
 			field: {
 				language: "Langue",
 				level: "Niveau",

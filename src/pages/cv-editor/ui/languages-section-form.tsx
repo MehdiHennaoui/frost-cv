@@ -1,4 +1,9 @@
-import { LanguagesIcon, PlusIcon, Trash2Icon } from "lucide-react";
+import {
+	GripVerticalIcon,
+	LanguagesIcon,
+	PlusIcon,
+	Trash2Icon,
+} from "lucide-react";
 import type { ReactNode } from "react";
 
 import type { Cv } from "@/entities/cv";
@@ -18,6 +23,7 @@ import { useCvEntryList } from "../model/use-cv-entry-list";
 import { CvDeleteConfirmDialog } from "./cv-delete-confirm-dialog";
 import { IconTooltipButton } from "./icon-tooltip-button";
 import { PositionMenu } from "./position-menu";
+import { ReorderList } from "./reorder-list";
 
 type LanguagesSectionFormProps = {
 	cv: Cv;
@@ -83,50 +89,64 @@ export function LanguagesSectionForm({
 								{t("cvEditor.languages.empty")}
 							</p>
 						)}
-						{entries.map((entry, index) => (
-							<div
-								key={entry.id}
-								className="space-y-3 rounded-lg border border-border p-3"
-							>
-								<div className="flex flex-wrap items-center justify-between gap-2">
-									<PositionMenu
-										label={t("cvEditor.languages.position")}
-										index={index}
-										count={entries.length}
-										onMove={(toIndex) => moveEntry(entry.id, toIndex)}
-										optionLabel={(position) =>
-											t("cvEditor.languages.positionOption", {
-												n: position + 1,
-											})
-										}
-									/>
-									<IconTooltipButton
-										label={t("cvEditor.languages.delete")}
-										onClick={() => requestDelete(entry.id)}
-									>
-										<Trash2Icon />
-									</IconTooltipButton>
-								</div>
+						{entries.length > 0 && (
+							<ReorderList
+								items={entries}
+								onMove={moveEntry}
+								renderItem={(entry, index, drag) => (
+									<div className="space-y-3 rounded-lg border border-border p-3">
+										<div className="flex flex-wrap items-center justify-between gap-2">
+											<div className="flex items-center gap-1">
+												<IconTooltipButton
+													label={t("cvEditor.languages.drag")}
+													{...drag.attributes}
+													{...drag.listeners}
+												>
+													<GripVerticalIcon />
+												</IconTooltipButton>
+												<PositionMenu
+													label={t("cvEditor.languages.position")}
+													index={index}
+													count={entries.length}
+													onMove={(toIndex) => moveEntry(entry.id, toIndex)}
+													optionLabel={(position) =>
+														t("cvEditor.languages.positionOption", {
+															n: position + 1,
+														})
+													}
+												/>
+											</div>
+											<IconTooltipButton
+												label={t("cvEditor.languages.delete")}
+												onClick={() => requestDelete(entry.id)}
+											>
+												<Trash2Icon />
+											</IconTooltipButton>
+										</div>
 
-								<FieldGroup className="gap-3">
-									{TEXT_FIELDS.map((name) => (
-										<Field key={name}>
-											<FieldLabel htmlFor={`language-${entry.id}-${name}`}>
-												{t(`cvEditor.languages.field.${name}`)}
-											</FieldLabel>
-											<Input
-												id={`language-${entry.id}-${name}`}
-												value={entry[name]}
-												onBlur={(event) => flushOnFormLeave(event, flush)}
-												onChange={(event) =>
-													patchEntry(entry.id, { [name]: event.target.value })
-												}
-											/>
-										</Field>
-									))}
-								</FieldGroup>
-							</div>
-						))}
+										<FieldGroup className="gap-3">
+											{TEXT_FIELDS.map((name) => (
+												<Field key={name}>
+													<FieldLabel htmlFor={`language-${entry.id}-${name}`}>
+														{t(`cvEditor.languages.field.${name}`)}
+													</FieldLabel>
+													<Input
+														id={`language-${entry.id}-${name}`}
+														value={entry[name]}
+														onBlur={(event) => flushOnFormLeave(event, flush)}
+														onChange={(event) =>
+															patchEntry(entry.id, {
+																[name]: event.target.value,
+															})
+														}
+													/>
+												</Field>
+											))}
+										</FieldGroup>
+									</div>
+								)}
+							/>
+						)}
 					</CardContent>
 				</Card>
 			</form>

@@ -2,6 +2,10 @@ export const en = {
 	dialog: {
 		close: "Close",
 	},
+	notFound: {
+		title: "Page not found",
+		home: "Back to your CVs",
+	},
 	uiLocale: {
 		label: "UI locale",
 		option: {
@@ -84,6 +88,7 @@ export const en = {
 			deleteConfirm: "Delete this experience",
 			position: "Position",
 			positionOption: "Position {{n}}",
+			drag: "Reorder this experience",
 			field: {
 				jobTitle: "Job title",
 				company: "Company",
@@ -108,6 +113,7 @@ export const en = {
 			deleteConfirm: "Delete this education",
 			position: "Position",
 			positionOption: "Position {{n}}",
+			drag: "Reorder this education",
 			field: {
 				school: "School name",
 				degree: "Degree name",
@@ -130,6 +136,7 @@ export const en = {
 			deleteConfirm: "Delete this language",
 			position: "Position",
 			positionOption: "Position {{n}}",
+			drag: "Reorder this language",
 			field: {
 				language: "Language",
 				level: "Level",
