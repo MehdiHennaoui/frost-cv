@@ -78,12 +78,51 @@ test.describe("section reorder", () => {
 		}
 		expect(to.y - from.y).toBeGreaterThan(400);
 
-		await dragHandleBy(page, experiences, Math.round((to.y - from.y) / 2));
+		await dragHandleBy(page, experiences, Math.round((to.y - from.y) / 2) + 8);
 
 		const preview = page.getByRole("article", { name: "Canadian CV preview" });
 		await expect(preview.getByRole("heading", { level: 2 })).toHaveText([
 			"Education",
 			"Experiences",
+			"Languages",
+		]);
+	});
+
+	test("drags a tall section up into first place", async ({ page }) => {
+		await page.goto("/cvs");
+		await page.getByRole("button", { name: "Create new CV" }).click();
+		await page.getByLabel("Title").fill("E2E Tall Section To Top CV");
+		await page.getByRole("button", { name: "Create CV" }).click();
+		await expect(page).toHaveURL(/\/cvs\/[^/]+/);
+
+		const sidebar = page.getByTestId("app-sidebar-portal");
+		await sidebar.getByRole("button", { name: "Add experience" }).click();
+		await sidebar.getByRole("button", { name: "Add experience" }).click();
+		const experiencesCard = sidebar
+			.locator("[data-slot=card]")
+			.filter({ hasText: "Experiences" });
+		await experiencesCard
+			.locator("[data-slot=card-header]")
+			.getByRole("button", { name: "Choose a position" })
+			.click();
+		await page.getByRole("menuitem", { name: "Position 3" }).click();
+
+		const preview = page.getByRole("article", { name: "Canadian CV preview" });
+		await expect(preview.getByRole("heading", { level: 2 })).toHaveText([
+			"Education",
+			"Languages",
+			"Experiences",
+		]);
+
+		await dragHandleTo(
+			page,
+			sectionDrag(sidebar, "Experiences"),
+			sectionDrag(sidebar, "Education"),
+		);
+
+		await expect(preview.getByRole("heading", { level: 2 })).toHaveText([
+			"Experiences",
+			"Education",
 			"Languages",
 		]);
 	});
@@ -93,6 +132,7 @@ function sectionDrag(sidebar: Locator, title: string) {
 	return sidebar
 		.locator("[data-slot=card]")
 		.filter({ hasText: title })
+		.locator("[data-slot=card-header]")
 		.getByRole("button", { name: "Drag to reorder" });
 }
 

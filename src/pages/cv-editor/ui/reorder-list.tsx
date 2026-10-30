@@ -1,4 +1,6 @@
 import type {
+	CollisionDescriptor,
+	CollisionDetection,
 	DragEndEvent,
 	DraggableAttributes,
 	DraggableSyntheticListeners,
@@ -44,6 +46,29 @@ const restrictToList: Modifier = ({
 	};
 };
 
+// The handle sits at the top of the card. A clamped tall card cannot move its center onto a shorter card.
+const closestHandle: CollisionDetection = (args) => {
+	const { pointerCoordinates, droppableRects, droppableContainers } = args;
+	if (!pointerCoordinates) {
+		return closestCenter(args);
+	}
+	const collisions: CollisionDescriptor[] = [];
+	for (const droppableContainer of droppableContainers) {
+		const rect = droppableRects.get(droppableContainer.id);
+		if (!rect) {
+			continue;
+		}
+		collisions.push({
+			id: droppableContainer.id,
+			data: {
+				droppableContainer,
+				value: Math.abs(pointerCoordinates.y - rect.top),
+			},
+		});
+	}
+	return collisions.sort((a, b) => a.data.value - b.data.value);
+};
+
 export type ReorderDragHandle = {
 	attributes: DraggableAttributes;
 	listeners: DraggableSyntheticListeners | undefined;
@@ -86,7 +111,7 @@ export function ReorderList<T extends ReorderItem>({
 	return (
 		<DndContext
 			sensors={sensors}
-			collisionDetection={closestCenter}
+			collisionDetection={closestHandle}
 			measuring={{ droppable: { strategy: MeasuringStrategy.BeforeDragging } }}
 			modifiers={[restrictToList]}
 			onDragEnd={handleDragEnd}
