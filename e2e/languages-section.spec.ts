@@ -46,8 +46,26 @@ test.describe("languages section", () => {
 		await level.last().fill("Native");
 		await level.last().blur();
 
-		const handles = sidebar.getByRole("button", {
-			name: "Reorder this language",
+		const languageEntries = sidebar
+			.locator("[data-slot=card]")
+			.filter({ hasText: "Languages" })
+			.locator(".rounded-lg.border");
+		const firstEntryButtons = languageEntries.first().getByRole("button");
+		await expect(firstEntryButtons).toHaveCount(3);
+		await expect(firstEntryButtons.nth(0)).toHaveAttribute(
+			"aria-label",
+			"Delete this language",
+		);
+		await expect(firstEntryButtons.nth(1)).toHaveAttribute(
+			"aria-label",
+			"Choose a position",
+		);
+		await expect(firstEntryButtons.nth(2)).toHaveAttribute(
+			"aria-label",
+			"Drag to reorder",
+		);
+		const handles = languageEntries.getByRole("button", {
+			name: "Drag to reorder",
 		});
 		await dragHandleTo(page, handles.nth(1), handles.nth(0));
 
@@ -73,8 +91,22 @@ async function dragHandleTo(page: Page, handle: Locator, target: Locator) {
 	}
 	const startX = from.x + from.width / 2;
 	const startY = from.y + from.height / 2;
+	const listTop = await handle.evaluate((node) => {
+		const list = node.closest(".gap-4");
+		return list?.getBoundingClientRect().top ?? null;
+	});
+	if (listTop == null) {
+		throw new Error("reorder list is not visible");
+	}
 	await page.mouse.move(startX, startY);
 	await page.mouse.down();
-	await page.mouse.move(startX, startY + (to.y - from.y), { steps: 15 });
+	await page.mouse.move(startX + 80, listTop - 200, { steps: 8 });
+	const capped = await handle.boundingBox();
+	if (!capped) {
+		throw new Error("drag handle is not visible");
+	}
+	expect(capped.y).toBeGreaterThanOrEqual(listTop - 1);
+	expect(Math.abs(capped.x - from.x)).toBeLessThan(2);
+	await page.mouse.move(startX, to.y + to.height / 2, { steps: 8 });
 	await page.mouse.up();
 }

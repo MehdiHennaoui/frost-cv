@@ -18,10 +18,7 @@ import { cn } from "@/shared/lib/cn";
 import { SidebarPortal } from "@/shared/lib/sidebar-portal";
 import { Button, buttonVariants } from "@/shared/ui/button";
 import { Spinner } from "@/shared/ui/spinner";
-import {
-	addCustomSection,
-	customSectionOf,
-} from "../model/custom-section-fields";
+import { addCustomSection } from "../model/custom-section-fields";
 import {
 	CvSavePendingProvider,
 	useCvSavePending,
@@ -46,32 +43,22 @@ type CvEditorPageProps = {
 function SectionReorderControls({
 	index,
 	count,
-	label,
 	onMove,
 	dragAttributes,
 	dragListeners,
 }: {
 	index: number;
 	count: number;
-	label: string;
 	onMove: (toIndex: number) => void;
 	dragAttributes: DraggableAttributes;
 	dragListeners: DraggableSyntheticListeners | undefined;
 }) {
 	const { t } = useAppTranslation();
-	const positionLabel = t("cvEditor.sections.position", { section: label });
 
 	return (
 		<>
-			<IconTooltipButton
-				label={t("cvEditor.sections.drag", { section: label })}
-				{...dragAttributes}
-				{...dragListeners}
-			>
-				<GripVerticalIcon />
-			</IconTooltipButton>
 			<PositionMenu
-				label={positionLabel}
+				label={t("cvEditor.sections.position")}
 				index={index}
 				count={count}
 				onMove={onMove}
@@ -79,6 +66,13 @@ function SectionReorderControls({
 					t("cvEditor.sections.positionOption", { n: position + 1 })
 				}
 			/>
+			<IconTooltipButton
+				label={t("cvEditor.sections.drag")}
+				{...dragAttributes}
+				{...dragListeners}
+			>
+				<GripVerticalIcon />
+			</IconTooltipButton>
 		</>
 	);
 }
@@ -146,17 +140,6 @@ function EditorSidebarSections({
 	const order = sectionOrderOf(cv.content).filter(
 		(key): key is MovableSectionKey => key !== "identity",
 	);
-	function labelFor(key: MovableSectionKey): string {
-		if (isCustomSectionKey(key)) {
-			return (
-				customSectionOf(
-					cv.content,
-					customSectionIdFromKey(key),
-				)?.title.trim() || t("cvEditor.customs.untitled")
-			);
-		}
-		return t(`cvEditor.section.${key}`);
-	}
 
 	async function persistSectionOrder(key: MovableSectionKey, toIndex: number) {
 		const content = moveSection(cv.content, key, toIndex);
@@ -197,7 +180,6 @@ function EditorSidebarSections({
 							<SectionReorderControls
 								index={index}
 								count={order.length}
-								label={labelFor(item.id)}
 								onMove={(toIndex) => {
 									void persistSectionOrder(item.id, toIndex);
 								}}

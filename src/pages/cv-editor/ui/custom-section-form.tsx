@@ -79,13 +79,13 @@ export function CustomSectionForm({
 							<span className="truncate">{heading}</span>
 						</CardTitle>
 						<div className="flex shrink-0 items-center gap-1">
-							{reorder}
 							<IconTooltipButton
 								label={t("cvEditor.customs.delete")}
 								onClick={() => setDeleteDialogOpen(true)}
 							>
 								<Trash2Icon />
 							</IconTooltipButton>
+							{reorder}
 						</div>
 					</CardHeader>
 					<CardContent>

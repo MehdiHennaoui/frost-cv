@@ -2,6 +2,7 @@ import type {
 	DragEndEvent,
 	DraggableAttributes,
 	DraggableSyntheticListeners,
+	Modifier,
 } from "@dnd-kit/core";
 import {
 	closestCenter,
@@ -22,6 +23,26 @@ import { CSS } from "@dnd-kit/utilities";
 import type { ReactNode } from "react";
 
 import { cn } from "@/shared/lib/cn";
+
+const restrictToList: Modifier = ({
+	transform,
+	draggingNodeRect,
+	containerNodeRect,
+}) => {
+	const next = { ...transform, x: 0 };
+	if (!draggingNodeRect || !containerNodeRect) {
+		return next;
+	}
+	const minY = containerNodeRect.top - draggingNodeRect.top;
+	const maxY =
+		containerNodeRect.top +
+		containerNodeRect.height -
+		(draggingNodeRect.top + draggingNodeRect.height);
+	return {
+		...next,
+		y: Math.min(Math.max(next.y, minY), maxY),
+	};
+};
 
 export type ReorderDragHandle = {
 	attributes: DraggableAttributes;
@@ -67,6 +88,7 @@ export function ReorderList<T extends ReorderItem>({
 			sensors={sensors}
 			collisionDetection={closestCenter}
 			measuring={{ droppable: { strategy: MeasuringStrategy.BeforeDragging } }}
+			modifiers={[restrictToList]}
 			onDragEnd={handleDragEnd}
 		>
 			<SortableContext

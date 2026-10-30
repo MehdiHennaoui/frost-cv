@@ -82,13 +82,13 @@ export function ExperiencesSectionForm({
 							{t("cvEditor.section.experiences")}
 						</CardTitle>
 						<div className="flex shrink-0 items-center gap-1">
-							{reorder}
 							<IconTooltipButton
 								label={t("cvEditor.experiences.add")}
 								onClick={handleAdd}
 							>
 								<PlusIcon />
 							</IconTooltipButton>
+							{reorder}
 						</div>
 					</CardHeader>
 					<CardContent className="space-y-4">
@@ -105,32 +105,30 @@ export function ExperiencesSectionForm({
 									const dateError = experienceDateRangeError(entry);
 									return (
 										<div className="space-y-3 rounded-lg border border-border p-3">
-											<div className="flex flex-wrap items-center justify-between gap-2">
-												<div className="flex items-center gap-1">
-													<IconTooltipButton
-														label={t("cvEditor.experiences.drag")}
-														{...drag.attributes}
-														{...drag.listeners}
-													>
-														<GripVerticalIcon />
-													</IconTooltipButton>
-													<PositionMenu
-														label={t("cvEditor.experiences.position")}
-														index={index}
-														count={entries.length}
-														onMove={(toIndex) => moveEntry(entry.id, toIndex)}
-														optionLabel={(position) =>
-															t("cvEditor.experiences.positionOption", {
-																n: position + 1,
-															})
-														}
-													/>
-												</div>
+											<div className="flex items-center justify-end gap-1">
 												<IconTooltipButton
 													label={t("cvEditor.experiences.delete")}
 													onClick={() => requestDelete(entry.id)}
 												>
 													<Trash2Icon />
+												</IconTooltipButton>
+												<PositionMenu
+													label={t("cvEditor.experiences.position")}
+													index={index}
+													count={entries.length}
+													onMove={(toIndex) => moveEntry(entry.id, toIndex)}
+													optionLabel={(position) =>
+														t("cvEditor.experiences.positionOption", {
+															n: position + 1,
+														})
+													}
+												/>
+												<IconTooltipButton
+													label={t("cvEditor.experiences.drag")}
+													{...drag.attributes}
+													{...drag.listeners}
+												>
+													<GripVerticalIcon />
 												</IconTooltipButton>
 											</div>
 

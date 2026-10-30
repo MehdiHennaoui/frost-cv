@@ -89,9 +89,9 @@ export const fr = {
 				"Supprimer « {{title}} » ? Cette action est irréversible.",
 			deleteCancel: "Annuler",
 			deleteConfirm: "Supprimer cette expérience",
-			position: "Position",
+			position: "Choisir une position",
 			positionOption: "Position {{n}}",
-			drag: "Réordonner cette expérience",
+			drag: "Glisser pour réordonner",
 			field: {
 				jobTitle: "Titre du poste",
 				company: "Entreprise",
@@ -116,9 +116,9 @@ export const fr = {
 				"Supprimer « {{title}} » ? Cette action est irréversible.",
 			deleteCancel: "Annuler",
 			deleteConfirm: "Supprimer cette formation",
-			position: "Position",
+			position: "Choisir une position",
 			positionOption: "Position {{n}}",
-			drag: "Réordonner cette formation",
+			drag: "Glisser pour réordonner",
 			field: {
 				school: "Établissement",
 				degree: "Diplôme",
@@ -141,9 +141,9 @@ export const fr = {
 				"Supprimer « {{title}} » ? Cette action est irréversible.",
 			deleteCancel: "Annuler",
 			deleteConfirm: "Supprimer cette langue",
-			position: "Position",
+			position: "Choisir une position",
 			positionOption: "Position {{n}}",
-			drag: "Réordonner cette langue",
+			drag: "Glisser pour réordonner",
 			field: {
 				language: "Langue",
 				level: "Niveau",
@@ -164,9 +164,9 @@ export const fr = {
 			},
 		},
 		sections: {
-			position: "Position : {{section}}",
+			position: "Choisir une position",
 			positionOption: "Position {{n}}",
-			drag: "Réordonner {{section}}",
+			drag: "Glisser pour réordonner",
 		},
 
 		preview: {

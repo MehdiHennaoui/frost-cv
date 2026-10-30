@@ -86,9 +86,9 @@ export const en = {
 			deleteDescription: "Delete “{{title}}”? This cannot be undone.",
 			deleteCancel: "Cancel",
 			deleteConfirm: "Delete this experience",
-			position: "Position",
+			position: "Choose a position",
 			positionOption: "Position {{n}}",
-			drag: "Reorder this experience",
+			drag: "Drag to reorder",
 			field: {
 				jobTitle: "Job title",
 				company: "Company",
@@ -111,9 +111,9 @@ export const en = {
 			deleteDescription: "Delete “{{title}}”? This cannot be undone.",
 			deleteCancel: "Cancel",
 			deleteConfirm: "Delete this education",
-			position: "Position",
+			position: "Choose a position",
 			positionOption: "Position {{n}}",
-			drag: "Reorder this education",
+			drag: "Drag to reorder",
 			field: {
 				school: "School name",
 				degree: "Degree name",
@@ -134,9 +134,9 @@ export const en = {
 			deleteDescription: "Delete “{{title}}”? This cannot be undone.",
 			deleteCancel: "Cancel",
 			deleteConfirm: "Delete this language",
-			position: "Position",
+			position: "Choose a position",
 			positionOption: "Position {{n}}",
-			drag: "Reorder this language",
+			drag: "Drag to reorder",
 			field: {
 				language: "Language",
 				level: "Level",
@@ -156,9 +156,9 @@ export const en = {
 			},
 		},
 		sections: {
-			position: "Position of {{section}}",
+			position: "Choose a position",
 			positionOption: "Position {{n}}",
-			drag: "Reorder {{section}}",
+			drag: "Drag to reorder",
 		},
 
 		preview: {

@@ -80,13 +80,13 @@ export function EducationSectionForm({
 							{t("cvEditor.section.education")}
 						</CardTitle>
 						<div className="flex shrink-0 items-center gap-1">
-							{reorder}
 							<IconTooltipButton
 								label={t("cvEditor.education.add")}
 								onClick={handleAdd}
 							>
 								<PlusIcon />
 							</IconTooltipButton>
+							{reorder}
 						</div>
 					</CardHeader>
 					<CardContent className="space-y-4">
@@ -103,32 +103,30 @@ export function EducationSectionForm({
 									const dateError = educationDateRangeError(entry);
 									return (
 										<div className="space-y-3 rounded-lg border border-border p-3">
-											<div className="flex flex-wrap items-center justify-between gap-2">
-												<div className="flex items-center gap-1">
-													<IconTooltipButton
-														label={t("cvEditor.education.drag")}
-														{...drag.attributes}
-														{...drag.listeners}
-													>
-														<GripVerticalIcon />
-													</IconTooltipButton>
-													<PositionMenu
-														label={t("cvEditor.education.position")}
-														index={index}
-														count={entries.length}
-														onMove={(toIndex) => moveEntry(entry.id, toIndex)}
-														optionLabel={(position) =>
-															t("cvEditor.education.positionOption", {
-																n: position + 1,
-															})
-														}
-													/>
-												</div>
+											<div className="flex items-center justify-end gap-1">
 												<IconTooltipButton
 													label={t("cvEditor.education.delete")}
 													onClick={() => requestDelete(entry.id)}
 												>
 													<Trash2Icon />
+												</IconTooltipButton>
+												<PositionMenu
+													label={t("cvEditor.education.position")}
+													index={index}
+													count={entries.length}
+													onMove={(toIndex) => moveEntry(entry.id, toIndex)}
+													optionLabel={(position) =>
+														t("cvEditor.education.positionOption", {
+															n: position + 1,
+														})
+													}
+												/>
+												<IconTooltipButton
+													label={t("cvEditor.education.drag")}
+													{...drag.attributes}
+													{...drag.listeners}
+												>
+													<GripVerticalIcon />
 												</IconTooltipButton>
 											</div>
 

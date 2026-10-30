@@ -18,10 +18,28 @@ test.describe("section reorder", () => {
 		]);
 
 		const sidebar = page.getByTestId("app-sidebar-portal");
+		const languageActions = sidebar
+			.locator("[data-slot=card]")
+			.filter({ hasText: "Languages" })
+			.locator("[data-slot=card-header]")
+			.getByRole("button");
+		await expect(languageActions).toHaveCount(3);
+		await expect(languageActions.nth(0)).toHaveAttribute(
+			"aria-label",
+			"Add language",
+		);
+		await expect(languageActions.nth(1)).toHaveAttribute(
+			"aria-label",
+			"Choose a position",
+		);
+		await expect(languageActions.nth(2)).toHaveAttribute(
+			"aria-label",
+			"Drag to reorder",
+		);
 		await dragHandleTo(
 			page,
-			sidebar.getByRole("button", { name: "Reorder Languages" }),
-			sidebar.getByRole("button", { name: "Reorder Experiences" }),
+			sectionDrag(sidebar, "Languages"),
+			sectionDrag(sidebar, "Experiences"),
 		);
 
 		await expect(preview.getByRole("heading", { level: 2 })).toHaveText([
@@ -49,29 +67,18 @@ test.describe("section reorder", () => {
 
 		const sidebar = page.getByTestId("app-sidebar-portal");
 		await sidebar.getByRole("button", { name: "Add experience" }).click();
-		await sidebar.getByRole("button", { name: "Add experience" }).click();
+		await sidebar.getByRole("button", { name: "Add education" }).click();
 
-		const gap = await page.evaluate(() => {
-			const top = (name: string) => {
-				const button = [...document.querySelectorAll("button")].find(
-					(item) => item.getAttribute("aria-label") === name,
-				);
-				return button?.getBoundingClientRect().top;
-			};
-			const from = top("Reorder Experiences");
-			const to = top("Reorder Education");
-			if (from == null || to == null) {
-				throw new Error("drag handle is not visible");
-			}
-			return to - from;
-		});
-		expect(gap).toBeGreaterThan(400);
+		const experiences = sectionDrag(sidebar, "Experiences");
+		const education = sectionDrag(sidebar, "Education");
+		const from = await experiences.boundingBox();
+		const to = await education.boundingBox();
+		if (!from || !to) {
+			throw new Error("drag handle is not visible");
+		}
+		expect(to.y - from.y).toBeGreaterThan(400);
 
-		await dragHandleBy(
-			page,
-			sidebar.getByRole("button", { name: "Reorder Experiences" }),
-			Math.round(gap / 2),
-		);
+		await dragHandleBy(page, experiences, Math.round((to.y - from.y) / 2));
 
 		const preview = page.getByRole("article", { name: "Canadian CV preview" });
 		await expect(preview.getByRole("heading", { level: 2 })).toHaveText([
@@ -81,6 +88,13 @@ test.describe("section reorder", () => {
 		]);
 	});
 });
+
+function sectionDrag(sidebar: Locator, title: string) {
+	return sidebar
+		.locator("[data-slot=card]")
+		.filter({ hasText: title })
+		.getByRole("button", { name: "Drag to reorder" });
+}
 
 async function dragHandleTo(page: Page, handle: Locator, target: Locator) {
 	await handle.scrollIntoViewIfNeeded();

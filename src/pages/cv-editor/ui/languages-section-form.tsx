@@ -74,13 +74,13 @@ export function LanguagesSectionForm({
 							{t("cvEditor.section.languages")}
 						</CardTitle>
 						<div className="flex shrink-0 items-center gap-1">
-							{reorder}
 							<IconTooltipButton
 								label={t("cvEditor.languages.add")}
 								onClick={handleAdd}
 							>
 								<PlusIcon />
 							</IconTooltipButton>
+							{reorder}
 						</div>
 					</CardHeader>
 					<CardContent className="space-y-4">
@@ -95,32 +95,30 @@ export function LanguagesSectionForm({
 								onMove={moveEntry}
 								renderItem={(entry, index, drag) => (
 									<div className="space-y-3 rounded-lg border border-border p-3">
-										<div className="flex flex-wrap items-center justify-between gap-2">
-											<div className="flex items-center gap-1">
-												<IconTooltipButton
-													label={t("cvEditor.languages.drag")}
-													{...drag.attributes}
-													{...drag.listeners}
-												>
-													<GripVerticalIcon />
-												</IconTooltipButton>
-												<PositionMenu
-													label={t("cvEditor.languages.position")}
-													index={index}
-													count={entries.length}
-													onMove={(toIndex) => moveEntry(entry.id, toIndex)}
-													optionLabel={(position) =>
-														t("cvEditor.languages.positionOption", {
-															n: position + 1,
-														})
-													}
-												/>
-											</div>
+										<div className="flex items-center justify-end gap-1">
 											<IconTooltipButton
 												label={t("cvEditor.languages.delete")}
 												onClick={() => requestDelete(entry.id)}
 											>
 												<Trash2Icon />
+											</IconTooltipButton>
+											<PositionMenu
+												label={t("cvEditor.languages.position")}
+												index={index}
+												count={entries.length}
+												onMove={(toIndex) => moveEntry(entry.id, toIndex)}
+												optionLabel={(position) =>
+													t("cvEditor.languages.positionOption", {
+														n: position + 1,
+													})
+												}
+											/>
+											<IconTooltipButton
+												label={t("cvEditor.languages.drag")}
+												{...drag.attributes}
+												{...drag.listeners}
+											>
+												<GripVerticalIcon />
 											</IconTooltipButton>
 										</div>
 
