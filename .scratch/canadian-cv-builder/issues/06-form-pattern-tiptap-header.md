@@ -4,7 +4,7 @@
 
 **Blocked by:** 05 — Editor shell + split preview
 
-**Status:** claimed
+**Status:** resolved
 
 **Maps to:** US-05, US-11
 
@@ -14,3 +14,7 @@
 - [x] Flush pending draft immediately on field/block blur and on leaving the editor route
 - [x] No Save / Cancel controls; no Discard / Keep editing modal
 - [x] Preview header reflects persisted values only (may lag the open draft by up to 1s until flush)
+
+## Answer
+
+Shipped on `main` via PR #8 (`850ac41`). Identity header form, TipTap, and the shared 1s autosave + blur/leave flush pattern are in use by later section tickets (07–10), which are also resolved. Status had stayed `claimed` only because agents waited on `gh` PR auth and never flipped the tracker after merge.
