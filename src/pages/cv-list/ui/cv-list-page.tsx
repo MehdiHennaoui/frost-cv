@@ -1,4 +1,10 @@
-import { DownloadIcon, FileUpIcon, PlusIcon, Trash2Icon } from "lucide-react";
+import {
+	CopyIcon,
+	DownloadIcon,
+	FileUpIcon,
+	PlusIcon,
+	Trash2Icon,
+} from "lucide-react";
 import { useState } from "react";
 
 import {
@@ -9,6 +15,7 @@ import {
 	createCv as createCvInDb,
 	cvExportFile,
 	deleteCv as deleteCvInDb,
+	duplicateCv as duplicateCvInDb,
 } from "@/entities/cv";
 import { useAppTranslation, useUiLocale } from "@/shared/i18n";
 import { downloadTextFile } from "@/shared/lib/download-text-file";
@@ -21,6 +28,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/shared/ui/card";
+import { duplicateCvDefaultTitle } from "../model/duplicate-cv-default-title";
 import { useCvListNavigation } from "../model/use-cv-list-navigation";
 import { CreateCvModal } from "./create-cv-modal";
 import { DeleteCvConfirmModal } from "./delete-cv-confirm-modal";
@@ -30,6 +38,7 @@ type CvListPageProps = {
 	cvs: Cv[];
 	createCv?: (input: CreateCvInput) => Promise<Cv>;
 	createCvFromImport?: (payload: CvImportPayload) => Promise<Cv>;
+	duplicateCv?: (sourceId: string, input: CreateCvInput) => Promise<Cv>;
 	deleteCv?: (id: string) => Promise<void>;
 	downloadFile?: (filename: string, text: string) => void;
 };
@@ -37,10 +46,12 @@ type CvListPageProps = {
 function CvCard({
 	cv,
 	onDelete,
+	onDuplicate,
 	onExport,
 }: {
 	cv: Cv;
 	onDelete: (cv: Cv) => void;
+	onDuplicate: (cv: Cv) => void;
 	onExport: (cv: Cv) => void;
 }) {
 	const { t } = useAppTranslation();
@@ -50,6 +61,10 @@ function CvCard({
 
 	function handleDelete() {
 		onDelete(cv);
+	}
+
+	function handleDuplicate() {
+		onDuplicate(cv);
 	}
 
 	function handleExport() {
@@ -69,6 +84,16 @@ function CvCard({
 				</CardDescription>
 				<CardAction>
 					<div className="flex flex-wrap justify-end gap-1">
+						<Button
+							type="button"
+							variant="ghost"
+							size="sm"
+							aria-label={t("cvList.duplicateNamed", { title: cv.title })}
+							onClick={handleDuplicate}
+						>
+							<CopyIcon data-icon="inline-start" aria-hidden />
+							{t("cvList.duplicate")}
+						</Button>
 						<Button
 							type="button"
 							variant="ghost"
@@ -100,14 +125,17 @@ export function CvListPage({
 	cvs,
 	createCv = createCvInDb,
 	createCvFromImport = createCvFromImportInDb,
+	duplicateCv = duplicateCvInDb,
 	deleteCv = deleteCvInDb,
 	downloadFile = downloadTextFile,
 }: CvListPageProps) {
 	const { t } = useAppTranslation();
+	const uiLocale = useUiLocale();
 	const { onCreated, onDeleted } = useCvListNavigation();
 	const [isCreateOpen, setIsCreateOpen] = useState(false);
 	const [isImportOpen, setIsImportOpen] = useState(false);
 	const [cvToDelete, setCvToDelete] = useState<Cv | null>(null);
+	const [cvToDuplicate, setCvToDuplicate] = useState<Cv | null>(null);
 
 	function handleOpenCreate() {
 		setIsCreateOpen(true);
@@ -121,15 +149,32 @@ export function CvListPage({
 		setCvToDelete(cv);
 	}
 
+	function handleRequestDuplicate(cv: Cv) {
+		setCvToDuplicate(cv);
+	}
+
 	function handleDeleteOpenChange(open: boolean) {
 		if (!open) {
 			setCvToDelete(null);
 		}
 	}
 
+	function handleDuplicateOpenChange(open: boolean) {
+		if (!open) {
+			setCvToDuplicate(null);
+		}
+	}
+
 	function handleExport(cv: Cv) {
 		const file = cvExportFile(cv);
 		downloadFile(file.filename, file.text);
+	}
+
+	async function handleDuplicateSubmit(input: CreateCvInput) {
+		if (!cvToDuplicate) {
+			throw new Error("duplicateCv.sourceMissing");
+		}
+		return duplicateCv(cvToDuplicate.id, input);
 	}
 
 	return (
@@ -154,6 +199,7 @@ export function CvListPage({
 							<CvCard
 								cv={cv}
 								onDelete={handleRequestDelete}
+								onDuplicate={handleRequestDuplicate}
 								onExport={handleExport}
 							/>
 						</li>
@@ -164,9 +210,24 @@ export function CvListPage({
 			<CreateCvModal
 				open={isCreateOpen}
 				onOpenChange={setIsCreateOpen}
-				createCv={createCv}
+				submitCv={createCv}
 				onCreated={onCreated}
 			/>
+
+			{cvToDuplicate && (
+				<CreateCvModal
+					key={cvToDuplicate.id}
+					open
+					onOpenChange={handleDuplicateOpenChange}
+					variant="duplicate"
+					defaultValues={{
+						title: duplicateCvDefaultTitle(cvToDuplicate.title, uiLocale),
+						locale: cvToDuplicate.locale,
+					}}
+					submitCv={handleDuplicateSubmit}
+					onCreated={onCreated}
+				/>
+			)}
 
 			<ImportCvModal
 				open={isImportOpen}

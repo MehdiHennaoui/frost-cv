@@ -30,6 +30,8 @@ export const fr = {
 		meta: "Langue du CV : {{locale}} · Mis à jour {{updatedAt}}",
 		delete: "Supprimer ce CV",
 		deleteNamed: "Supprimer ce CV : {{title}}",
+		duplicate: "Dupliquer ce CV",
+		duplicateNamed: "Dupliquer ce CV : {{title}}",
 		export: "Exporter ce CV",
 		exportNamed: "Exporter ce CV en JSON : {{title}}",
 		unknownDate: "Date inconnue",
@@ -61,6 +63,12 @@ export const fr = {
 		submit: "Créer le CV",
 		titleRequired: "Le titre est obligatoire",
 		failed: "Impossible de créer le CV",
+	},
+	duplicateCv: {
+		title: "Dupliquer le CV",
+		submit: "Dupliquer le CV",
+		failed: "Impossible de dupliquer le CV",
+		sourceMissing: "Ce CV n’existe plus",
 	},
 	deleteCv: {
 		title: "Supprimer le CV",

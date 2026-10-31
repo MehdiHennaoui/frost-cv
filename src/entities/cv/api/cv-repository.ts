@@ -82,6 +82,33 @@ export async function createCvFromImport(
 	return cv;
 }
 
+export async function duplicateCv(
+	sourceId: string,
+	input: CreateCvInput,
+): Promise<Cv> {
+	const parsed = createCvInputSchema.safeParse(input);
+	if (!parsed.success) {
+		throw new Error(parsed.error.issues[0]?.message ?? "duplicateCv.failed");
+	}
+
+	const source = await db.cvs.get(sourceId);
+	if (!source) {
+		throw new Error("duplicateCv.sourceMissing");
+	}
+
+	const now = Date.now();
+	const cv: Cv = {
+		id: crypto.randomUUID(),
+		title: parsed.data.title,
+		locale: parsed.data.locale,
+		content: structuredClone(source.content),
+		createdAt: now,
+		updatedAt: now,
+	};
+	await db.cvs.put(cv);
+	return cv;
+}
+
 export async function replaceCvFromImport(
 	id: string,
 	payload: CvImportPayload,

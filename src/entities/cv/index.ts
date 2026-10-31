@@ -2,6 +2,7 @@ export {
 	createCv,
 	createCvFromImport,
 	deleteCv,
+	duplicateCv,
 	getCv,
 	listCvs,
 	putCv,

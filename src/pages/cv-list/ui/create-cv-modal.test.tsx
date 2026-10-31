@@ -41,7 +41,7 @@ describe("CreateCvModal", () => {
 			<CreateCvModal
 				open
 				onOpenChange={() => {}}
-				createCv={createCv}
+				submitCv={createCv}
 				onCreated={onCreated}
 			/>,
 		);
@@ -68,7 +68,7 @@ describe("CreateCvModal", () => {
 			<CreateCvModal
 				open
 				onOpenChange={onOpenChange}
-				createCv={createCv}
+				submitCv={createCv}
 				onCreated={onCreated}
 			/>,
 		);
@@ -99,7 +99,7 @@ describe("CreateCvModal", () => {
 			<CreateCvModal
 				open
 				onOpenChange={onOpenChange}
-				createCv={createCv}
+				submitCv={createCv}
 				onCreated={onCreated}
 			/>,
 		);

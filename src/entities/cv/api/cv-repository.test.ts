@@ -8,6 +8,7 @@ import {
 	createCv,
 	createCvFromImport,
 	deleteCv,
+	duplicateCv,
 	getCv,
 	listCvs,
 	putCv,
@@ -141,6 +142,122 @@ describe("saveCv", () => {
 			firstName: "Ada",
 			description: "<p>Hi</p>",
 		});
+	});
+});
+
+describe("duplicateCv", () => {
+	beforeEach(async () => {
+		await resetCvDatabase();
+	});
+
+	it("creates an independent CV with chosen title and locale and deep-copied content", async () => {
+		const source = await createCv({ title: "Source", locale: "fr" });
+		const withContent = await saveCv({
+			...source,
+			content: {
+				...createEmptyCvContent(),
+				identity: {
+					firstName: "Ada",
+					lastName: "Lovelace",
+					jobTitle: "Engineer",
+					email: "",
+					phone: "",
+					postalCode: "",
+					linkedin: "",
+					github: "",
+					website: "",
+					description: "",
+				},
+				customSections: [
+					{
+						id: "sec-1",
+						title: "Projects",
+						description: "<p>A</p>",
+					},
+				],
+				sectionOrder: [
+					"identity",
+					"custom:sec-1",
+					"experiences",
+					"education",
+					"languages",
+				],
+			},
+		});
+
+		const duplicated = await duplicateCv(withContent.id, {
+			title: "Source (copy)",
+			locale: "en",
+		});
+
+		expect(duplicated.id).not.toBe(withContent.id);
+		expect(duplicated.title).toBe("Source (copy)");
+		expect(duplicated.locale).toBe("en");
+		expect(duplicated.content).toEqual(withContent.content);
+		expect(duplicated.createdAt).toBe(duplicated.updatedAt);
+		expect(duplicated.createdAt).toBeGreaterThan(0);
+
+		const listed = await listCvs();
+		expect(listed).toHaveLength(2);
+		await expect(getCv(withContent.id)).resolves.toEqual(withContent);
+	});
+
+	it("rejects an empty title without writing", async () => {
+		const source = await createCv({ title: "Source", locale: "en" });
+
+		await expect(
+			duplicateCv(source.id, { title: "   ", locale: "en" }),
+		).rejects.toThrow(/title/i);
+		await expect(listCvs()).resolves.toEqual([source]);
+	});
+
+	it("throws when the source CV is missing", async () => {
+		await expect(
+			duplicateCv("missing-id", { title: "Copy", locale: "en" }),
+		).rejects.toThrow("duplicateCv.sourceMissing");
+		await expect(listCvs()).resolves.toEqual([]);
+	});
+
+	it("keeps nested content independent after mutating the duplicate", async () => {
+		const source = await createCv({ title: "Source", locale: "en" });
+		const withContent = await saveCv({
+			...source,
+			content: {
+				...createEmptyCvContent(),
+				identity: {
+					firstName: "Ada",
+					lastName: "",
+					jobTitle: "",
+					email: "",
+					phone: "",
+					postalCode: "",
+					linkedin: "",
+					github: "",
+					website: "",
+					description: "",
+				},
+			},
+		});
+
+		const duplicated = await duplicateCv(withContent.id, {
+			title: "Copy",
+			locale: "en",
+		});
+		const mutated = await saveCv({
+			...duplicated,
+			content: {
+				...duplicated.content,
+				identity: {
+					...(duplicated.content.identity as Record<string, string>),
+					firstName: "Grace",
+				},
+			},
+		});
+
+		expect(mutated.content.identity).toEqual(
+			expect.objectContaining({ firstName: "Grace" }),
+		);
+		await expect(getCv(withContent.id)).resolves.toEqual(withContent);
 	});
 });
 

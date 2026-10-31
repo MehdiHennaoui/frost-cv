@@ -52,6 +52,10 @@ _Avoid_: Collection, vault, workspace, account (when meaning the set of CVs)
 Loading CV data from a JSON file into local storage. Covers a single CV file or a library file. All-or-nothing: invalid or unsupported files make no change to stored CVs.
 _Avoid_: Partial import, merge import (unless a future decision defines merge)
 
+**Duplicate**:
+Creating a new independent CV from an existing Library CV: full content copy, user-chosen title and CV locale, original unchanged.
+_Avoid_: Clone, copy (when naming the action), fork, template instance
+
 **Library export**:
 Downloading every CV in the library as one JSON backup file.
 _Avoid_: Bulk export, batch export (prefer Library export; UI may say “Export all”)

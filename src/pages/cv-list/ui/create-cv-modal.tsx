@@ -1,5 +1,5 @@
 import { useForm } from "@tanstack/react-form";
-import { PlusIcon, XIcon } from "lucide-react";
+import { CopyIcon, PlusIcon, XIcon } from "lucide-react";
 import type { ChangeEvent, FormEvent } from "react";
 import { match, P } from "ts-pattern";
 
@@ -23,14 +23,18 @@ import { Input } from "@/shared/ui/input";
 import { NativeSelect, NativeSelectOption } from "@/shared/ui/native-select";
 import { Spinner } from "@/shared/ui/spinner";
 
+export type CvTitleLocaleModalVariant = "create" | "duplicate";
+
 type CreateCvModalProps = {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
-	createCv: (input: CreateCvInput) => Promise<Cv>;
+	defaultValues?: CreateCvInput;
+	submitCv: (input: CreateCvInput) => Promise<Cv>;
 	onCreated: (cvId: string) => void;
+	variant?: CvTitleLocaleModalVariant;
 };
 
-const DEFAULT_VALUES: CreateCvInput = {
+const CREATE_DEFAULT_VALUES: CreateCvInput = {
 	title: "",
 	locale: "en",
 };
@@ -63,27 +67,31 @@ function fieldErrorMessages(
 export function CreateCvModal({
 	open,
 	onOpenChange,
-	createCv,
+	defaultValues = CREATE_DEFAULT_VALUES,
+	submitCv,
 	onCreated,
+	variant = "create",
 }: CreateCvModalProps) {
 	const { t } = useAppTranslation();
 	const form = useForm({
-		defaultValues: DEFAULT_VALUES,
+		defaultValues,
 		validators: {
 			onSubmit: createCvInputSchema,
 		},
 		onSubmit: async ({ value }) => {
 			try {
-				const cv = await createCv(value);
-				form.reset();
+				const cv = await submitCv(value);
+				form.reset(defaultValues);
 				onOpenChange(false);
 				onCreated(cv.id);
 			} catch (err) {
+				const fallback =
+					variant === "duplicate" ? "duplicateCv.failed" : "createCv.failed";
 				form.setFieldMeta("title", (meta) => ({
 					...meta,
 					errorMap: {
 						...meta.errorMap,
-						onSubmit: err instanceof Error ? err.message : "createCv.failed",
+						onSubmit: err instanceof Error ? err.message : fallback,
 					},
 				}));
 			}
@@ -92,7 +100,7 @@ export function CreateCvModal({
 
 	function handleOpenChange(nextOpen: boolean) {
 		if (!nextOpen) {
-			form.reset();
+			form.reset(defaultValues);
 		}
 		onOpenChange(nextOpen);
 	}
@@ -107,11 +115,17 @@ export function CreateCvModal({
 		handleOpenChange(false);
 	}
 
+	const dialogTitle =
+		variant === "duplicate" ? t("duplicateCv.title") : t("createCv.title");
+	const submitLabel =
+		variant === "duplicate" ? t("duplicateCv.submit") : t("createCv.submit");
+	const SubmitIcon = variant === "duplicate" ? CopyIcon : PlusIcon;
+
 	return (
 		<Dialog open={open} onOpenChange={handleOpenChange}>
 			<DialogContent>
 				<DialogHeader>
-					<DialogTitle>{t("createCv.title")}</DialogTitle>
+					<DialogTitle>{dialogTitle}</DialogTitle>
 				</DialogHeader>
 				<form onSubmit={handleFormSubmit}>
 					<FieldGroup className="gap-4">
@@ -147,7 +161,9 @@ export function CreateCvModal({
 														t(
 															message as
 																| "createCv.titleRequired"
-																| "createCv.failed",
+																| "createCv.failed"
+																| "duplicateCv.failed"
+																| "duplicateCv.sourceMissing",
 														),
 												)}
 											/>
@@ -195,7 +211,9 @@ export function CreateCvModal({
 														t(
 															message as
 																| "createCv.titleRequired"
-																| "createCv.failed",
+																| "createCv.failed"
+																| "duplicateCv.failed"
+																| "duplicateCv.sourceMissing",
 														),
 												)}
 											/>
@@ -222,9 +240,9 @@ export function CreateCvModal({
 									{isSubmitting ? (
 										<Spinner data-icon="inline-start" />
 									) : (
-										<PlusIcon data-icon="inline-start" />
+										<SubmitIcon data-icon="inline-start" />
 									)}
-									{t("createCv.submit")}
+									{submitLabel}
 								</Button>
 							</DialogFooter>
 						)}
