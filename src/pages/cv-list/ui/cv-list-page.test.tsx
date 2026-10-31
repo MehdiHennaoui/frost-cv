@@ -99,7 +99,7 @@ describe("CvListPage", () => {
 		fireEvent.click(exportButton);
 
 		expect(downloadFile).toHaveBeenCalledTimes(1);
-		expect(downloadFile.mock.calls[0]?.[0]).toBe("Frontend-CV.json");
+		expect(downloadFile.mock.calls[0]?.[0]).toBe("frost-cv.json");
 		expect(JSON.parse(downloadFile.mock.calls[0]?.[1] as string)).toEqual(
 			expect.objectContaining({
 				schemaVersion: 1,

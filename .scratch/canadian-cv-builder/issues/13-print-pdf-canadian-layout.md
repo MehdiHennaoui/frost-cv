@@ -4,12 +4,19 @@
 
 **Blocked by:** 11 — Section reorder
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Maps to:** US-12
 
-- [ ] User-facing control triggers browser print for the preview
-- [ ] Print stylesheet hides editor chrome and UI chrome; preview content is what prints
-- [ ] Layout follows settled Canadian rules (no photo; header contacts/links; section order respected)
-- [ ] Section labels / Present-Présent follow the CV locale, not necessarily the UI locale
-- [ ] No enforced max page count (length recommendation is backlog US-15)
+- [x] User-facing control triggers browser print for the preview
+- [x] Print stylesheet hides editor chrome and UI chrome; preview content is what prints
+- [x] Layout follows settled Canadian rules (no photo; header contacts/links; section order respected)
+- [x] Section labels / Present-Présent follow the CV locale, not necessarily the UI locale
+- [x] No enforced max page count (length recommendation is backlog US-15)
+
+### Visual polish
+
+- [x] Editor sidebar: Export PDF, Export JSON, and Import are icon-only with tooltips; placed at the top
+- [x] Editor sidebar: Back to list stays at the bottom with an icon plus the existing label text
+- [x] Editor route desktop: sidebar takes half the page width; mobile sheet width unchanged
+- [x] Download basename from identity first/last/job + locale (omit empty, slug lowercase, fallback frost-cv); shared by JSON export and print PDF title

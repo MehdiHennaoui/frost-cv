@@ -60,10 +60,10 @@ function AppShell({ children }: { children: React.ReactNode }) {
 			<SidebarProvider
 				key={isCvEditor ? "cv-editor" : "default"}
 				defaultOpen={isCvEditor}
-				className="min-h-dvh"
+				className="min-h-dvh print:min-h-0"
 				style={
 					{
-						"--sidebar-width": "24rem",
+						"--sidebar-width": isCvEditor ? "50vw" : "24rem",
 						"--sidebar-width-mobile": "20rem",
 					} as CSSProperties
 				}
@@ -77,15 +77,17 @@ function AppShell({ children }: { children: React.ReactNode }) {
 						/>
 					</SidebarContent>
 				</Sidebar>
-				<SidebarInset>
-					<header className="flex h-14 shrink-0 items-center gap-2 border-b px-4">
+				<SidebarInset className="print:bg-white">
+					<header className="flex h-14 shrink-0 items-center gap-2 border-b px-4 print:hidden">
 						{isCvEditor && <SidebarTrigger />}
 						<h1 className="min-w-0 flex-1 truncate font-bold text-lg tracking-tight">
 							{title}
 						</h1>
 						<UiLocaleSwitch />
 					</header>
-					<div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
+					<div className="min-h-0 flex-1 overflow-y-auto print:overflow-visible print:bg-white">
+						{children}
+					</div>
 				</SidebarInset>
 			</SidebarProvider>
 		</TooltipProvider>

@@ -145,18 +145,56 @@ export function toCvExportDocument(cv: Cv): CvExportDocument {
 	};
 }
 
-export function cvExportFilename(title: string): string {
-	const slug =
-		title
-			.trim()
-			.replace(/[^\w.-]+/g, "-")
-			.replace(/^-+|-+$/g, "") || "cv";
-	return `${slug}.json`;
+function readIdentityString(
+	identity: unknown,
+	key: "firstName" | "lastName" | "jobTitle",
+): string {
+	if (!identity || typeof identity !== "object" || Array.isArray(identity)) {
+		return "";
+	}
+	const value = (identity as Record<string, unknown>)[key];
+	return typeof value === "string" ? value : "";
+}
+
+/** Lowercase ASCII slug; empty input yields "". */
+export function slugifyCvFilenamePart(value: string): string {
+	return value
+		.normalize("NFD")
+		.replace(/\p{M}/gu, "")
+		.toLowerCase()
+		.replace(/[^a-z0-9]+/g, "-")
+		.replace(/^-+|-+$/g, "");
+}
+
+/**
+ * Download / print basename from identity + locale.
+ * Omits empty name parts; falls back to frost-cv when first/last/job are all empty.
+ */
+export function cvDownloadStem(cv: Cv): string {
+	const identity = cv.content.identity;
+	const nameParts = [
+		readIdentityString(identity, "firstName"),
+		readIdentityString(identity, "lastName"),
+		readIdentityString(identity, "jobTitle"),
+	]
+		.map(slugifyCvFilenamePart)
+		.filter(Boolean);
+
+	if (nameParts.length === 0) {
+		return "frost-cv";
+	}
+
+	const localePart = slugifyCvFilenamePart(cv.locale);
+	return [...nameParts, localePart].filter(Boolean).join("-");
+}
+
+export function cvExportFilename(cv: Cv): string {
+	return `${cvDownloadStem(cv)}.json`;
 }
 
 export function cvExportFile(cv: Cv): { filename: string; text: string } {
 	return {
-		filename: cvExportFilename(cv.title),
+		filename: cvExportFilename(cv),
 		text: `${JSON.stringify(toCvExportDocument(cv), null, 2)}\n`,
 	};
 }
