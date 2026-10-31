@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 - [x] Each Library CV card exposes a Duplicate action that opens the shared title + CV locale form with Duplicate framing
 - [x] Defaults: title = source title + UI-locale copy suffix; CV locale = source locale; both editable
