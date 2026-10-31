@@ -4,7 +4,7 @@
 
 **Blocked by:** 11 — Section reorder
 
-**Status:** claimed
+**Status:** resolved
 
 **Maps to:** US-12
 
