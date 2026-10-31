@@ -212,10 +212,12 @@ describe("duplicateCv", () => {
 	});
 
 	it("throws when the source CV is missing", async () => {
+		const kept = await createCv({ title: "Keep me", locale: "en" });
+
 		await expect(
 			duplicateCv("missing-id", { title: "Copy", locale: "en" }),
 		).rejects.toThrow("duplicateCv.sourceMissing");
-		await expect(listCvs()).resolves.toEqual([]);
+		await expect(listCvs()).resolves.toEqual([kept]);
 	});
 
 	it("keeps nested content independent after mutating the duplicate", async () => {

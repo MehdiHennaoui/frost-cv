@@ -28,7 +28,6 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/shared/ui/card";
-import { duplicateCvDefaultTitle } from "../model/duplicate-cv-default-title";
 import { useCvListNavigation } from "../model/use-cv-list-navigation";
 import { CreateCvModal } from "./create-cv-modal";
 import { DeleteCvConfirmModal } from "./delete-cv-confirm-modal";
@@ -130,7 +129,6 @@ export function CvListPage({
 	downloadFile = downloadTextFile,
 }: CvListPageProps) {
 	const { t } = useAppTranslation();
-	const uiLocale = useUiLocale();
 	const { onCreated, onDeleted } = useCvListNavigation();
 	const [isCreateOpen, setIsCreateOpen] = useState(false);
 	const [isImportOpen, setIsImportOpen] = useState(false);
@@ -221,7 +219,7 @@ export function CvListPage({
 					onOpenChange={handleDuplicateOpenChange}
 					variant="duplicate"
 					defaultValues={{
-						title: duplicateCvDefaultTitle(cvToDuplicate.title, uiLocale),
+						title: `${cvToDuplicate.title}${t("duplicateCv.titleSuffix")}`,
 						locale: cvToDuplicate.locale,
 					}}
 					submitCv={handleDuplicateSubmit}

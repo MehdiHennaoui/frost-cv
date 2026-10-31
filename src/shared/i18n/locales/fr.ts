@@ -67,6 +67,7 @@ export const fr = {
 	duplicateCv: {
 		title: "Dupliquer le CV",
 		submit: "Dupliquer le CV",
+		titleSuffix: " (copie)",
 		failed: "Impossible de dupliquer le CV",
 		sourceMissing: "Ce CV n’existe plus",
 	},

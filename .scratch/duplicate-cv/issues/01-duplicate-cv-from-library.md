@@ -6,8 +6,8 @@
 
 **Status:** ready-for-agent
 
-- [ ] Each Library CV card exposes a Duplicate action that opens the shared title + CV locale form with Duplicate framing
-- [ ] Defaults: title = source title + UI-locale copy suffix; CV locale = source locale; both editable
-- [ ] Confirm persists a new CV (new id, fresh timestamps, deep-copied content, modal title/locale) and navigates to its editor
-- [ ] Cancel / dismiss persists nothing; source CV unchanged after a successful Duplicate
-- [ ] Persistence seam `duplicateCv` (or equivalent) is covered by tests: happy path, invalid title, missing source, content independence from the original
+- [x] Each Library CV card exposes a Duplicate action that opens the shared title + CV locale form with Duplicate framing
+- [x] Defaults: title = source title + UI-locale copy suffix; CV locale = source locale; both editable
+- [x] Confirm persists a new CV (new id, fresh timestamps, deep-copied content, modal title/locale) and navigates to its editor
+- [x] Cancel / dismiss persists nothing; source CV unchanged after a successful Duplicate
+- [x] Persistence seam `duplicateCv` (or equivalent) is covered by tests: happy path, invalid title, missing source, content independence from the original

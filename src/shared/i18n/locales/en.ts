@@ -64,6 +64,7 @@ export const en = {
 	duplicateCv: {
 		title: "Duplicate CV",
 		submit: "Duplicate CV",
+		titleSuffix: " (copy)",
 		failed: "Could not duplicate CV",
 		sourceMissing: "That CV no longer exists",
 	},
