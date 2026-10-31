@@ -23,11 +23,13 @@ import { formatUpdatedAt } from "@/shared/lib/timestamp";
 import { Button } from "@/shared/ui/button";
 import {
 	Card,
-	CardAction,
 	CardDescription,
+	CardFooter,
 	CardHeader,
 	CardTitle,
 } from "@/shared/ui/card";
+import { Link } from "@/shared/ui/link";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/shared/ui/tooltip";
 import { useCvListNavigation } from "../model/use-cv-list-navigation";
 import { CreateCvModal } from "./create-cv-modal";
 import { DeleteCvConfirmModal } from "./delete-cv-confirm-modal";
@@ -70,52 +72,76 @@ function CvCard({
 		onExport(cv);
 	}
 
+	const duplicateLabel = t("cvList.duplicateNamed", { title: cv.title });
+	const exportLabel = t("cvList.exportNamed", { title: cv.title });
+	const deleteLabel = t("cvList.deleteNamed", { title: cv.title });
+
 	return (
 		<Card size="sm" className="h-full">
-			<CardHeader>
+			<CardHeader className="relative">
 				<CardTitle className="min-w-0 break-words">
-					<a href={`/cvs/${cv.id}`} className="hover:underline">
+					<Link
+						to="/cvs/$cvId"
+						params={{ cvId: cv.id }}
+						className="rounded-sm outline-none after:absolute after:inset-0 after:content-[''] hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+					>
 						{cv.title}
-					</a>
+					</Link>
 				</CardTitle>
-				<CardDescription>
+				<CardDescription className="pointer-events-none">
 					{t("cvList.meta", { locale: cv.locale, updatedAt })}
 				</CardDescription>
-				<CardAction>
-					<div className="flex flex-wrap justify-end gap-1">
-						<Button
-							type="button"
-							variant="ghost"
-							size="sm"
-							aria-label={t("cvList.duplicateNamed", { title: cv.title })}
-							onClick={handleDuplicate}
-						>
-							<CopyIcon data-icon="inline-start" aria-hidden />
-							{t("cvList.duplicate")}
-						</Button>
-						<Button
-							type="button"
-							variant="ghost"
-							size="sm"
-							aria-label={t("cvList.exportNamed", { title: cv.title })}
-							onClick={handleExport}
-						>
-							<DownloadIcon data-icon="inline-start" aria-hidden />
-							{t("cvList.export")}
-						</Button>
-						<Button
-							type="button"
-							variant="ghost"
-							size="sm"
-							aria-label={t("cvList.deleteNamed", { title: cv.title })}
-							onClick={handleDelete}
-						>
-							<Trash2Icon data-icon="inline-start" aria-hidden />
-							{t("cvList.delete")}
-						</Button>
-					</div>
-				</CardAction>
 			</CardHeader>
+			<CardFooter className="relative z-10 mt-auto justify-end gap-1">
+				<Tooltip>
+					<TooltipTrigger
+						render={
+							<Button
+								type="button"
+								variant="ghost"
+								size="icon-sm"
+								aria-label={duplicateLabel}
+								onClick={handleDuplicate}
+							/>
+						}
+					>
+						<CopyIcon aria-hidden />
+					</TooltipTrigger>
+					<TooltipContent>{duplicateLabel}</TooltipContent>
+				</Tooltip>
+				<Tooltip>
+					<TooltipTrigger
+						render={
+							<Button
+								type="button"
+								variant="ghost"
+								size="icon-sm"
+								aria-label={exportLabel}
+								onClick={handleExport}
+							/>
+						}
+					>
+						<DownloadIcon aria-hidden />
+					</TooltipTrigger>
+					<TooltipContent>{exportLabel}</TooltipContent>
+				</Tooltip>
+				<Tooltip>
+					<TooltipTrigger
+						render={
+							<Button
+								type="button"
+								variant="ghost"
+								size="icon-sm"
+								aria-label={deleteLabel}
+								onClick={handleDelete}
+							/>
+						}
+					>
+						<Trash2Icon aria-hidden />
+					</TooltipTrigger>
+					<TooltipContent>{deleteLabel}</TooltipContent>
+				</Tooltip>
+			</CardFooter>
 		</Card>
 	);
 }

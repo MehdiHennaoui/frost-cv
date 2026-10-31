@@ -28,6 +28,7 @@ import { cn } from "@/shared/lib/cn";
 import { downloadTextFile } from "@/shared/lib/download-text-file";
 import { SidebarPortal } from "@/shared/lib/sidebar-portal";
 import { Button, buttonVariants } from "@/shared/ui/button";
+import { Link } from "@/shared/ui/link";
 import { Spinner } from "@/shared/ui/spinner";
 import { addCustomSection } from "../model/custom-section-fields";
 import {
@@ -289,10 +290,10 @@ function EditorSidebarContent({
 				<EditorSidebarSections cv={cv} onPersisted={onPersisted} />
 			</div>
 			<div className="border-sidebar-border border-t p-2">
-				<a href="/cvs" className={buttonVariants({ variant: "outline" })}>
+				<Link to="/cvs" className={buttonVariants({ variant: "outline" })}>
 					<ArrowLeftIcon data-icon="inline-start" />
 					{t("cvEditor.backToList")}
-				</a>
+				</Link>
 			</div>
 		</div>
 	);
@@ -367,9 +368,9 @@ export function CvEditorPage({
 		return (
 			<main className="mx-auto flex max-w-6xl flex-col gap-4 p-4 md:p-8">
 				<p className="text-muted-foreground">{t("cvEditor.notFoundHint")}</p>
-				<a href="/cvs" className={buttonVariants({ variant: "outline" })}>
+				<Link to="/cvs" className={buttonVariants({ variant: "outline" })}>
 					{t("cvEditor.backToList")}
-				</a>
+				</Link>
 			</main>
 		);
 	}

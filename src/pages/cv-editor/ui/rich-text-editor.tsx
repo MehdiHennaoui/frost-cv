@@ -42,6 +42,7 @@ export function RichTextEditor({
 				horizontalRule: false,
 				strike: false,
 				underline: false,
+				link: false,
 			}),
 			Link.configure({
 				openOnClick: false,

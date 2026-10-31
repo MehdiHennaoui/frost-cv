@@ -1,13 +1,9 @@
 import { TanStackDevtools } from "@tanstack/react-devtools";
-import {
-	createRootRoute,
-	HeadContent,
-	Link,
-	Scripts,
-} from "@tanstack/react-router";
+import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
 import { useAppTranslation } from "@/shared/i18n";
+import { Link } from "@/shared/ui/link";
 import { AppLayout } from "../app-layout";
 import appCss from "../styles.css?url";
 
