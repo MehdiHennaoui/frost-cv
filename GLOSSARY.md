@@ -13,7 +13,7 @@ The language of the application chrome (`en` or `fr`). Independent of any CV’s
 _Avoid_: Language (alone), app language (prefer this term)
 
 **CV locale**:
-The language used for that CV’s content labels and PDF/print wording (for example Present / Présent). Independent of the UI locale.
+The language used for that CV’s content labels and React PDF document wording (for example Present / Présent). Independent of the UI locale.
 _Avoid_: Language (alone), CV language (prefer this term)
 
 **Language entry**:
@@ -65,5 +65,13 @@ Loading a library JSON file into local storage. Two modes: **add** (create new C
 _Avoid_: Bulk import, restore (say replace when the library is wiped), merge import
 
 **Letter page**:
-The print and preview page size for a Canadian CV: US Letter, 8.5 × 11 inches. Not A4.
+The page size for a Canadian CV preview and PDF: US Letter, 8.5 × 11 inches. Not A4. Applies to the React PDF document (and historically to Print PDF).
 _Avoid_: A4 (unless a future export mode targets international applications)
+
+**Print PDF**:
+Legacy export path: printing the on-screen Tailwind preview in the browser (print CSS / system print dialog) to produce a PDF. Superseded by the React PDF document (ADR-0003; was ADR-0002).
+_Avoid_: Browser PDF, print export (prefer this term), “the PDF” when the engine matters
+
+**React PDF document**:
+A PDF (and its on-screen editor preview) built with `@react-pdf/renderer` from the same CV model, sized to Letter page. Production preview and export path (ADR-0003). Page numbers belong only in viewer chrome, not in the document content.
+_Avoid_: react-pdf export (alone), generated PDF (prefer this term when contrasting engines), Print PDF (legacy)
