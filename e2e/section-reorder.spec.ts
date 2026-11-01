@@ -1,5 +1,11 @@
 import { expect, type Locator, type Page, test } from "@playwright/test";
 
+import {
+	expectReactPdfPreview,
+	reloadEditor,
+	sidebarSectionTitles,
+} from "./helpers/preview";
+
 test.describe("section reorder", () => {
 	test("drags a section and keeps the new order after reload", async ({
 		page,
@@ -10,14 +16,15 @@ test.describe("section reorder", () => {
 		await page.getByRole("button", { name: "Create CV" }).click();
 		await expect(page).toHaveURL(/\/cvs\/[^/]+/);
 
-		const preview = page.getByRole("article", { name: "Canadian CV preview" });
-		await expect(preview.getByRole("heading", { level: 2 })).toHaveText([
+		const sidebar = page.getByTestId("app-sidebar-portal");
+		await expect(sidebarSectionTitles(sidebar)).toHaveText([
+			"Identity",
 			"Experiences",
 			"Education",
 			"Languages",
 		]);
+		await expectReactPdfPreview(page);
 
-		const sidebar = page.getByTestId("app-sidebar-portal");
 		const languageActions = sidebar
 			.locator("[data-slot=card]")
 			.filter({ hasText: "Languages" })
@@ -42,14 +49,17 @@ test.describe("section reorder", () => {
 			sectionDrag(sidebar, "Experiences"),
 		);
 
-		await expect(preview.getByRole("heading", { level: 2 })).toHaveText([
+		await expect(sidebarSectionTitles(sidebar)).toHaveText([
+			"Identity",
 			"Languages",
 			"Experiences",
 			"Education",
 		]);
 
-		await page.reload();
-		await expect(preview.getByRole("heading", { level: 2 })).toHaveText([
+		await reloadEditor(page);
+		const after = page.getByTestId("app-sidebar-portal");
+		await expect(sidebarSectionTitles(after)).toHaveText([
+			"Identity",
 			"Languages",
 			"Experiences",
 			"Education",
@@ -80,12 +90,13 @@ test.describe("section reorder", () => {
 
 		await dragHandleBy(page, experiences, Math.round((to.y - from.y) / 2) + 8);
 
-		const preview = page.getByRole("article", { name: "Canadian CV preview" });
-		await expect(preview.getByRole("heading", { level: 2 })).toHaveText([
+		await expect(sidebarSectionTitles(sidebar)).toHaveText([
+			"Identity",
 			"Education",
 			"Experiences",
 			"Languages",
 		]);
+		await expectReactPdfPreview(page);
 	});
 
 	test("drags a tall section up into first place", async ({ page }) => {
@@ -107,8 +118,8 @@ test.describe("section reorder", () => {
 			.click();
 		await page.getByRole("menuitem", { name: "Position 3" }).click();
 
-		const preview = page.getByRole("article", { name: "Canadian CV preview" });
-		await expect(preview.getByRole("heading", { level: 2 })).toHaveText([
+		await expect(sidebarSectionTitles(sidebar)).toHaveText([
+			"Identity",
 			"Education",
 			"Languages",
 			"Experiences",
@@ -120,11 +131,13 @@ test.describe("section reorder", () => {
 			sectionDrag(sidebar, "Education"),
 		);
 
-		await expect(preview.getByRole("heading", { level: 2 })).toHaveText([
+		await expect(sidebarSectionTitles(sidebar)).toHaveText([
+			"Identity",
 			"Experiences",
 			"Education",
 			"Languages",
 		]);
+		await expectReactPdfPreview(page);
 	});
 });
 

@@ -1,7 +1,13 @@
 import { expect, test } from "@playwright/test";
 
+import {
+	expectReactPdfPreview,
+	flushEditorPersist,
+	reloadEditor,
+} from "./helpers/preview";
+
 test.describe("education section", () => {
-	test("adds an education entry and shows it in the Canadian preview", async ({
+	test("adds an education entry and keeps it after blur flush", async ({
 		page,
 	}) => {
 		await page.goto("/cvs");
@@ -14,8 +20,7 @@ test.describe("education section", () => {
 		const sidebar = page.getByTestId("app-sidebar-portal");
 		await sidebar.getByRole("button", { name: "Add education" }).click();
 
-		const school = sidebar.getByLabel("School name").last();
-		await school.fill("McGill University");
+		await sidebar.getByLabel("School name").last().fill("McGill University");
 		await sidebar
 			.getByLabel("Degree name")
 			.last()
@@ -23,15 +28,22 @@ test.describe("education section", () => {
 		await sidebar.getByLabel("City / country").last().fill("Montreal, Canada");
 		await sidebar.getByLabel("Start month").last().fill("2016-09");
 		await sidebar.getByLabel("End month").last().fill("2020-05");
-		await school.blur();
+		await flushEditorPersist(page);
 
-		const preview = page.getByLabel("Canadian CV preview");
-		await expect(
-			preview.getByText("B.Sc. Computer Science · McGill University"),
-		).toBeVisible({
-			timeout: 5000,
-		});
-		await expect(preview.getByText("Montreal, Canada")).toBeVisible();
-		await expect(preview.getByText("Sep 2016 – May 2020")).toBeVisible();
+		await expectReactPdfPreview(page);
+
+		await reloadEditor(page);
+		const after = page.getByTestId("app-sidebar-portal");
+		await expect(after.getByLabel("School name").last()).toHaveValue(
+			"McGill University",
+		);
+		await expect(after.getByLabel("Degree name").last()).toHaveValue(
+			"B.Sc. Computer Science",
+		);
+		await expect(after.getByLabel("City / country").last()).toHaveValue(
+			"Montreal, Canada",
+		);
+		await expect(after.getByLabel("Start month").last()).toHaveValue("2016-09");
+		await expect(after.getByLabel("End month").last()).toHaveValue("2020-05");
 	});
 });

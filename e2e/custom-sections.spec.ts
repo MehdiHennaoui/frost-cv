@@ -1,7 +1,14 @@
 import { expect, test } from "@playwright/test";
 
+import {
+	expectReactPdfPreview,
+	flushEditorPersist,
+	reloadEditor,
+	sidebarSectionTitles,
+} from "./helpers/preview";
+
 test.describe("custom sections", () => {
-	test("adds a custom section and shows it in the Canadian preview", async ({
+	test("adds a custom section and keeps it after blur flush", async ({
 		page,
 	}) => {
 		await page.goto("/cvs");
@@ -14,13 +21,17 @@ test.describe("custom sections", () => {
 		const sidebar = page.getByTestId("app-sidebar-portal");
 		await sidebar.getByRole("button", { name: "Add custom section" }).click();
 
-		const title = sidebar.getByLabel("Section title").last();
-		await title.fill("Skills");
-		await title.blur();
+		await sidebar.getByLabel("Section title").last().fill("Skills");
+		await flushEditorPersist(page);
 
-		const preview = page.getByLabel("Canadian CV preview");
-		await expect(preview.getByRole("heading", { name: "Skills" })).toBeVisible({
-			timeout: 5000,
-		});
+		await expect(sidebarSectionTitles(sidebar)).toContainText(["Skills"]);
+		await expectReactPdfPreview(page);
+
+		await reloadEditor(page);
+		const after = page.getByTestId("app-sidebar-portal");
+		await expect(after.getByLabel("Section title").last()).toHaveValue(
+			"Skills",
+		);
+		await expect(sidebarSectionTitles(after)).toContainText(["Skills"]);
 	});
 });

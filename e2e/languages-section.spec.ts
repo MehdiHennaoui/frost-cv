@@ -1,7 +1,13 @@
 import { expect, type Locator, type Page, test } from "@playwright/test";
 
+import {
+	expectReactPdfPreview,
+	flushEditorPersist,
+	reloadEditor,
+} from "./helpers/preview";
+
 test.describe("languages section", () => {
-	test("adds a language entry and shows it in the Canadian preview", async ({
+	test("adds a language entry and keeps it after blur flush", async ({
 		page,
 	}) => {
 		await page.goto("/cvs");
@@ -14,15 +20,16 @@ test.describe("languages section", () => {
 		const sidebar = page.getByTestId("app-sidebar-portal");
 		await sidebar.getByRole("button", { name: "Add language" }).click();
 
-		const language = sidebar.getByLabel("Language").last();
-		await language.fill("French");
+		await sidebar.getByLabel("Language").last().fill("French");
 		await sidebar.getByLabel("Level").last().fill("Fluent");
-		await language.blur();
+		await flushEditorPersist(page);
 
-		const preview = page.getByLabel("Canadian CV preview");
-		await expect(preview.getByText("French — Fluent")).toBeVisible({
-			timeout: 5000,
-		});
+		await expectReactPdfPreview(page);
+
+		await reloadEditor(page);
+		const after = page.getByTestId("app-sidebar-portal");
+		await expect(after.getByLabel("Language").last()).toHaveValue("French");
+		await expect(after.getByLabel("Level").last()).toHaveValue("Fluent");
 	});
 
 	test("reorders language entries inside the section", async ({ page }) => {
@@ -44,7 +51,7 @@ test.describe("languages section", () => {
 		await sidebar.getByRole("button", { name: "Add language" }).click();
 		await language.last().fill("English");
 		await level.last().fill("Native");
-		await level.last().blur();
+		await flushEditorPersist(page);
 
 		const languageEntries = sidebar
 			.locator("[data-slot=card]")
@@ -69,16 +76,26 @@ test.describe("languages section", () => {
 		});
 		await dragHandleTo(page, handles.nth(1), handles.nth(0));
 
-		const preview = page.getByLabel("Canadian CV preview");
-		await expect(preview.getByRole("listitem")).toHaveText([
-			"English — Native",
-			"French — Fluent",
-		]);
-		await expect(preview.getByRole("heading", { level: 2 })).toHaveText([
-			"Experiences",
-			"Education",
-			"Languages",
-		]);
+		await expect(language.nth(0)).toHaveValue("English");
+		await expect(language.nth(1)).toHaveValue("French");
+		await expect(level.nth(0)).toHaveValue("Native");
+		await expect(level.nth(1)).toHaveValue("Fluent");
+		await expectReactPdfPreview(page);
+
+		await reloadEditor(page);
+		const after = page.getByTestId("app-sidebar-portal");
+		const languageAfter = after.getByRole("textbox", {
+			name: "Language",
+			exact: true,
+		});
+		const levelAfter = after.getByRole("textbox", {
+			name: "Level",
+			exact: true,
+		});
+		await expect(languageAfter.nth(0)).toHaveValue("English");
+		await expect(languageAfter.nth(1)).toHaveValue("French");
+		await expect(levelAfter.nth(0)).toHaveValue("Native");
+		await expect(levelAfter.nth(1)).toHaveValue("Fluent");
 	});
 });
 

@@ -13,5 +13,9 @@ pre-commit:
       run: pnpm typecheck
     test:
       run: pnpm test
+    test-e2e:
+      glob: "{src,e2e}/**/*.{js,jsx,ts,tsx}"
+      run: pnpm test:e2e
     lint-fsd:
       run: pnpm lint:fsd
+
