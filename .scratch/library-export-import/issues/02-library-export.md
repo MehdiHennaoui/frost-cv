@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately). Toast ticket `01` is independent.
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Maps to:** `.scratch/library-export-import/spec.md`; US-17; ADR-0004; `GLOSSARY.md` Library export
 
