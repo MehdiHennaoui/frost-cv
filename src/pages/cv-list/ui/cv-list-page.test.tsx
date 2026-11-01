@@ -108,4 +108,107 @@ describe("CvListPage", () => {
 			}),
 		);
 	});
+
+	it("disables library export controls when empty or nothing is selected", () => {
+		const { rerender } = render(<CvListPage cvs={[]} />);
+
+		expect(
+			(
+				screen.getByRole("button", {
+					name: "cvList.exportAll",
+				}) as HTMLButtonElement
+			).disabled,
+		).toBe(true);
+		expect(
+			(
+				screen.getByRole("button", {
+					name: "cvList.exportSelected",
+				}) as HTMLButtonElement
+			).disabled,
+		).toBe(true);
+		expect(
+			screen.queryByRole("button", { name: "cvList.selectAll" }),
+		).toBeNull();
+
+		rerender(<CvListPage cvs={sampleCvs} />);
+
+		expect(
+			(
+				screen.getByRole("button", {
+					name: "cvList.exportAll",
+				}) as HTMLButtonElement
+			).disabled,
+		).toBe(false);
+		expect(
+			(
+				screen.getByRole("button", {
+					name: "cvList.exportSelected",
+				}) as HTMLButtonElement
+			).disabled,
+		).toBe(true);
+		expect(
+			screen.getByRole("button", { name: "cvList.selectAll" }),
+		).toBeTruthy();
+	});
+
+	it("exports all CVs in list order and clears selection", () => {
+		const downloadFile = vi.fn();
+		render(<CvListPage cvs={sampleCvs} downloadFile={downloadFile} />);
+
+		fireEvent.click(screen.getByRole("button", { name: "cvList.selectAll" }));
+		expect(
+			(
+				screen.getByRole("button", {
+					name: "cvList.exportSelected",
+				}) as HTMLButtonElement
+			).disabled,
+		).toBe(false);
+
+		fireEvent.click(screen.getByRole("button", { name: "cvList.exportAll" }));
+
+		expect(downloadFile).toHaveBeenCalledTimes(1);
+		expect(downloadFile.mock.calls[0]?.[0]).toBe("frost-cv-library.json");
+		expect(JSON.parse(downloadFile.mock.calls[0]?.[1] as string)).toEqual({
+			schemaVersion: 1,
+			cvs: [
+				expect.objectContaining({ title: "Frontend CV", locale: "en" }),
+				expect.objectContaining({ title: "CV Québec", locale: "fr" }),
+			],
+		});
+		expect(
+			(
+				screen.getByRole("button", {
+					name: "cvList.exportSelected",
+				}) as HTMLButtonElement
+			).disabled,
+		).toBe(true);
+	});
+
+	it("exports selected CVs in list order, not click order", () => {
+		const downloadFile = vi.fn();
+		render(<CvListPage cvs={sampleCvs} downloadFile={downloadFile} />);
+
+		const checkboxes = screen.getAllByRole("checkbox");
+		fireEvent.click(checkboxes[1] as HTMLElement);
+		fireEvent.click(checkboxes[0] as HTMLElement);
+		fireEvent.click(
+			screen.getByRole("button", { name: "cvList.exportSelected" }),
+		);
+
+		expect(downloadFile).toHaveBeenCalledTimes(1);
+		expect(JSON.parse(downloadFile.mock.calls[0]?.[1] as string)).toEqual({
+			schemaVersion: 1,
+			cvs: [
+				expect.objectContaining({ title: "Frontend CV" }),
+				expect.objectContaining({ title: "CV Québec" }),
+			],
+		});
+		expect(
+			(
+				screen.getByRole("button", {
+					name: "cvList.exportSelected",
+				}) as HTMLButtonElement
+			).disabled,
+		).toBe(true);
+	});
 });

@@ -34,6 +34,11 @@ export const fr = {
 		duplicateNamed: "Dupliquer ce CV : {{title}}",
 		export: "Exporter ce CV",
 		exportNamed: "Exporter ce CV en JSON : {{title}}",
+		selectAll: "Sélectionner tous les CV",
+		clearSelection: "Effacer la sélection",
+		selectNamed: "Sélectionner {{title}}",
+		exportAll: "Exporter tous les CV",
+		exportSelected: "Exporter les CV sélectionnés",
 		unknownDate: "Date inconnue",
 	},
 	cvExport: {

@@ -16,6 +16,7 @@ import {
 	cvExportFile,
 	deleteCv as deleteCvInDb,
 	duplicateCv as duplicateCvInDb,
+	libraryExportFile,
 } from "@/entities/cv";
 import { useAppTranslation, useUiLocale } from "@/shared/i18n";
 import { downloadTextFile } from "@/shared/lib/download-text-file";
@@ -28,6 +29,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/shared/ui/card";
+import { Checkbox } from "@/shared/ui/checkbox";
 import { Link } from "@/shared/ui/link";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/shared/ui/tooltip";
 import { useCvListNavigation } from "../model/use-cv-list-navigation";
@@ -46,11 +48,15 @@ type CvListPageProps = {
 
 function CvCard({
 	cv,
+	selected,
+	onSelectedChange,
 	onDelete,
 	onDuplicate,
 	onExport,
 }: {
 	cv: Cv;
+	selected: boolean;
+	onSelectedChange: (selected: boolean) => void;
 	onDelete: (cv: Cv) => void;
 	onDuplicate: (cv: Cv) => void;
 	onExport: (cv: Cv) => void;
@@ -72,6 +78,7 @@ function CvCard({
 		onExport(cv);
 	}
 
+	const selectLabel = t("cvList.selectNamed", { title: cv.title });
 	const duplicateLabel = t("cvList.duplicateNamed", { title: cv.title });
 	const exportLabel = t("cvList.exportNamed", { title: cv.title });
 	const deleteLabel = t("cvList.deleteNamed", { title: cv.title });
@@ -79,18 +86,30 @@ function CvCard({
 	return (
 		<Card size="sm" className="h-full">
 			<CardHeader className="relative">
-				<CardTitle className="min-w-0 break-words">
-					<Link
-						to="/cvs/$cvId"
-						params={{ cvId: cv.id }}
-						className="rounded-sm outline-none after:absolute after:inset-0 after:content-[''] hover:underline focus-visible:ring-2 focus-visible:ring-ring"
-					>
-						{cv.title}
-					</Link>
-				</CardTitle>
-				<CardDescription className="pointer-events-none">
-					{t("cvList.meta", { locale: cv.locale, updatedAt })}
-				</CardDescription>
+				<div className="relative z-10 flex items-start gap-2">
+					<Checkbox
+						className="z-20"
+						checked={selected}
+						aria-label={selectLabel}
+						onCheckedChange={(checked) => {
+							onSelectedChange(checked === true);
+						}}
+					/>
+					<div className="min-w-0 flex-1">
+						<CardTitle className="min-w-0 break-words">
+							<Link
+								to="/cvs/$cvId"
+								params={{ cvId: cv.id }}
+								className="rounded-sm outline-none after:absolute after:inset-0 after:content-[''] hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+							>
+								{cv.title}
+							</Link>
+						</CardTitle>
+						<CardDescription className="pointer-events-none">
+							{t("cvList.meta", { locale: cv.locale, updatedAt })}
+						</CardDescription>
+					</div>
+				</div>
 			</CardHeader>
 			<CardFooter className="relative z-10 mt-auto justify-end gap-1">
 				<Tooltip>
@@ -160,6 +179,9 @@ export function CvListPage({
 	const [isImportOpen, setIsImportOpen] = useState(false);
 	const [cvToDelete, setCvToDelete] = useState<Cv | null>(null);
 	const [cvToDuplicate, setCvToDuplicate] = useState<Cv | null>(null);
+	const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set());
+
+	const allSelected = cvs.length > 0 && selectedIds.size === cvs.length;
 
 	function handleOpenCreate() {
 		setIsCreateOpen(true);
@@ -194,6 +216,39 @@ export function CvListPage({
 		downloadFile(file.filename, file.text);
 	}
 
+	function handleSelectedChange(cvId: string, selected: boolean) {
+		setSelectedIds((previous) => {
+			const next = new Set(previous);
+			if (selected) {
+				next.add(cvId);
+			} else {
+				next.delete(cvId);
+			}
+			return next;
+		});
+	}
+
+	function handleToggleSelectAll() {
+		if (allSelected) {
+			setSelectedIds(new Set());
+			return;
+		}
+		setSelectedIds(new Set(cvs.map((cv) => cv.id)));
+	}
+
+	function handleExportAll() {
+		const file = libraryExportFile(cvs);
+		downloadFile(file.filename, file.text);
+		setSelectedIds(new Set());
+	}
+
+	function handleExportSelected() {
+		const selected = cvs.filter((cv) => selectedIds.has(cv.id));
+		const file = libraryExportFile(selected);
+		downloadFile(file.filename, file.text);
+		setSelectedIds(new Set());
+	}
+
 	async function handleDuplicateSubmit(input: CreateCvInput) {
 		if (!cvToDuplicate) {
 			throw new Error("duplicateCv.sourceMissing");
@@ -203,15 +258,44 @@ export function CvListPage({
 
 	return (
 		<main className="mx-auto max-w-6xl overflow-y-auto p-4 md:p-8">
-			<div className="flex justify-end gap-2">
-				<Button type="button" variant="outline" onClick={handleOpenImport}>
-					<FileUpIcon data-icon="inline-start" />
-					{t("cvList.import")}
-				</Button>
-				<Button type="button" onClick={handleOpenCreate}>
-					<PlusIcon data-icon="inline-start" />
-					{t("cvList.create")}
-				</Button>
+			<div className="flex flex-wrap items-center justify-between gap-2">
+				<div className="flex flex-wrap gap-2">
+					{cvs.length > 0 && (
+						<Button
+							type="button"
+							variant="outline"
+							onClick={handleToggleSelectAll}
+						>
+							{allSelected ? t("cvList.clearSelection") : t("cvList.selectAll")}
+						</Button>
+					)}
+					<Button
+						type="button"
+						variant="outline"
+						disabled={selectedIds.size === 0}
+						onClick={handleExportSelected}
+					>
+						{t("cvList.exportSelected")}
+					</Button>
+					<Button
+						type="button"
+						variant="outline"
+						disabled={cvs.length === 0}
+						onClick={handleExportAll}
+					>
+						{t("cvList.exportAll")}
+					</Button>
+				</div>
+				<div className="flex flex-wrap gap-2">
+					<Button type="button" variant="outline" onClick={handleOpenImport}>
+						<FileUpIcon data-icon="inline-start" />
+						{t("cvList.import")}
+					</Button>
+					<Button type="button" onClick={handleOpenCreate}>
+						<PlusIcon data-icon="inline-start" />
+						{t("cvList.create")}
+					</Button>
+				</div>
 			</div>
 
 			{cvs.length === 0 ? (
@@ -222,6 +306,10 @@ export function CvListPage({
 						<li key={cv.id} className="min-w-0">
 							<CvCard
 								cv={cv}
+								selected={selectedIds.has(cv.id)}
+								onSelectedChange={(selected) => {
+									handleSelectedChange(cv.id, selected);
+								}}
 								onDelete={handleRequestDelete}
 								onDuplicate={handleRequestDuplicate}
 								onExport={handleExport}

@@ -5,8 +5,11 @@ import {
 	cvDownloadStem,
 	cvExportFile,
 	cvExportFilename,
+	libraryExportFile,
 	parseCvExportDocument,
+	parseLibraryExportDocument,
 	toCvExportDocument,
+	toLibraryExportDocument,
 } from "./cv-export";
 
 const SAMPLE_CV: Cv = {
@@ -146,6 +149,54 @@ describe("cvExportFile", () => {
 		const file = cvExportFile(SAMPLE_CV);
 		expect(file.filename).toBe("ada-lovelace-analyst-en.json");
 		expect(JSON.parse(file.text)).toEqual(toCvExportDocument(SAMPLE_CV));
+	});
+});
+
+describe("libraryExportFile", () => {
+	it("serializes CVs in call order into the library envelope", () => {
+		const second: Cv = {
+			...SAMPLE_CV,
+			id: "cv-2",
+			title: "Second",
+			locale: "fr",
+		};
+
+		expect(toLibraryExportDocument([SAMPLE_CV, second])).toEqual({
+			schemaVersion: 1,
+			cvs: [toCvExportDocument(SAMPLE_CV), toCvExportDocument(second)],
+		});
+
+		const file = libraryExportFile([SAMPLE_CV, second]);
+		expect(file.filename).toBe("frost-cv-library.json");
+		expect(JSON.parse(file.text)).toEqual(
+			toLibraryExportDocument([SAMPLE_CV, second]),
+		);
+	});
+
+	it("round-trips a library document through parse", () => {
+		const file = libraryExportFile([SAMPLE_CV]);
+		const parsed = parseLibraryExportDocument(file.text);
+
+		expect(parsed).toEqual({
+			ok: true,
+			value: [
+				{
+					title: "Software Engineer",
+					locale: "en",
+					content: SAMPLE_CV.content,
+				},
+			],
+		});
+	});
+
+	it("rejects an empty cvs array and a single-CV document shape", () => {
+		expect(
+			parseLibraryExportDocument(JSON.stringify({ schemaVersion: 1, cvs: [] })),
+		).toEqual({ ok: false, error: "libraryExport.empty" });
+
+		expect(
+			parseLibraryExportDocument(JSON.stringify(toCvExportDocument(SAMPLE_CV))),
+		).toEqual({ ok: false, error: "libraryExport.unsupportedVersion" });
 	});
 });
 

@@ -199,6 +199,86 @@ export function cvExportFile(cv: Cv): { filename: string; text: string } {
 	};
 }
 
+export const LIBRARY_EXPORT_SCHEMA_VERSION = 1 as const;
+export const LIBRARY_EXPORT_FILENAME = "frost-cv-library.json";
+
+export type LibraryExportDocument = {
+	schemaVersion: typeof LIBRARY_EXPORT_SCHEMA_VERSION;
+	cvs: CvExportDocument[];
+};
+
+export type ParseLibraryExportResult =
+	| { ok: true; value: CvImportPayload[] }
+	| {
+			ok: false;
+			error:
+				| "libraryExport.invalidJson"
+				| "libraryExport.unsupportedVersion"
+				| "libraryExport.invalidSchema"
+				| "libraryExport.empty";
+	  };
+
+export function toLibraryExportDocument(cvs: Cv[]): LibraryExportDocument {
+	return {
+		schemaVersion: LIBRARY_EXPORT_SCHEMA_VERSION,
+		cvs: cvs.map(toCvExportDocument),
+	};
+}
+
+export function libraryExportFile(cvs: Cv[]): {
+	filename: string;
+	text: string;
+} {
+	return {
+		filename: LIBRARY_EXPORT_FILENAME,
+		text: `${JSON.stringify(toLibraryExportDocument(cvs), null, 2)}\n`,
+	};
+}
+
+export function parseLibraryExportDocument(
+	text: string,
+): ParseLibraryExportResult {
+	let raw: unknown;
+	try {
+		raw = JSON.parse(text);
+	} catch {
+		return { ok: false, error: "libraryExport.invalidJson" };
+	}
+
+	if (
+		!raw ||
+		typeof raw !== "object" ||
+		Array.isArray(raw) ||
+		!("schemaVersion" in raw) ||
+		(raw as { schemaVersion?: unknown }).schemaVersion !==
+			LIBRARY_EXPORT_SCHEMA_VERSION ||
+		!("cvs" in raw) ||
+		!Array.isArray((raw as { cvs?: unknown }).cvs)
+	) {
+		return { ok: false, error: "libraryExport.unsupportedVersion" };
+	}
+
+	const cvs = (raw as { cvs: unknown[] }).cvs;
+	if (cvs.length === 0) {
+		return { ok: false, error: "libraryExport.empty" };
+	}
+
+	const value: CvImportPayload[] = [];
+	for (const entry of cvs) {
+		const parsed = cvExportDocumentSchema.safeParse(entry);
+		if (!parsed.success) {
+			return { ok: false, error: "libraryExport.invalidSchema" };
+		}
+		value.push({
+			title: parsed.data.title,
+			locale: parsed.data.locale,
+			content: parsed.data.content,
+		});
+	}
+
+	return { ok: true, value };
+}
+
 export function parseCvExportDocument(text: string): ParseCvExportResult {
 	let raw: unknown;
 	try {
