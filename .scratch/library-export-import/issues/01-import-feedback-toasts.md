@@ -4,12 +4,12 @@
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Maps to:** `.scratch/library-export-import/spec.md` (US feedback / Q13–Q14)
 
-- [ ] Toast primitive is available from `@/shared/ui` (shadcn) and mounted in app chrome
-- [ ] List Import JSON (create) shows errors as toasts; no inline error paragraph in the modal
-- [ ] Editor replace-import shows errors as toasts; no inline error paragraph in the dialog
-- [ ] Successful create import and successful replace import each show a success toast
-- [ ] Existing invalid JSON / unsupported version / invalid schema / import failed copy still reaches the user via toast
+- [x] Toast primitive is available from `@/shared/ui` (shadcn) and mounted in app chrome
+- [x] List Import JSON (create) shows errors as toasts; no inline error paragraph in the modal
+- [x] Editor replace-import shows errors as toasts; no inline error paragraph in the dialog
+- [x] Successful create import and successful replace import each show a success toast
+- [x] Existing invalid JSON / unsupported version / invalid schema / import failed copy still reaches the user via toast
