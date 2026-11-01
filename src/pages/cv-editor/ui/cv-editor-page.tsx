@@ -61,12 +61,14 @@ function SectionReorderControls({
 	onMove,
 	dragAttributes,
 	dragListeners,
+	disabled = false,
 }: {
 	index: number;
 	count: number;
 	onMove: (toIndex: number) => void;
 	dragAttributes: DraggableAttributes;
 	dragListeners: DraggableSyntheticListeners | undefined;
+	disabled?: boolean;
 }) {
 	const { t } = useAppTranslation();
 
@@ -76,6 +78,7 @@ function SectionReorderControls({
 				label={t("cvEditor.sections.position")}
 				index={index}
 				count={count}
+				disabled={disabled}
 				onMove={onMove}
 				optionLabel={(position) =>
 					t("cvEditor.sections.positionOption", { n: position + 1 })
@@ -85,6 +88,7 @@ function SectionReorderControls({
 				label={t("cvEditor.sections.drag")}
 				{...dragAttributes}
 				{...dragListeners}
+				disabled={disabled}
 			>
 				<GripVerticalIcon />
 			</IconTooltipButton>
@@ -151,7 +155,7 @@ function EditorSidebarSections({
 	onPersisted: (cv: Cv) => void;
 }) {
 	const { t } = useAppTranslation();
-	const { withCvSavePending } = useCvSavePending();
+	const { isCvSavePending, withCvSavePending } = useCvSavePending();
 	const order = sectionOrderOf(cv.content).filter(
 		(key): key is MovableSectionKey => key !== "identity",
 	);
@@ -195,6 +199,7 @@ function EditorSidebarSections({
 							<SectionReorderControls
 								index={index}
 								count={order.length}
+								disabled={isCvSavePending}
 								onMove={(toIndex) => {
 									void persistSectionOrder(item.id, toIndex);
 								}}
@@ -209,6 +214,7 @@ function EditorSidebarSections({
 				type="button"
 				size="sm"
 				variant="outline"
+				disabled={isCvSavePending}
 				onClick={() => {
 					void handleAddCustomSection();
 				}}
@@ -272,11 +278,11 @@ function EditorSidebarContent({
 				</div>
 			</div>
 			<div
-				aria-busy={isLocked || undefined}
+				aria-busy={isImportOpen || undefined}
 				className={cn("min-h-0 flex-1 space-y-4 overflow-y-auto px-2", {
-					"opacity-60": isLocked,
+					"opacity-60": isImportOpen,
 				})}
-				inert={isLocked || undefined}
+				inert={isImportOpen || undefined}
 			>
 				<p className="font-medium text-xs">{t("cvEditor.edit.label")}</p>
 				<IdentityHeaderForm cv={cv} onPersisted={onPersisted} />

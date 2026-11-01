@@ -81,7 +81,7 @@ export function useCvAutosave<T>({
 	return { schedule, flush, cancel };
 }
 
-/** Skip the blur flush while focus stays in the same form, so the save lock does not drop the next field. */
+/** Same-form blur stays on the 1s debounce so a persist does not start between fields. */
 export function flushOnFormLeave(
 	event:
 		| {

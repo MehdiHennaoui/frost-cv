@@ -22,6 +22,7 @@ type PositionMenuProps = {
 	count: number;
 	onMove: (toIndex: number) => void;
 	optionLabel: (position: number) => string;
+	disabled?: boolean;
 };
 
 export function PositionMenu({
@@ -30,6 +31,7 @@ export function PositionMenu({
 	count,
 	onMove,
 	optionLabel,
+	disabled = false,
 }: PositionMenuProps) {
 	return (
 		<TooltipProvider>
@@ -43,7 +45,7 @@ export function PositionMenu({
 										type="button"
 										size="icon-sm"
 										variant="ghost"
-										disabled={count < 2}
+										disabled={disabled || count < 2}
 										aria-label={label}
 									/>
 								}

@@ -30,6 +30,7 @@ vi.mock("@/entities/cv", async (importOriginal) => {
 
 afterEach(() => {
 	cleanup();
+	vi.useRealTimers();
 	saveCvMock.mockReset();
 });
 
@@ -204,7 +205,7 @@ describe("CvEditorPage", () => {
 		expect(screen.getByText("cvExport.replaceDescription")).toBeTruthy();
 	});
 
-	it("locks fields and reorder while a save is in flight", async () => {
+	it("keeps the focused field editable while a draft persists", async () => {
 		let release: (cv: Cv) => void = () => {};
 		saveCvMock.mockImplementation(
 			(next: Cv) =>
@@ -212,34 +213,111 @@ describe("CvEditorPage", () => {
 					release = () => resolve({ ...next, updatedAt: 2 });
 				}),
 		);
+		vi.useFakeTimers({
+			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
+		});
 
 		const { host } = renderEditor(sampleCv());
-		fireEvent.click(
-			within(host).getAllByRole("button", {
-				name: "cvEditor.sections.position",
-			})[0],
+		const firstName = within(host).getByLabelText(
+			"cvEditor.identity.field.firstName",
 		);
+		firstName.focus();
+		fireEvent.change(firstName, { target: { value: "Augusta" } });
+
 		await act(async () => {
-			fireEvent.click(screen.getAllByRole("menuitem")[2]);
+			await vi.advanceTimersByTimeAsync(1000);
 		});
 
 		expect(within(host).getByText("cvEditor.saving")).toBeTruthy();
-		expect(
-			within(host)
-				.getByLabelText("cvEditor.identity.field.firstName")
-				.closest("[inert]"),
-		).toBeTruthy();
-		expect(
-			within(host)
-				.getAllByRole("button", { name: "cvEditor.sections.position" })[0]
-				?.closest("[inert]"),
-		).toBeTruthy();
+		expect(document.activeElement).toBe(firstName);
+		expect(firstName.closest("[inert]")).toBeNull();
+		expect(firstName.closest("[aria-busy='true']")).toBeNull();
+		expect((firstName as HTMLInputElement).disabled).toBe(false);
+
+		fireEvent.change(firstName, { target: { value: "Augusta Ada" } });
+		expect((firstName as HTMLInputElement).value).toBe("Augusta Ada");
 
 		await act(async () => {
 			release(saveCvMock.mock.calls[0]?.[0] as Cv);
 		});
 
 		expect(within(host).queryByText("cvEditor.saving")).toBeNull();
-		expect(host.querySelector("[inert]")).toBeNull();
+		expect(document.activeElement).toBe(firstName);
+	});
+
+	it("blocks section reorder, add, export, and import while a draft persists", async () => {
+		let release: (cv: Cv) => void = () => {};
+		saveCvMock.mockImplementation(
+			(next: Cv) =>
+				new Promise<Cv>((resolve) => {
+					release = () => resolve({ ...next, updatedAt: 2 });
+				}),
+		);
+		vi.useFakeTimers({
+			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
+		});
+
+		const { host } = renderEditor(sampleCv());
+		fireEvent.change(
+			within(host).getByLabelText("cvEditor.identity.field.firstName"),
+			{ target: { value: "Augusta" } },
+		);
+
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(1000);
+		});
+
+		expect(within(host).getByText("cvEditor.saving")).toBeTruthy();
+		for (const name of [
+			"cvEditor.sections.position",
+			"cvEditor.sections.drag",
+			"cvEditor.customs.add",
+			"cvExport.export",
+			"cvList.import",
+		]) {
+			for (const control of within(host).getAllByRole("button", { name })) {
+				expect((control as HTMLButtonElement).disabled).toBe(true);
+			}
+		}
+
+		await act(async () => {
+			release(saveCvMock.mock.calls[0]?.[0] as Cv);
+		});
+
+		expect(within(host).queryByText("cvEditor.saving")).toBeNull();
+		for (const name of [
+			"cvEditor.sections.position",
+			"cvEditor.sections.drag",
+			"cvEditor.customs.add",
+			"cvExport.export",
+			"cvList.import",
+		]) {
+			for (const control of within(host).getAllByRole("button", { name })) {
+				expect((control as HTMLButtonElement).disabled).toBe(false);
+			}
+		}
+	});
+
+	it("blocks editing while replace-import is open", () => {
+		const { host } = renderEditor(sampleCv());
+		const firstName = within(host).getByLabelText(
+			"cvEditor.identity.field.firstName",
+		);
+
+		fireEvent.click(
+			within(host).getByRole("button", { name: "cvList.import" }),
+		);
+
+		expect(
+			screen.getByRole("heading", { name: "cvExport.replaceTitle" }),
+		).toBeTruthy();
+		expect(firstName.closest("[inert]")).toBeTruthy();
+
+		fireEvent.click(screen.getByRole("button", { name: "cvExport.cancel" }));
+
+		expect(
+			screen.queryByRole("heading", { name: "cvExport.replaceTitle" }),
+		).toBeNull();
+		expect(firstName.closest("[inert]")).toBeNull();
 	});
 });
