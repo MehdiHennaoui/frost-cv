@@ -33,13 +33,14 @@ function walk(
 describe("tipTapHtmlToReactPdf", () => {
 	it("maps bold, italic, list, and link into React PDF nodes", () => {
 		const nodes = tipTapHtmlToReactPdf(
-			'<p>Hello <strong>bold</strong> <em>italic</em></p><ul><li>one</li></ul><p><a href="https://example.com">site</a></p><script>alert(1)</script>',
+			'<p>Hello <strong>bold</strong> <em>italic</em></p><ul><li>one</li></ul><ol><li>first</li></ol><p><a href="https://example.com">site</a></p><script>alert(1)</script>',
 		);
 		expect(nodes).not.toBeNull();
 
 		const fonts: string[] = [];
 		const hrefs: string[] = [];
 		let sawBullet = false;
+		let sawOrdered = false;
 		walk(nodes, (el) => {
 			if (el.type === Text && el.props.style?.fontFamily) {
 				fonts.push(el.props.style.fontFamily);
@@ -49,16 +50,17 @@ describe("tipTapHtmlToReactPdf", () => {
 			}
 			const children = (el as ReactElement<{ children?: ReactNode }>).props
 				.children;
-			if (typeof children === "string" && children.includes("•")) {
+			const parts = Array.isArray(children)
+				? children
+				: children == null
+					? []
+					: [children];
+			const flat = parts.map(String).join("");
+			if (flat.includes("•")) {
 				sawBullet = true;
 			}
-			if (
-				Array.isArray(children) &&
-				children.some(
-					(child) => typeof child === "string" && child.includes("•"),
-				)
-			) {
-				sawBullet = true;
+			if (flat.includes("1.")) {
+				sawOrdered = true;
 			}
 		});
 
@@ -66,6 +68,7 @@ describe("tipTapHtmlToReactPdf", () => {
 		expect(fonts).toContain("Helvetica-Oblique");
 		expect(hrefs).toContain("https://example.com");
 		expect(sawBullet).toBe(true);
+		expect(sawOrdered).toBe(true);
 	});
 
 	it("returns null for empty HTML", () => {
