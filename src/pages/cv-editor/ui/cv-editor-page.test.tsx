@@ -116,16 +116,20 @@ describe("CvEditorPage", () => {
 		).toBeNull();
 	});
 
-	it("preview shows persisted identity outside the sidebar", () => {
+	it("preview hosts the React PDF document (stubbed in tests)", () => {
 		renderEditor(sampleCv());
 
 		const preview = screen.getByLabelText("cvEditor.preview.label");
-		expect(within(preview).getByText("Ada Lovelace")).toBeTruthy();
-		expect(within(preview).getByText("Analyst")).toBeTruthy();
-		expect(within(preview).getByText("Built engines")).toBeTruthy();
+		expect(preview.hasAttribute("data-react-pdf-preview")).toBe(true);
+		expect(
+			within(preview).getByText("React PDF document preview"),
+		).toBeTruthy();
+		expect(
+			within(preview).queryByLabelText("cvEditor.identity.field.firstName"),
+		).toBeNull();
 	});
 
-	it("saves a new section order immediately and updates the preview", async () => {
+	it("saves a new section order immediately", async () => {
 		saveCvMock.mockImplementation(async (next: Cv) => ({
 			...next,
 			updatedAt: 2,
@@ -152,29 +156,18 @@ describe("CvEditorPage", () => {
 			"languages",
 			"experiences",
 		]);
-
-		const preview = screen.getByLabelText("cvEditor.preview.label");
-		expect(
-			within(preview)
-				.getAllByRole("heading", { level: 2 })
-				.map((heading) => heading.textContent),
-		).toEqual(["Education", "Languages", "Experiences"]);
 	});
 
-	it("prints the Canadian preview from the export PDF control", () => {
-		const print = vi.spyOn(window, "print").mockImplementation(() => {});
-		document.title = "Frost CV";
+	it("puts back-to-list with the top sidebar actions and drops Print PDF", () => {
 		const { host } = renderEditor(sampleCv());
 
-		fireEvent.click(
-			within(host).getByRole("button", { name: "cvExport.print" }),
-		);
-
-		expect(print).toHaveBeenCalledOnce();
-		expect(document.title).toBe("ada-lovelace-analyst-en");
-		window.dispatchEvent(new Event("afterprint"));
-		expect(document.title).toBe("Frost CV");
-		print.mockRestore();
+		expect(
+			within(host).getByRole("link", { name: "cvEditor.backToList" }),
+		).toBeTruthy();
+		expect(host.querySelector(".border-t")).toBeNull();
+		expect(
+			within(host).queryByRole("button", { name: "cvExport.print" }),
+		).toBeNull();
 	});
 
 	it("exports the current CV as JSON via the download helper", () => {

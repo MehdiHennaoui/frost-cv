@@ -8,7 +8,6 @@ import {
 	FileUpIcon,
 	GripVerticalIcon,
 	PlusIcon,
-	PrinterIcon,
 } from "lucide-react";
 import { type ReactNode, useEffect, useState } from "react";
 
@@ -35,16 +34,16 @@ import {
 	CvSavePendingProvider,
 	useCvSavePending,
 } from "../model/cv-save-pending";
-import { printCv } from "../model/print-cv";
 import { moveSection } from "../model/section-order";
-import { CanadianCvPreview } from "./canadian-cv-preview";
 import { CustomSectionForm } from "./custom-section-form";
 import { EducationSectionForm } from "./education-section-form";
 import { ExperiencesSectionForm } from "./experiences-section-form";
 import { IconTooltipButton } from "./icon-tooltip-button";
+import { IconTooltipLink } from "./icon-tooltip-link";
 import { IdentityHeaderForm } from "./identity-header-form";
 import { LanguagesSectionForm } from "./languages-section-form";
 import { PositionMenu } from "./position-menu";
+import { ReactPdfPreview } from "./react-pdf-preview";
 import { ReorderList } from "./reorder-list";
 import { ReplaceCvImportDialog } from "./replace-cv-import-dialog";
 
@@ -225,14 +224,12 @@ function EditorSidebarContent({
 	cv,
 	onPersisted,
 	onExport,
-	onPrint,
 	onOpenImport,
 	isImportOpen,
 }: {
 	cv: Cv;
 	onPersisted: (cv: Cv) => void;
 	onExport: () => void;
-	onPrint: () => void;
 	onOpenImport: () => void;
 	isImportOpen: boolean;
 }) {
@@ -255,13 +252,9 @@ function EditorSidebarContent({
 					)}
 				</div>
 				<div className="flex shrink-0 items-center gap-1">
-					<IconTooltipButton
-						label={t("cvExport.print")}
-						disabled={isLocked}
-						onClick={onPrint}
-					>
-						<PrinterIcon />
-					</IconTooltipButton>
+					<IconTooltipLink label={t("cvEditor.backToList")} to="/cvs">
+						<ArrowLeftIcon />
+					</IconTooltipLink>
 					<IconTooltipButton
 						label={t("cvExport.export")}
 						disabled={isLocked}
@@ -289,12 +282,6 @@ function EditorSidebarContent({
 				<IdentityHeaderForm cv={cv} onPersisted={onPersisted} />
 				<EditorSidebarSections cv={cv} onPersisted={onPersisted} />
 			</div>
-			<div className="border-sidebar-border border-t p-2">
-				<Link to="/cvs" className={buttonVariants({ variant: "outline" })}>
-					<ArrowLeftIcon data-icon="inline-start" />
-					{t("cvEditor.backToList")}
-				</Link>
-			</div>
 		</div>
 	);
 }
@@ -321,10 +308,6 @@ function CvEditorLoaded({
 		downloadFile(file.filename, file.text);
 	}
 
-	function handlePrint() {
-		printCv(persistedCv);
-	}
-
 	function handleOpenImport() {
 		setIsImportOpen(true);
 	}
@@ -336,13 +319,12 @@ function CvEditorLoaded({
 					cv={persistedCv}
 					onPersisted={setPersistedCv}
 					onExport={handleExport}
-					onPrint={handlePrint}
 					onOpenImport={handleOpenImport}
 					isImportOpen={isImportOpen}
 				/>
 			</SidebarPortal>
-			<main className="flex flex-1 justify-center bg-muted/40 p-4 md:p-8 print:bg-white print:p-0">
-				<CanadianCvPreview cv={persistedCv} />
+			<main className="flex flex-1 justify-center bg-muted/40 p-4 md:p-8">
+				<ReactPdfPreview cv={persistedCv} />
 			</main>
 			<ReplaceCvImportDialog
 				open={isImportOpen}
