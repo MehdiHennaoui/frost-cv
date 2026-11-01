@@ -21,7 +21,8 @@ Product framing from the grill session. Implementation tickets live under [`issu
 | WYSIWYG | **TipTap** core OSS only (no Cloud / Pro). Bold, italic, lists, links. Stored as **HTML**. |
 | Preview / PDF | Canadian layout with Tailwind. PDF = browser **print** of the preview. No hard page limit in v1. |
 | Editor shell | Shared `AppLayout` chrome (locale, page title, sidebar). Edit UI is portaled into the sidebar on the CV editor route; preview is the main pane. Not page-local split columns or mobile Edit/Preview tabs. |
-| JSON | Export and import (create new CV or replace an existing one after confirmation). |
+| JSON | Single-CV export/import (create new CV or replace an existing one after confirmation). Library export/import: one JSON file of chosen CVs (all or selection); import modes add or replace (wipe). See US-17 / US-18 and `.scratch/library-export-import/`. |
+| Import feedback | Import errors and import successes use toasts (including single-CV flows). |
 | Tracker | Local files in this folder — not GitHub Issues. |
 
 ## Stack context
@@ -85,6 +86,14 @@ As a user, I can download the current CV as a JSON file for backup or transfer.
 ### US-14 — Import JSON
 
 As a user, I can import a CV from a JSON file, creating a new CV or replacing an existing one after confirmation.
+
+### US-17 — Library export
+
+As a user, from the Library list I can download one JSON backup of every CV or of a checkbox selection (`frost-cv-library.json`), then have the selection cleared.
+
+### US-18 — Library import
+
+As a user, from the Library list I can import a library JSON file with add (append new CVs) or replace (clear the library, then load) after confirmation; feedback is via toasts and I stay on the list.
 
 ## Backlog (not v1 tickets)
 

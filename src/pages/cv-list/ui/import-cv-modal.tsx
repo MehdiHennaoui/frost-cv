@@ -18,12 +18,7 @@ import {
 	DialogTitle,
 } from "@/shared/ui/dialog";
 import { Spinner } from "@/shared/ui/spinner";
-
-type ImportError =
-	| "cvExport.invalidJson"
-	| "cvExport.unsupportedVersion"
-	| "cvExport.invalidSchema"
-	| "cvExport.importFailed";
+import { toast } from "@/shared/ui/toast";
 
 type ImportCvModalProps = {
 	open: boolean;
@@ -42,17 +37,13 @@ export function ImportCvModal({
 	const inputId = useId();
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [isImporting, setIsImporting] = useState(false);
-	const [error, setError] = useState<ImportError | null>(null);
 
 	function handleOpenChange(nextOpen: boolean) {
 		if (!nextOpen && isImporting) {
 			return;
 		}
-		if (!nextOpen) {
-			setError(null);
-			if (inputRef.current) {
-				inputRef.current.value = "";
-			}
+		if (!nextOpen && inputRef.current) {
+			inputRef.current.value = "";
 		}
 		onOpenChange(nextOpen);
 	}
@@ -68,19 +59,19 @@ export function ImportCvModal({
 		}
 
 		setIsImporting(true);
-		setError(null);
 		try {
 			const text = await file.text();
 			const parsed = parseCvExportDocument(text);
 			if (!parsed.ok) {
-				setError(parsed.error);
+				toast.add({ type: "error", title: t(parsed.error) });
 				return;
 			}
 			const cv = await createCvFromImport(parsed.value);
+			toast.add({ type: "success", title: t("cvExport.importSuccess") });
 			onOpenChange(false);
 			await onCreated(cv.id);
 		} catch {
-			setError("cvExport.importFailed");
+			toast.add({ type: "error", title: t("cvExport.importFailed") });
 		} finally {
 			setIsImporting(false);
 			if (inputRef.current) {
@@ -109,11 +100,6 @@ export function ImportCvModal({
 						void handleFileChange(event);
 					}}
 				/>
-				{error && (
-					<p className="text-destructive text-sm" role="alert">
-						{t(error)}
-					</p>
-				)}
 				<DialogFooter>
 					<Button
 						type="button"

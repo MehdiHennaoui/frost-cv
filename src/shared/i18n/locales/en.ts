@@ -50,6 +50,8 @@ export const en = {
 		unsupportedVersion: "This JSON export version is not supported.",
 		invalidSchema: "That JSON file does not match the CV export schema.",
 		importFailed: "Could not import this CV.",
+		importSuccess: "CV imported.",
+		replaceSuccess: "CV replaced.",
 	},
 	createCv: {
 		title: "Create new CV",

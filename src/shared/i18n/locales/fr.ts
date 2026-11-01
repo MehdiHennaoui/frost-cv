@@ -53,6 +53,8 @@ export const fr = {
 			"Cette version d’export JSON n’est pas prise en charge.",
 		invalidSchema: "Ce fichier JSON ne correspond pas au schéma d’export CV.",
 		importFailed: "Impossible d’importer ce CV.",
+		importSuccess: "CV importé.",
+		replaceSuccess: "CV remplacé.",
 	},
 	createCv: {
 		title: "Créer un CV",

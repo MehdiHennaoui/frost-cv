@@ -4,6 +4,7 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
 import { useAppTranslation } from "@/shared/i18n";
 import { Link } from "@/shared/ui/link";
+import { Toaster } from "@/shared/ui/toast";
 import { AppLayout } from "../app-layout";
 import appCss from "../styles.css?url";
 
@@ -55,18 +56,20 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<HeadContent />
 			</head>
 			<body>
-				<AppLayout>{children}</AppLayout>
-				<TanStackDevtools
-					config={{
-						position: "bottom-right",
-					}}
-					plugins={[
-						{
-							name: "Tanstack Router",
-							render: <TanStackRouterDevtoolsPanel />,
-						},
-					]}
-				/>
+				<Toaster>
+					<AppLayout>{children}</AppLayout>
+					<TanStackDevtools
+						config={{
+							position: "bottom-right",
+						}}
+						plugins={[
+							{
+								name: "Tanstack Router",
+								render: <TanStackRouterDevtoolsPanel />,
+							},
+						]}
+					/>
+				</Toaster>
 				<Scripts />
 			</body>
 		</html>

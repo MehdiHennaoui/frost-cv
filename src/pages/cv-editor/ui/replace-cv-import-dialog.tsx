@@ -18,12 +18,7 @@ import {
 	DialogTitle,
 } from "@/shared/ui/dialog";
 import { Spinner } from "@/shared/ui/spinner";
-
-type ImportError =
-	| "cvExport.invalidJson"
-	| "cvExport.unsupportedVersion"
-	| "cvExport.invalidSchema"
-	| "cvExport.importFailed";
+import { toast } from "@/shared/ui/toast";
 
 type ReplaceCvImportDialogProps = {
 	open: boolean;
@@ -45,7 +40,6 @@ export function ReplaceCvImportDialog({
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [pending, setPending] = useState<CvImportPayload | null>(null);
 	const [isImporting, setIsImporting] = useState(false);
-	const [error, setError] = useState<ImportError | null>(null);
 
 	function resetFileInput() {
 		if (inputRef.current) {
@@ -58,7 +52,6 @@ export function ReplaceCvImportDialog({
 			return;
 		}
 		if (!nextOpen) {
-			setError(null);
 			setPending(null);
 			resetFileInput();
 		}
@@ -75,18 +68,17 @@ export function ReplaceCvImportDialog({
 			return;
 		}
 
-		setError(null);
 		try {
 			const text = await file.text();
 			const parsed = parseCvExportDocument(text);
 			if (!parsed.ok) {
-				setError(parsed.error);
+				toast.add({ type: "error", title: t(parsed.error) });
 				setPending(null);
 				return;
 			}
 			setPending(parsed.value);
 		} catch {
-			setError("cvExport.importFailed");
+			toast.add({ type: "error", title: t("cvExport.importFailed") });
 			setPending(null);
 		} finally {
 			resetFileInput();
@@ -98,13 +90,13 @@ export function ReplaceCvImportDialog({
 			return;
 		}
 		setIsImporting(true);
-		setError(null);
 		try {
 			const cv = await replaceCvFromImport(pending);
+			toast.add({ type: "success", title: t("cvExport.replaceSuccess") });
 			onOpenChange(false);
 			await onReplaced(cv);
 		} catch {
-			setError("cvExport.importFailed");
+			toast.add({ type: "error", title: t("cvExport.importFailed") });
 		} finally {
 			setIsImporting(false);
 		}
@@ -133,11 +125,6 @@ export function ReplaceCvImportDialog({
 				{pending && (
 					<p className="text-muted-foreground text-sm">
 						{t("cvExport.replaceReady", { title: pending.title })}
-					</p>
-				)}
-				{error && (
-					<p className="text-destructive text-sm" role="alert">
-						{t(error)}
 					</p>
 				)}
 				<DialogFooter>

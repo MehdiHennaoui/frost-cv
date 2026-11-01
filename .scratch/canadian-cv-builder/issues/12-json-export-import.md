@@ -18,3 +18,4 @@
 ## Comments
 
 - Reopened after initial resolve: add list-card export so users avoid an extra navigation into the editor. Library export/import (export all, add vs replace) stays a separate follow-up ticket, not this checklist item.
+- Follow-up specified under `.scratch/library-export-import/` (US-17 / US-18); library list sorting deferred to `.scratch/library-sort/`.

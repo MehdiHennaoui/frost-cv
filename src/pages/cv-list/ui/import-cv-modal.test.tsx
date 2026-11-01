@@ -10,10 +10,18 @@ import {
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { CvImportPayload } from "@/entities/cv";
+import { toast } from "@/shared/ui/toast";
 import { ImportCvModal } from "./import-cv-modal";
+
+vi.mock("@/shared/ui/toast", () => ({
+	toast: {
+		add: vi.fn(),
+	},
+}));
 
 afterEach(() => {
 	cleanup();
+	vi.mocked(toast.add).mockClear();
 });
 
 function validExportText() {
@@ -44,7 +52,7 @@ function validExportText() {
 }
 
 describe("ImportCvModal", () => {
-	it("creates a CV from a valid JSON file", async () => {
+	it("creates a CV from a valid JSON file and shows a success toast", async () => {
 		const createCvFromImport = vi.fn(async (payload: CvImportPayload) => ({
 			id: "new-id",
 			title: payload.title,
@@ -77,9 +85,14 @@ describe("ImportCvModal", () => {
 		});
 		expect(createCvFromImport.mock.calls[0]?.[0].title).toBe("Imported CV");
 		expect(onCreated).toHaveBeenCalledWith("new-id");
+		expect(toast.add).toHaveBeenCalledWith({
+			type: "success",
+			title: "cvExport.importSuccess",
+		});
+		expect(screen.queryByRole("alert")).toBeNull();
 	});
 
-	it("shows an error for invalid JSON", async () => {
+	it("shows an error toast for invalid JSON without an inline alert", async () => {
 		const createCvFromImport = vi.fn();
 
 		render(
@@ -100,10 +113,12 @@ describe("ImportCvModal", () => {
 		fireEvent.change(input, { target: { files: [file] } });
 
 		await waitFor(() => {
-			expect(screen.getByRole("alert").textContent).toBe(
-				"cvExport.invalidJson",
-			);
+			expect(toast.add).toHaveBeenCalledWith({
+				type: "error",
+				title: "cvExport.invalidJson",
+			});
 		});
 		expect(createCvFromImport).not.toHaveBeenCalled();
+		expect(screen.queryByRole("alert")).toBeNull();
 	});
 });

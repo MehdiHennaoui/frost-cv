@@ -57,8 +57,8 @@ Creating a new independent CV from an existing Library CV: full content copy, us
 _Avoid_: Clone, copy (when naming the action), fork, template instance
 
 **Library export**:
-Downloading every CV in the library as one JSON backup file.
-_Avoid_: Bulk export, batch export (prefer Library export; UI may say “Export all”)
+Downloading one JSON backup file of the chosen CVs from the library — either every CV or a user selection.
+_Avoid_: Bulk export, batch export (prefer Library export; UI may say “Export all” or “Export selected”)
 
 **Library import**:
 Loading a library JSON file into local storage. Two modes: **add** (create new CVs from the file) and **replace** (clear the library, then load the file). Still all-or-nothing.
