@@ -24,7 +24,7 @@ export const fr = {
 	cvList: {
 		heading: "Vos CV",
 		create: "Créer un CV",
-		import: "Importer JSON",
+		import: "Importer un CV",
 		empty: "Aucun CV pour le moment.",
 		loading: "Chargement des CV…",
 		meta: "Langue du CV : {{locale}} · Mis à jour {{updatedAt}}",
@@ -33,7 +33,7 @@ export const fr = {
 		duplicate: "Dupliquer ce CV",
 		duplicateNamed: "Dupliquer ce CV : {{title}}",
 		export: "Exporter ce CV",
-		exportNamed: "Exporter ce CV en JSON : {{title}}",
+		exportNamed: "Exporter ce CV : {{title}}",
 		selectAll: "Sélectionner tous les CV",
 		clearSelection: "Effacer la sélection",
 		selectNamed: "Sélectionner {{title}}",
@@ -42,16 +42,17 @@ export const fr = {
 		unknownDate: "Date inconnue",
 	},
 	cvExport: {
-		export: "Exporter JSON",
-		importTitle: "Importer un CV depuis JSON",
+		export: "Exporter le CV",
+		importTitle: "Importer un CV",
 		importDescription:
-			"Choisissez un fichier JSON Frost CV. Un nouveau CV sera créé.",
-		replaceTitle: "Remplacer le CV depuis JSON",
+			"Choisissez un fichier Frost CV. Un nouveau CV sera créé.",
+		replace: "Remplacer le CV",
+		replaceTitle: "Remplacer le CV",
 		replaceDescription:
 			"L’import remplacera « {{title}} » par le contenu du fichier. Cette action est irréversible.",
 		replaceReady: "Prêt à remplacer par « {{title}} ».",
 		replaceConfirm: "Remplacer le CV",
-		chooseFile: "Choisir un fichier JSON",
+		chooseFile: "Choisir un fichier",
 		cancel: "Annuler",
 		invalidJson: "Ce fichier n’est pas un JSON valide.",
 		unsupportedVersion:

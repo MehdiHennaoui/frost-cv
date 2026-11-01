@@ -2,6 +2,9 @@ import {
 	CopyIcon,
 	DownloadIcon,
 	FileUpIcon,
+	FolderDownIcon,
+	ListChecksIcon,
+	ListXIcon,
 	PlusIcon,
 	Trash2Icon,
 } from "lucide-react";
@@ -266,6 +269,11 @@ export function CvListPage({
 							variant="outline"
 							onClick={handleToggleSelectAll}
 						>
+							{allSelected ? (
+								<ListXIcon data-icon="inline-start" />
+							) : (
+								<ListChecksIcon data-icon="inline-start" />
+							)}
 							{allSelected ? t("cvList.clearSelection") : t("cvList.selectAll")}
 						</Button>
 					)}
@@ -275,6 +283,7 @@ export function CvListPage({
 						disabled={selectedIds.size === 0}
 						onClick={handleExportSelected}
 					>
+						<DownloadIcon data-icon="inline-start" />
 						{t("cvList.exportSelected")}
 					</Button>
 					<Button
@@ -283,6 +292,7 @@ export function CvListPage({
 						disabled={cvs.length === 0}
 						onClick={handleExportAll}
 					>
+						<FolderDownIcon data-icon="inline-start" />
 						{t("cvList.exportAll")}
 					</Button>
 				</div>

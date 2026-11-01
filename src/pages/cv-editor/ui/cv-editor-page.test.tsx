@@ -196,7 +196,7 @@ describe("CvEditorPage", () => {
 		const { host } = renderEditor(sampleCv());
 
 		fireEvent.click(
-			within(host).getByRole("button", { name: "cvList.import" }),
+			within(host).getByRole("button", { name: "cvExport.replace" }),
 		);
 
 		expect(
@@ -273,7 +273,7 @@ describe("CvEditorPage", () => {
 			"cvEditor.sections.drag",
 			"cvEditor.customs.add",
 			"cvExport.export",
-			"cvList.import",
+			"cvExport.replace",
 		]) {
 			for (const control of within(host).getAllByRole("button", { name })) {
 				expect((control as HTMLButtonElement).disabled).toBe(true);
@@ -290,7 +290,7 @@ describe("CvEditorPage", () => {
 			"cvEditor.sections.drag",
 			"cvEditor.customs.add",
 			"cvExport.export",
-			"cvList.import",
+			"cvExport.replace",
 		]) {
 			for (const control of within(host).getAllByRole("button", { name })) {
 				expect((control as HTMLButtonElement).disabled).toBe(false);
@@ -305,7 +305,7 @@ describe("CvEditorPage", () => {
 		);
 
 		fireEvent.click(
-			within(host).getByRole("button", { name: "cvList.import" }),
+			within(host).getByRole("button", { name: "cvExport.replace" }),
 		);
 
 		expect(

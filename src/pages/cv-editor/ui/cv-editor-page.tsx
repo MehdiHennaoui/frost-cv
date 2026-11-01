@@ -269,7 +269,7 @@ function EditorSidebarContent({
 						<DownloadIcon />
 					</IconTooltipButton>
 					<IconTooltipButton
-						label={t("cvList.import")}
+						label={t("cvExport.replace")}
 						disabled={isLocked}
 						onClick={onOpenImport}
 					>

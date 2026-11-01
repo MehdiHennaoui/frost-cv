@@ -7,8 +7,12 @@ Merge the current feature branch into `main`, push `main`, then delete that feat
 ## Before you start
 
 1. Confirm `git branch --show-current` is **not** `main` or `master`. If it is, stop and say so.
-2. Confirm the working tree is clean (no uncommitted changes you need). If dirty, stop and ask whether to commit, stash, or abort.
-3. Note the feature branch name; you will delete exactly that branch after the merge.
+2. Note the feature branch name; you will delete exactly that branch after the merge.
+3. **Commit any leftover work first.** If `git status` shows unstaged, staged, or untracked files that belong on this branch (product code, tests, i18n, the ticket issue file, this command doc, etc.):
+   - Stage the relevant files and create a normal commit on the feature branch (follow the repo commit rules / Conventional Commits; run hooks — do not `--no-verify`).
+   - Push the feature branch (`git push -u origin HEAD` if needed) so remote matches before merge.
+   - Only ask the user what to do if something looks unsafe to commit (secrets, unrelated junk, or an ambiguous mix of work). Do **not** stop just because the tree is dirty with ordinary leftover feature work.
+4. After that commit (or if the tree was already clean), continue. Do not stash as the default path.
 
 Do not force-push. Do not delete `main` / `master`. Do not use `git branch -D` unless a normal `-d` fails because the branch was already fully merged and you verified that.
 
@@ -41,3 +45,4 @@ After `main` has the merge and is pushed:
 - Merge or delete when the user only asked about the flow
 - Leave the feature branch checked out after a successful land
 - Skip the remote delete when the remote branch still exists
+- Leave ordinary uncommitted feature-branch work uncommitted and ask instead of committing (unless unsafe as above)
