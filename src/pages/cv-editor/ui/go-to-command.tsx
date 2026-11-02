@@ -1,7 +1,17 @@
-import { useEffect, useMemo, useState } from "react";
+import {
+	BriefcaseIcon,
+	GraduationCapIcon,
+	LanguagesIcon,
+	LayoutListIcon,
+	LocateFixedIcon,
+	type LucideIcon,
+	UserIcon,
+} from "lucide-react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 
 import type { CvContent } from "@/entities/cv";
 import { useAppTranslation } from "@/shared/i18n";
+import { cn } from "@/shared/lib/cn";
 import { Button } from "@/shared/ui/button";
 import {
 	Command,
@@ -11,14 +21,32 @@ import {
 	CommandInput,
 	CommandItem,
 	CommandList,
+	CommandSeparator,
 } from "@/shared/ui/command";
-import { buildGoToTargets } from "../model/go-to-targets";
+import { splitEntryScanLabel } from "../model/entry-scan-label";
+import { buildGoToTargets, type GoToTarget } from "../model/go-to-targets";
 import { setLocationHash } from "../model/use-location-hash";
 
 type GoToCommandProps = {
 	content: CvContent;
 	disabled?: boolean;
 };
+
+function sectionIcon(groupId: string): LucideIcon {
+	if (groupId === "identity") {
+		return UserIcon;
+	}
+	if (groupId === "experiences") {
+		return BriefcaseIcon;
+	}
+	if (groupId === "education") {
+		return GraduationCapIcon;
+	}
+	if (groupId === "languages") {
+		return LanguagesIcon;
+	}
+	return LayoutListIcon;
+}
 
 export function GoToCommand({ content, disabled = false }: GoToCommandProps) {
 	const { t } = useAppTranslation();
@@ -38,7 +66,7 @@ export function GoToCommand({ content, disabled = false }: GoToCommandProps) {
 
 	const groups = useMemo(() => {
 		const order: string[] = [];
-		const byGroup = new Map<string, typeof targets>();
+		const byGroup = new Map<string, GoToTarget[]>();
 		for (const target of targets) {
 			const list = byGroup.get(target.groupId);
 			if (list) {
@@ -48,14 +76,10 @@ export function GoToCommand({ content, disabled = false }: GoToCommandProps) {
 			order.push(target.groupId);
 			byGroup.set(target.groupId, [target]);
 		}
-		return order.map((groupId) => {
-			const items = byGroup.get(groupId) ?? [];
-			return {
-				groupId,
-				groupLabel: items[0]?.groupLabel ?? groupId,
-				items,
-			};
-		});
+		return order.map((groupId) => ({
+			groupId,
+			items: byGroup.get(groupId) ?? [],
+		}));
 	}, [targets]);
 
 	useEffect(() => {
@@ -81,6 +105,7 @@ export function GoToCommand({ content, disabled = false }: GoToCommandProps) {
 				disabled={disabled}
 				onClick={() => setOpen(true)}
 			>
+				<LocateFixedIcon data-icon="inline-start" />
 				{t("cvEditor.goTo.open")}
 				<span className="text-muted-foreground text-xs">
 					{t("cvEditor.goTo.shortcut")}
@@ -96,22 +121,55 @@ export function GoToCommand({ content, disabled = false }: GoToCommandProps) {
 					<CommandInput placeholder={t("cvEditor.goTo.placeholder")} />
 					<CommandList>
 						<CommandEmpty>{t("cvEditor.goTo.empty")}</CommandEmpty>
-						{groups.map((group) => (
-							<CommandGroup key={group.groupId} heading={group.groupLabel}>
-								{group.items.map((item) => (
-									<CommandItem
-										key={item.id}
-										value={`${item.groupLabel} ${item.label} ${item.id}`}
-										onSelect={() => {
-											setOpen(false);
-											setLocationHash(item.id);
-										}}
-									>
-										{item.label}
-									</CommandItem>
-								))}
-							</CommandGroup>
-						))}
+						{groups.map((group, groupIndex) => {
+							const Icon = sectionIcon(group.groupId);
+							return (
+								<Fragment key={group.groupId}>
+									{groupIndex > 0 && <CommandSeparator />}
+									<CommandGroup>
+										{group.items.map((item) => {
+											const isEntry = item.kind === "entry";
+											const { order, rest } = isEntry
+												? splitEntryScanLabel(item.label)
+												: { order: "", rest: item.label };
+											return (
+												<CommandItem
+													key={item.id}
+													value={`${item.groupLabel} ${item.label} ${item.id}`}
+													title={item.label}
+													className={cn({
+														"font-medium": !isEntry,
+														"pl-6": isEntry,
+													})}
+													onSelect={() => {
+														setOpen(false);
+														setLocationHash(item.id);
+													}}
+												>
+													{isEntry ? (
+														<span className="flex min-w-0 items-center gap-2 border-border border-l pl-3">
+															{order.length > 0 && (
+																<span className="shrink-0 text-muted-foreground tabular-nums">
+																	{order}
+																</span>
+															)}
+															<span className="min-w-0 truncate">{rest}</span>
+														</span>
+													) : (
+														<>
+															<Icon aria-hidden className="size-4 shrink-0" />
+															<span className="min-w-0 truncate">
+																{item.label}
+															</span>
+														</>
+													)}
+												</CommandItem>
+											);
+										})}
+									</CommandGroup>
+								</Fragment>
+							);
+						})}
 					</CommandList>
 				</Command>
 			</CommandDialog>

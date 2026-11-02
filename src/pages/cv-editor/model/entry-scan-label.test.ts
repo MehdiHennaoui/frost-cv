@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { entryScanLabel } from "./entry-scan-label";
+import { entryScanLabel, splitEntryScanLabel } from "./entry-scan-label";
 
 describe("entryScanLabel", () => {
 	it("joins non-empty parts after a 1-based order", () => {
@@ -20,5 +20,18 @@ describe("entryScanLabel", () => {
 		expect(entryScanLabel(1, ["", "  Acme  "], "Experiences")).toBe("1 · Acme");
 		expect(entryScanLabel(1, ["", ""], "Experiences")).toBe("1 · Experiences");
 		expect(entryScanLabel(4, ["   "], "Languages")).toBe("4 · Languages");
+	});
+});
+
+describe("splitEntryScanLabel", () => {
+	it("splits the leading order from the rest of the scan label", () => {
+		expect(splitEntryScanLabel("1 · Engineer · Acme")).toEqual({
+			order: "1",
+			rest: "Engineer · Acme",
+		});
+		expect(splitEntryScanLabel("Experiences")).toEqual({
+			order: "",
+			rest: "Experiences",
+		});
 	});
 });

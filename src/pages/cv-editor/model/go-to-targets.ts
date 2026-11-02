@@ -13,6 +13,7 @@ import { languagesOf } from "./language-fields";
 export type GoToTarget = {
 	id: string;
 	label: string;
+	kind: "section" | "entry";
 	groupId: string;
 	groupLabel: string;
 };
@@ -38,6 +39,7 @@ export function buildGoToTargets(
 			targets.push({
 				id: "identity",
 				label,
+				kind: "section",
 				groupId: "identity",
 				groupLabel: label,
 			});
@@ -49,6 +51,7 @@ export function buildGoToTargets(
 			targets.push({
 				id: "experiences",
 				label: groupLabel,
+				kind: "section",
 				groupId: "experiences",
 				groupLabel,
 			});
@@ -60,6 +63,7 @@ export function buildGoToTargets(
 						[entry.jobTitle, entry.company],
 						groupLabel,
 					),
+					kind: "entry",
 					groupId: "experiences",
 					groupLabel,
 				});
@@ -72,6 +76,7 @@ export function buildGoToTargets(
 			targets.push({
 				id: "education",
 				label: groupLabel,
+				kind: "section",
 				groupId: "education",
 				groupLabel,
 			});
@@ -83,6 +88,7 @@ export function buildGoToTargets(
 						[entry.degree, entry.school],
 						groupLabel,
 					),
+					kind: "entry",
 					groupId: "education",
 					groupLabel,
 				});
@@ -95,6 +101,7 @@ export function buildGoToTargets(
 			targets.push({
 				id: "languages",
 				label: groupLabel,
+				kind: "section",
 				groupId: "languages",
 				groupLabel,
 			});
@@ -102,6 +109,7 @@ export function buildGoToTargets(
 				targets.push({
 					id: entry.id,
 					label: entryScanLabel(index + 1, [entry.language], groupLabel),
+					kind: "entry",
 					groupId: "languages",
 					groupLabel,
 				});
@@ -116,6 +124,7 @@ export function buildGoToTargets(
 			targets.push({
 				id,
 				label: groupLabel,
+				kind: "section",
 				groupId: id,
 				groupLabel,
 			});
