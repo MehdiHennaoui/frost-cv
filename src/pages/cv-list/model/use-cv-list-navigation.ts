@@ -9,9 +9,13 @@ export function useCvListNavigation() {
 		await navigate({ to: "/cvs/$cvId", params: { cvId } });
 	}
 
-	async function onDeleted() {
+	async function invalidateList() {
 		await router.invalidate();
 	}
 
-	return { onCreated, onDeleted };
+	return {
+		onCreated,
+		onDeleted: invalidateList,
+		onLibraryImported: invalidateList,
+	};
 }

@@ -198,6 +198,45 @@ describe("libraryExportFile", () => {
 			parseLibraryExportDocument(JSON.stringify(toCvExportDocument(SAMPLE_CV))),
 		).toEqual({ ok: false, error: "libraryExport.unsupportedVersion" });
 	});
+
+	it("names the invalid CV by title, or CV #N when title is blank", () => {
+		const valid = toCvExportDocument(SAMPLE_CV);
+		const brokenWithTitle = {
+			schemaVersion: 1,
+			title: "Broken Resume",
+			locale: "en",
+			content: { ...valid.content, sectionOrder: [] },
+		};
+		const brokenBlankTitle = {
+			schemaVersion: 1,
+			title: "   ",
+			locale: "en",
+			content: { ...valid.content, sectionOrder: [] },
+		};
+
+		expect(
+			parseLibraryExportDocument(
+				JSON.stringify({ schemaVersion: 1, cvs: [valid, brokenWithTitle] }),
+			),
+		).toEqual({
+			ok: false,
+			error: "libraryExport.invalidSchema",
+			cvLabel: "Broken Resume",
+		});
+
+		expect(
+			parseLibraryExportDocument(
+				JSON.stringify({
+					schemaVersion: 1,
+					cvs: [valid, brokenBlankTitle],
+				}),
+			),
+		).toEqual({
+			ok: false,
+			error: "libraryExport.invalidSchema",
+			cvLabel: "CV #2",
+		});
+	});
 });
 
 describe("parseCvExportDocument", () => {

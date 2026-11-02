@@ -128,6 +128,36 @@ export async function replaceCvFromImport(
 	return next;
 }
 
+export type LibraryImportMode = "add" | "replace";
+
+export async function importLibraryCvs(
+	payloads: CvImportPayload[],
+	mode: LibraryImportMode,
+): Promise<Cv[]> {
+	if (payloads.length === 0) {
+		throw new Error("libraryImport.empty");
+	}
+
+	const now = Date.now();
+	const created: Cv[] = payloads.map((payload, index) => ({
+		id: crypto.randomUUID(),
+		title: payload.title,
+		locale: payload.locale,
+		content: payload.content,
+		createdAt: now + index,
+		updatedAt: now + index,
+	}));
+
+	await db.transaction("rw", db.cvs, async () => {
+		if (mode === "replace") {
+			await db.cvs.clear();
+		}
+		await db.cvs.bulkPut(created);
+	});
+
+	return created;
+}
+
 /** Test / seed helper — not required for list UI. */
 export async function putCv(cv: Cv): Promise<string> {
 	const id = await db.cvs.put(cv);

@@ -10,6 +10,7 @@ import {
 	deleteCv,
 	duplicateCv,
 	getCv,
+	importLibraryCvs,
 	listCvs,
 	putCv,
 	replaceCvFromImport,
@@ -357,5 +358,75 @@ describe("createCvFromImport / replaceCvFromImport", () => {
 				content: createEmptyCvContent(),
 			}),
 		).rejects.toThrow("cvExport.replaceMissing");
+	});
+});
+
+describe("importLibraryCvs", () => {
+	beforeEach(async () => {
+		await resetCvDatabase();
+	});
+
+	it("adds new CVs without changing existing ones", async () => {
+		const existing = await createCv({ title: "Keep me", locale: "en" });
+		const payloads = [
+			{
+				title: "Imported A",
+				locale: "fr" as const,
+				content: createEmptyCvContent(),
+			},
+			{
+				title: "Imported B",
+				locale: "en" as const,
+				content: createEmptyCvContent(),
+			},
+		];
+
+		const created = await importLibraryCvs(payloads, "add");
+
+		expect(created).toHaveLength(2);
+		expect(created.map((cv) => cv.title)).toEqual(["Imported A", "Imported B"]);
+		expect(created.every((cv) => cv.id !== existing.id)).toBe(true);
+		await expect(getCv(existing.id)).resolves.toEqual(existing);
+		const listed = await listCvs();
+		expect(listed).toHaveLength(3);
+		expect(listed.map((cv) => cv.id).sort()).toEqual(
+			[existing.id, created[0].id, created[1].id].sort(),
+		);
+	});
+
+	it("replace clears the library then loads all entries", async () => {
+		const old = await createCv({ title: "Old", locale: "en" });
+		const payloads = [
+			{
+				title: "New A",
+				locale: "en" as const,
+				content: createEmptyCvContent(),
+			},
+			{
+				title: "New B",
+				locale: "fr" as const,
+				content: createEmptyCvContent(),
+			},
+		];
+
+		const created = await importLibraryCvs(payloads, "replace");
+
+		expect(created).toHaveLength(2);
+		await expect(getCv(old.id)).resolves.toBeUndefined();
+		const listed = await listCvs();
+		expect(listed.map((cv) => cv.title).sort()).toEqual(["New A", "New B"]);
+	});
+
+	it("rejects empty payloads without changing storage", async () => {
+		const existing = await createCv({ title: "Keep", locale: "en" });
+
+		await expect(importLibraryCvs([], "replace")).rejects.toThrow(
+			"libraryImport.empty",
+		);
+		await expect(importLibraryCvs([], "add")).rejects.toThrow(
+			"libraryImport.empty",
+		);
+
+		await expect(listCvs()).resolves.toEqual([existing]);
 	});
 });

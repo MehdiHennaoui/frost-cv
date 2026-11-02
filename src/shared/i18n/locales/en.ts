@@ -40,7 +40,32 @@ export const en = {
 		selectNamed: "Select {{title}}",
 		exportAll: "Export all CVs",
 		exportSelected: "Export selected CVs",
+		importLibrary: "Import library",
 		unknownDate: "Unknown date",
+	},
+	libraryExport: {
+		invalidJson: "That file is not valid JSON.",
+		unsupportedVersion:
+			"This file is not a supported library backup (wrong shape or version).",
+		invalidSchema:
+			"Could not import “{{cvLabel}}” — it does not match the CV schema.",
+		empty: "That library file has no CVs.",
+	},
+	libraryImport: {
+		title: "Import library",
+		description:
+			"Add CVs from a library backup, or replace your entire library with the file.",
+		add: "Add CVs",
+		replace: "Replace library",
+		confirmReplaceTitle: "Replace entire library?",
+		confirmReplaceDescription:
+			"All local CVs will be deleted, then the file will be loaded. This cannot be undone.",
+		confirmReplace: "Replace library",
+		chooseFileDescription: "Choose a Frost CV library backup file.",
+		chooseFile: "Choose file",
+		cancel: "Cancel",
+		importSuccess: "Library imported.",
+		importFailed: "Could not import this library.",
 	},
 	cvExport: {
 		export: "Export CV",

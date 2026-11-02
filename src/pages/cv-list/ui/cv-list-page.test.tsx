@@ -10,6 +10,7 @@ vi.mock("../model/use-cv-list-navigation", () => ({
 	useCvListNavigation: () => ({
 		onCreated: vi.fn(),
 		onDeleted: vi.fn(),
+		onLibraryImported: vi.fn(),
 	}),
 }));
 
@@ -72,6 +73,25 @@ describe("CvListPage", () => {
 			screen.getByRole("heading", { name: "cvExport.importTitle" }),
 		).toBeTruthy();
 		expect(screen.getByText("cvExport.importDescription")).toBeTruthy();
+	});
+
+	it("opens the library import modal from Import library", () => {
+		render(<CvListPage cvs={[]} />);
+
+		fireEvent.click(
+			screen.getByRole("button", { name: "cvList.importLibrary" }),
+		);
+
+		expect(
+			screen.getByRole("heading", { name: "libraryImport.title" }),
+		).toBeTruthy();
+		expect(screen.getByText("libraryImport.description")).toBeTruthy();
+		expect(
+			screen.getByRole("button", { name: "libraryImport.add" }),
+		).toBeTruthy();
+		expect(
+			screen.getByRole("button", { name: "libraryImport.replace" }),
+		).toBeTruthy();
 	});
 
 	it("opens a delete confirmation naming the CV", () => {

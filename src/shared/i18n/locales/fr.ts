@@ -42,7 +42,33 @@ export const fr = {
 		selectNamed: "Sélectionner {{title}}",
 		exportAll: "Exporter tous les CV",
 		exportSelected: "Exporter les CV sélectionnés",
+		importLibrary: "Importer la bibliothèque",
 		unknownDate: "Date inconnue",
+	},
+	libraryExport: {
+		invalidJson: "Ce fichier n’est pas un JSON valide.",
+		unsupportedVersion:
+			"Ce fichier n’est pas une sauvegarde de bibliothèque prise en charge (forme ou version incorrecte).",
+		invalidSchema:
+			"Impossible d’importer « {{cvLabel}} » — il ne correspond pas au schéma CV.",
+		empty: "Ce fichier de bibliothèque ne contient aucun CV.",
+	},
+	libraryImport: {
+		title: "Importer la bibliothèque",
+		description:
+			"Ajoutez des CV depuis une sauvegarde de bibliothèque, ou remplacez toute la bibliothèque par le fichier.",
+		add: "Ajouter des CV",
+		replace: "Remplacer la bibliothèque",
+		confirmReplaceTitle: "Remplacer toute la bibliothèque ?",
+		confirmReplaceDescription:
+			"Tous les CV locaux seront supprimés, puis le fichier sera chargé. Cette action est irréversible.",
+		confirmReplace: "Remplacer la bibliothèque",
+		chooseFileDescription:
+			"Choisissez un fichier de sauvegarde de bibliothèque Frost CV.",
+		chooseFile: "Choisir un fichier",
+		cancel: "Annuler",
+		importSuccess: "Bibliothèque importée.",
+		importFailed: "Impossible d’importer cette bibliothèque.",
 	},
 	cvExport: {
 		export: "Exporter le CV",

@@ -3,6 +3,7 @@ import {
 	DownloadIcon,
 	FileUpIcon,
 	FolderDownIcon,
+	FolderUpIcon,
 	ListChecksIcon,
 	ListXIcon,
 	PlusIcon,
@@ -19,6 +20,8 @@ import {
 	cvExportFile,
 	deleteCv as deleteCvInDb,
 	duplicateCv as duplicateCvInDb,
+	importLibraryCvs as importLibraryCvsInDb,
+	type LibraryImportMode,
 	libraryExportFile,
 } from "@/entities/cv";
 import { useAppTranslation, useUiLocale } from "@/shared/i18n";
@@ -39,11 +42,16 @@ import { useCvListNavigation } from "../model/use-cv-list-navigation";
 import { CreateCvModal } from "./create-cv-modal";
 import { DeleteCvConfirmModal } from "./delete-cv-confirm-modal";
 import { ImportCvModal } from "./import-cv-modal";
+import { ImportLibraryModal } from "./import-library-modal";
 
 type CvListPageProps = {
 	cvs: Cv[];
 	createCv?: (input: CreateCvInput) => Promise<Cv>;
 	createCvFromImport?: (payload: CvImportPayload) => Promise<Cv>;
+	importLibraryCvs?: (
+		payloads: CvImportPayload[],
+		mode: LibraryImportMode,
+	) => Promise<Cv[]>;
 	duplicateCv?: (sourceId: string, input: CreateCvInput) => Promise<Cv>;
 	deleteCv?: (id: string) => Promise<void>;
 	downloadFile?: (filename: string, text: string) => void;
@@ -172,14 +180,16 @@ export function CvListPage({
 	cvs,
 	createCv = createCvInDb,
 	createCvFromImport = createCvFromImportInDb,
+	importLibraryCvs = importLibraryCvsInDb,
 	duplicateCv = duplicateCvInDb,
 	deleteCv = deleteCvInDb,
 	downloadFile = downloadTextFile,
 }: CvListPageProps) {
 	const { t } = useAppTranslation();
-	const { onCreated, onDeleted } = useCvListNavigation();
+	const { onCreated, onDeleted, onLibraryImported } = useCvListNavigation();
 	const [isCreateOpen, setIsCreateOpen] = useState(false);
 	const [isImportOpen, setIsImportOpen] = useState(false);
+	const [isImportLibraryOpen, setIsImportLibraryOpen] = useState(false);
 	const [cvToDelete, setCvToDelete] = useState<Cv | null>(null);
 	const [cvToDuplicate, setCvToDuplicate] = useState<Cv | null>(null);
 	const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set());
@@ -192,6 +202,10 @@ export function CvListPage({
 
 	function handleOpenImport() {
 		setIsImportOpen(true);
+	}
+
+	function handleOpenImportLibrary() {
+		setIsImportLibraryOpen(true);
 	}
 
 	function handleRequestDelete(cv: Cv) {
@@ -297,6 +311,14 @@ export function CvListPage({
 					</Button>
 				</div>
 				<div className="flex flex-wrap gap-2">
+					<Button
+						type="button"
+						variant="outline"
+						onClick={handleOpenImportLibrary}
+					>
+						<FolderUpIcon data-icon="inline-start" />
+						{t("cvList.importLibrary")}
+					</Button>
 					<Button type="button" variant="outline" onClick={handleOpenImport}>
 						<FileUpIcon data-icon="inline-start" />
 						{t("cvList.import")}
@@ -356,6 +378,13 @@ export function CvListPage({
 				onOpenChange={setIsImportOpen}
 				createCvFromImport={createCvFromImport}
 				onCreated={onCreated}
+			/>
+
+			<ImportLibraryModal
+				open={isImportLibraryOpen}
+				onOpenChange={setIsImportLibraryOpen}
+				importLibraryCvs={importLibraryCvs}
+				onImported={onLibraryImported}
 			/>
 
 			{cvToDelete && (

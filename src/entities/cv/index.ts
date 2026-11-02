@@ -4,6 +4,8 @@ export {
 	deleteCv,
 	duplicateCv,
 	getCv,
+	importLibraryCvs,
+	type LibraryImportMode,
 	listCvs,
 	putCv,
 	replaceCvFromImport,

@@ -214,9 +214,26 @@ export type ParseLibraryExportResult =
 			error:
 				| "libraryExport.invalidJson"
 				| "libraryExport.unsupportedVersion"
-				| "libraryExport.invalidSchema"
 				| "libraryExport.empty";
+	  }
+	| {
+			ok: false;
+			error: "libraryExport.invalidSchema";
+			cvLabel: string;
 	  };
+
+function libraryImportCvLabel(entry: unknown, index: number): string {
+	if (entry && typeof entry === "object" && !Array.isArray(entry)) {
+		const title = (entry as { title?: unknown }).title;
+		if (typeof title === "string") {
+			const trimmed = title.trim();
+			if (trimmed.length > 0) {
+				return trimmed;
+			}
+		}
+	}
+	return `CV #${index + 1}`;
+}
 
 export function toLibraryExportDocument(cvs: Cv[]): LibraryExportDocument {
 	return {
@@ -264,10 +281,15 @@ export function parseLibraryExportDocument(
 	}
 
 	const value: CvImportPayload[] = [];
-	for (const entry of cvs) {
+	for (let index = 0; index < cvs.length; index += 1) {
+		const entry = cvs[index];
 		const parsed = cvExportDocumentSchema.safeParse(entry);
 		if (!parsed.success) {
-			return { ok: false, error: "libraryExport.invalidSchema" };
+			return {
+				ok: false,
+				error: "libraryExport.invalidSchema",
+				cvLabel: libraryImportCvLabel(entry, index),
+			};
 		}
 		value.push({
 			title: parsed.data.title,
