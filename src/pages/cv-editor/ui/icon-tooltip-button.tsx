@@ -15,6 +15,7 @@ type IconTooltipButtonProps = ComponentProps<typeof Button> & {
 export function IconTooltipButton({
 	label,
 	children,
+	variant = "outline",
 	...props
 }: IconTooltipButtonProps) {
 	return (
@@ -25,7 +26,7 @@ export function IconTooltipButton({
 						<Button
 							type="button"
 							size="icon-sm"
-							variant="ghost"
+							variant={variant}
 							aria-label={label}
 							{...props}
 						/>

@@ -96,17 +96,19 @@ describe("ExperiencesSectionForm", () => {
 		expect(
 			screen.getByLabelText("cvEditor.experiences.field.jobTitle"),
 		).toBeTruthy();
-		expect(screen.queryByText("1 · Engineer · Acme")).toBeNull();
+		expect(screen.getByText("1 · Engineer · Acme")).toBeTruthy();
 
 		fireEvent.change(
 			screen.getByLabelText("cvEditor.experiences.field.jobTitle"),
 			{ target: { value: "Senior Engineer" } },
 		);
-		fireEvent.click(
-			screen.getByRole("button", { name: "cvEditor.entry.collapse" }),
-		);
 
 		expect(screen.getByText("1 · Senior Engineer · Acme")).toBeTruthy();
+
+		fireEvent.click(screen.getByText("1 · Senior Engineer · Acme"));
+		expect(
+			screen.queryByLabelText("cvEditor.experiences.field.jobTitle"),
+		).toBeNull();
 	});
 
 	it("debounces experience persistence by 1s", async () => {

@@ -1,6 +1,9 @@
 import type { en } from "./en";
 
 export const fr = {
+	appLayout: {
+		toggleSidebar: "Afficher ou masquer la barre latérale",
+	},
 	dialog: {
 		close: "Fermer",
 	},

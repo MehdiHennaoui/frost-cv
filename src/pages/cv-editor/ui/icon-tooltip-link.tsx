@@ -29,7 +29,7 @@ export function IconTooltipLink({
 						<Link
 							aria-label={label}
 							className={cn(
-								buttonVariants({ variant: "ghost", size: "icon-sm" }),
+								buttonVariants({ variant: "outline", size: "icon-sm" }),
 								className,
 							)}
 							{...props}

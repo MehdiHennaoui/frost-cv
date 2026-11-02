@@ -44,7 +44,7 @@ export function PositionMenu({
 									<Button
 										type="button"
 										size="icon-sm"
-										variant="ghost"
+										variant="outline"
 										disabled={disabled || count < 2}
 										aria-label={label}
 									/>

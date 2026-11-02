@@ -1,4 +1,7 @@
 export const en = {
+	appLayout: {
+		toggleSidebar: "Toggle sidebar",
+	},
 	dialog: {
 		close: "Close",
 	},

@@ -17,7 +17,12 @@ import {
 	SidebarProvider,
 	SidebarTrigger,
 } from "@/shared/ui/sidebar";
-import { TooltipProvider } from "@/shared/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/shared/ui/tooltip";
 import { resolveRoutePageTitle } from "./route-page-titles";
 
 type AppLayoutProps = {
@@ -51,9 +56,11 @@ function useRoutePageTitle(): string {
 
 function AppShell({ children }: { children: React.ReactNode }) {
 	useStoredUiLocale();
+	const { t } = useAppTranslation();
 	const { setHost } = useSidebarPortalHost();
 	const isCvEditor = useIsCvEditorRoute();
 	const title = useRoutePageTitle();
+	const toggleSidebarLabel = t("appLayout.toggleSidebar");
 
 	return (
 		<TooltipProvider>
@@ -79,7 +86,14 @@ function AppShell({ children }: { children: React.ReactNode }) {
 				</Sidebar>
 				<SidebarInset>
 					<header className="flex h-14 shrink-0 items-center gap-2 border-b px-4">
-						{isCvEditor && <SidebarTrigger />}
+						{isCvEditor && (
+							<Tooltip>
+								<TooltipTrigger
+									render={<SidebarTrigger aria-label={toggleSidebarLabel} />}
+								/>
+								<TooltipContent>{toggleSidebarLabel}</TooltipContent>
+							</Tooltip>
+						)}
 						<h1 className="min-w-0 flex-1 truncate font-bold text-lg tracking-tight">
 							{title}
 						</h1>

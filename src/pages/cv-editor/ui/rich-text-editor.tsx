@@ -123,7 +123,7 @@ export function RichTextEditor({
 				<Button
 					type="button"
 					size="icon-sm"
-					variant={editor.isActive("bold") ? "secondary" : "ghost"}
+					variant={editor.isActive("bold") ? "secondary" : "outline"}
 					aria-label={t("cvEditor.identity.toolbar.bold")}
 					aria-pressed={editor.isActive("bold")}
 					onClick={() => editor.chain().focus().toggleBold().run()}
@@ -133,7 +133,7 @@ export function RichTextEditor({
 				<Button
 					type="button"
 					size="icon-sm"
-					variant={editor.isActive("italic") ? "secondary" : "ghost"}
+					variant={editor.isActive("italic") ? "secondary" : "outline"}
 					aria-label={t("cvEditor.identity.toolbar.italic")}
 					aria-pressed={editor.isActive("italic")}
 					onClick={() => editor.chain().focus().toggleItalic().run()}
@@ -143,7 +143,7 @@ export function RichTextEditor({
 				<Button
 					type="button"
 					size="icon-sm"
-					variant={editor.isActive("bulletList") ? "secondary" : "ghost"}
+					variant={editor.isActive("bulletList") ? "secondary" : "outline"}
 					aria-label={t("cvEditor.identity.toolbar.bulletList")}
 					aria-pressed={editor.isActive("bulletList")}
 					onClick={() => editor.chain().focus().toggleBulletList().run()}
@@ -153,7 +153,7 @@ export function RichTextEditor({
 				<Button
 					type="button"
 					size="icon-sm"
-					variant={editor.isActive("orderedList") ? "secondary" : "ghost"}
+					variant={editor.isActive("orderedList") ? "secondary" : "outline"}
 					aria-label={t("cvEditor.identity.toolbar.orderedList")}
 					aria-pressed={editor.isActive("orderedList")}
 					onClick={() => editor.chain().focus().toggleOrderedList().run()}
@@ -163,7 +163,7 @@ export function RichTextEditor({
 				<Button
 					type="button"
 					size="icon-sm"
-					variant={editor.isActive("link") ? "secondary" : "ghost"}
+					variant={editor.isActive("link") ? "secondary" : "outline"}
 					aria-label={t("cvEditor.identity.toolbar.link")}
 					aria-pressed={editor.isActive("link")}
 					onClick={setLink}
