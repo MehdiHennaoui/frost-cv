@@ -58,7 +58,7 @@ export function RichTextEditor({
 			attributes: {
 				id: id ?? "",
 				class:
-					"prose prose-sm max-w-none px-2.5 py-2 outline-none focus-visible:outline-none",
+					"max-w-none px-2.5 py-2 outline-none focus-visible:outline-none [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5",
 				...(ariaInvalid ? { "aria-invalid": "true" } : {}),
 			},
 		},
