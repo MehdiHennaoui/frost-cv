@@ -1,8 +1,10 @@
 import {
 	BriefcaseIcon,
+	FoldVerticalIcon,
 	GripVerticalIcon,
 	PlusIcon,
 	Trash2Icon,
+	UnfoldVerticalIcon,
 } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -70,8 +72,9 @@ export function ExperiencesSectionForm({
 		canSave: experiencesHaveValidDateRanges,
 		createEmpty: createEmptyExperience,
 	});
-	const { isExpanded, toggle } = useEntryCollapse();
+	const { isExpanded, toggle, toggleAll } = useEntryCollapse();
 	const sectionName = t("cvEditor.section.experiences");
+	const anyExpanded = entries.some((entry) => isExpanded(entry.id));
 
 	return (
 		<>
@@ -87,6 +90,16 @@ export function ExperiencesSectionForm({
 							{t("cvEditor.section.experiences")}
 						</CardTitle>
 						<div className="flex shrink-0 items-center gap-1">
+							<IconTooltipButton
+								label={
+									anyExpanded
+										? t("cvEditor.entry.collapseAll")
+										: t("cvEditor.entry.expandAll")
+								}
+								onClick={() => toggleAll(entries.map((entry) => entry.id))}
+							>
+								{anyExpanded ? <FoldVerticalIcon /> : <UnfoldVerticalIcon />}
+							</IconTooltipButton>
 							<IconTooltipButton
 								label={t("cvEditor.experiences.add")}
 								onClick={handleAdd}

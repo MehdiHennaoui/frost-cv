@@ -78,8 +78,43 @@ function sampleCv(): Cv {
 
 function expandFirstEntry() {
 	fireEvent.click(
-		screen.getByRole("button", { name: "cvEditor.entry.expand" }),
+		screen.getByRole("button", { name: /^cvEditor\.entry\.expand$/ }),
 	);
+}
+
+function twoExperiencesCv(): Cv {
+	return {
+		id: "cv-1",
+		title: "Frontend CV",
+		locale: "en",
+		content: {
+			...createEmptyCvContent(),
+			experiences: [
+				{
+					id: "exp-1",
+					jobTitle: "Engineer",
+					company: "Acme",
+					location: "Montreal",
+					startMonth: "2020-01",
+					endMonth: "2021-06",
+					isCurrent: false,
+					description: "",
+				},
+				{
+					id: "exp-2",
+					jobTitle: "Designer",
+					company: "Beta",
+					location: "Toronto",
+					startMonth: "2018-01",
+					endMonth: "2019-06",
+					isCurrent: false,
+					description: "",
+				},
+			],
+		},
+		createdAt: 1,
+		updatedAt: 1,
+	};
 }
 
 describe("ExperiencesSectionForm", () => {
@@ -106,6 +141,32 @@ describe("ExperiencesSectionForm", () => {
 		expect(screen.getByText("1 · Senior Engineer · Acme")).toBeTruthy();
 
 		fireEvent.click(screen.getByText("1 · Senior Engineer · Acme"));
+		expect(
+			screen.queryByLabelText("cvEditor.experiences.field.jobTitle"),
+		).toBeNull();
+	});
+
+	it("header control expands all entries, then collapses all when any is open", () => {
+		render(
+			<ExperiencesSectionForm cv={twoExperiencesCv()} onPersisted={vi.fn()} />,
+		);
+
+		expect(
+			screen.queryByLabelText("cvEditor.experiences.field.jobTitle"),
+		).toBeNull();
+
+		fireEvent.click(
+			screen.getByRole("button", { name: "cvEditor.entry.expandAll" }),
+		);
+
+		expect(
+			screen.getAllByLabelText("cvEditor.experiences.field.jobTitle"),
+		).toHaveLength(2);
+
+		fireEvent.click(
+			screen.getByRole("button", { name: "cvEditor.entry.collapseAll" }),
+		);
+
 		expect(
 			screen.queryByLabelText("cvEditor.experiences.field.jobTitle"),
 		).toBeNull();

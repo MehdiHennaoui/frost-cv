@@ -20,5 +20,23 @@ export function useEntryCollapse() {
 		});
 	}
 
-	return { isExpanded, toggle };
+	function toggleAll(ids: readonly string[]) {
+		setExpandedIds((prev) => {
+			const anyExpanded = ids.some((id) => prev.has(id));
+			if (anyExpanded) {
+				const next = new Set(prev);
+				for (const id of ids) {
+					next.delete(id);
+				}
+				return next;
+			}
+			const next = new Set(prev);
+			for (const id of ids) {
+				next.add(id);
+			}
+			return next;
+		});
+	}
+
+	return { isExpanded, toggle, toggleAll };
 }

@@ -51,7 +51,7 @@ function sampleCv(): Cv {
 
 function expandFirstEntry() {
 	fireEvent.click(
-		screen.getByRole("button", { name: "cvEditor.entry.expand" }),
+		screen.getByRole("button", { name: /^cvEditor\.entry\.expand$/ }),
 	);
 }
 

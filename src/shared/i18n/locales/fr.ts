@@ -149,6 +149,8 @@ export const fr = {
 		entry: {
 			expand: "Développer l’entrée",
 			collapse: "Réduire l’entrée",
+			expandAll: "Développer toutes les entrées",
+			collapseAll: "Réduire toutes les entrées",
 		},
 		experiences: {
 			add: "Ajouter une expérience",

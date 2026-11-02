@@ -145,6 +145,8 @@ export const en = {
 		entry: {
 			expand: "Expand entry",
 			collapse: "Collapse entry",
+			expandAll: "Expand all entries",
+			collapseAll: "Collapse all entries",
 		},
 		experiences: {
 			add: "Add experience",

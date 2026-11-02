@@ -31,16 +31,20 @@ test.describe("section reorder", () => {
 			.filter({ hasText: "Languages" })
 			.locator("[data-slot=card-header]")
 			.getByRole("button");
-		await expect(languageActions).toHaveCount(3);
+		await expect(languageActions).toHaveCount(4);
 		await expect(languageActions.nth(0)).toHaveAttribute(
 			"aria-label",
-			"Add language",
+			"Expand all entries",
 		);
 		await expect(languageActions.nth(1)).toHaveAttribute(
 			"aria-label",
-			"Choose a position",
+			"Add language",
 		);
 		await expect(languageActions.nth(2)).toHaveAttribute(
+			"aria-label",
+			"Choose a position",
+		);
+		await expect(languageActions.nth(3)).toHaveAttribute(
 			"aria-label",
 			"Drag to reorder",
 		);

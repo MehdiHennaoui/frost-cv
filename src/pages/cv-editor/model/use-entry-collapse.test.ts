@@ -31,4 +31,29 @@ describe("useEntryCollapse", () => {
 		});
 		expect(result.current.isExpanded("a")).toBe(false);
 	});
+
+	it("toggleAll expands every id when all are collapsed", () => {
+		const { result } = renderHook(() => useEntryCollapse());
+
+		act(() => {
+			result.current.toggleAll(["a", "b"]);
+		});
+
+		expect(result.current.isExpanded("a")).toBe(true);
+		expect(result.current.isExpanded("b")).toBe(true);
+	});
+
+	it("toggleAll collapses every id when any is expanded", () => {
+		const { result } = renderHook(() => useEntryCollapse());
+
+		act(() => {
+			result.current.toggle("a");
+		});
+		act(() => {
+			result.current.toggleAll(["a", "b"]);
+		});
+
+		expect(result.current.isExpanded("a")).toBe(false);
+		expect(result.current.isExpanded("b")).toBe(false);
+	});
 });
