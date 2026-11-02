@@ -2,7 +2,7 @@ import { useEffect, useEffectEvent, useRef } from "react";
 
 import { type Cv, type CvContent, saveCv } from "@/entities/cv";
 import { createAutosave } from "@/shared/lib/autosave";
-import { useCvSavePending } from "./cv-save-pending";
+import { useWithCvSavePending } from "./cv-save-pending";
 
 type UseCvAutosaveOptions<T> = {
 	cv: Cv;
@@ -24,7 +24,7 @@ export function useCvAutosave<T>({
 	canSave = () => true,
 }: UseCvAutosaveOptions<T>) {
 	const latestRef = useRef(initialSaved);
-	const { withCvSavePending } = useCvSavePending();
+	const withCvSavePending = useWithCvSavePending();
 
 	const persist = useEffectEvent(async (value: T) => {
 		await withCvSavePending(async () => {

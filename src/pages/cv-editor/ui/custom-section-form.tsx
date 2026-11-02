@@ -13,7 +13,7 @@ import {
 	removeCustomSection,
 	withCustomSection,
 } from "../model/custom-section-fields";
-import { useCvSavePending } from "../model/cv-save-pending";
+import { useWithCvSavePending } from "../model/cv-save-pending";
 import { flushOnFormLeave } from "../model/use-cv-autosave";
 import { useCvSectionDraft } from "../model/use-cv-section-draft";
 import { CvDeleteConfirmDialog } from "./cv-delete-confirm-dialog";
@@ -34,7 +34,7 @@ export function CustomSectionForm({
 	reorder,
 }: CustomSectionFormProps) {
 	const { t } = useAppTranslation();
-	const { withCvSavePending } = useCvSavePending();
+	const withCvSavePending = useWithCvSavePending();
 	const initial =
 		customSectionOf(cv.content, sectionId) ??
 		({

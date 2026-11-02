@@ -1,5 +1,5 @@
 import { PDFViewer } from "@react-pdf/renderer";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import type { Cv } from "@/entities/cv";
 import { useAppTranslation } from "@/shared/i18n";
@@ -21,6 +21,8 @@ export function ReactPdfPreview({ cv }: ReactPdfPreviewProps) {
 	}, []);
 
 	const showViewer = mounted && !isVitest;
+	// PDFViewer re-layouts and reloads its iframe whenever children is a new element.
+	const document = useMemo(() => <ReactPdfCanadianDocument cv={cv} />, [cv]);
 
 	return (
 		<article
@@ -40,7 +42,7 @@ export function ReactPdfPreview({ cv }: ReactPdfPreviewProps) {
 						minHeight: "11in",
 					}}
 				>
-					<ReactPdfCanadianDocument cv={cv} />
+					{document}
 				</PDFViewer>
 			) : (
 				<div

@@ -32,7 +32,8 @@ import { Spinner } from "@/shared/ui/spinner";
 import { addCustomSection } from "../model/custom-section-fields";
 import {
 	CvSavePendingProvider,
-	useCvSavePending,
+	useIsCvSavePending,
+	useWithCvSavePending,
 } from "../model/cv-save-pending";
 import { moveSection } from "../model/section-order";
 import { CustomSectionForm } from "./custom-section-form";
@@ -155,7 +156,8 @@ function EditorSidebarSections({
 	onPersisted: (cv: Cv) => void;
 }) {
 	const { t } = useAppTranslation();
-	const { isCvSavePending, withCvSavePending } = useCvSavePending();
+	const isCvSavePending = useIsCvSavePending();
+	const withCvSavePending = useWithCvSavePending();
 	const order = sectionOrderOf(cv.content).filter(
 		(key): key is MovableSectionKey => key !== "identity",
 	);
@@ -240,7 +242,7 @@ function EditorSidebarContent({
 	isImportOpen: boolean;
 }) {
 	const { t } = useAppTranslation();
-	const { isCvSavePending } = useCvSavePending();
+	const isCvSavePending = useIsCvSavePending();
 	const isLocked = isCvSavePending || isImportOpen;
 
 	return (
@@ -250,12 +252,14 @@ function EditorSidebarContent({
 					<p className="text-muted-foreground text-xs">
 						{t("cvEditor.meta", { locale: cv.locale })}
 					</p>
-					{isCvSavePending && (
-						<output className="mt-1 flex items-center gap-1.5 text-muted-foreground text-xs">
-							<Spinner aria-hidden className="size-3" role="presentation" />
-							{t("cvEditor.saving")}
-						</output>
-					)}
+					<div className="mt-1 flex h-4 items-center gap-1.5 text-muted-foreground text-xs">
+						{isCvSavePending && (
+							<output className="flex items-center gap-1.5">
+								<Spinner aria-hidden className="size-3" role="presentation" />
+								{t("cvEditor.saving")}
+							</output>
+						)}
+					</div>
 				</div>
 				<div className="flex shrink-0 items-center gap-1">
 					<IconTooltipLink label={t("cvEditor.backToList")} to="/cvs">
@@ -303,7 +307,7 @@ function CvEditorLoaded({
 }) {
 	const [persistedCv, setPersistedCv] = useState(cv);
 	const [isImportOpen, setIsImportOpen] = useState(false);
-	const { withCvSavePending } = useCvSavePending();
+	const withCvSavePending = useWithCvSavePending();
 
 	useEffect(() => {
 		setPersistedCv(cv);
