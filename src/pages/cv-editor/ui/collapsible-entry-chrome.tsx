@@ -10,6 +10,7 @@ import {
 } from "@/shared/ui/collapsible";
 
 type CollapsibleEntryChromeProps = {
+	id: string;
 	expanded: boolean;
 	onToggle: () => void;
 	scanLabel: string;
@@ -20,6 +21,7 @@ type CollapsibleEntryChromeProps = {
 };
 
 export function CollapsibleEntryChrome({
+	id,
 	expanded,
 	onToggle,
 	scanLabel,
@@ -30,6 +32,7 @@ export function CollapsibleEntryChrome({
 }: CollapsibleEntryChromeProps) {
 	return (
 		<Collapsible
+			id={id}
 			open={expanded}
 			onOpenChange={(open) => {
 				if (open !== expanded) {

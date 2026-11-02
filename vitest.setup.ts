@@ -3,6 +3,21 @@ import { beforeEach, vi } from "vitest";
 
 import { useTranslationKeys } from "@/shared/i18n";
 
+class ResizeObserverStub {
+	observe() {}
+	unobserve() {}
+	disconnect() {}
+}
+
+vi.stubGlobal("ResizeObserver", ResizeObserverStub);
+
+if (
+	typeof Element !== "undefined" &&
+	!Element.prototype.scrollIntoView
+) {
+	Element.prototype.scrollIntoView = vi.fn();
+}
+
 vi.mock("@/shared/ui/link", () => ({
 	Link: ({
 		children,

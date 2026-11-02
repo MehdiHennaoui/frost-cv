@@ -47,6 +47,7 @@ vi.mock("./rich-text-editor", () => ({
 
 afterEach(() => {
 	cleanup();
+	window.location.hash = "";
 	vi.useRealTimers();
 	saveCvMock.mockReset();
 });
@@ -170,6 +171,19 @@ describe("ExperiencesSectionForm", () => {
 		expect(
 			screen.queryByLabelText("cvEditor.experiences.field.jobTitle"),
 		).toBeNull();
+	});
+
+	it("expands only the entry matching the location hash", () => {
+		window.location.hash = "exp-2";
+		render(
+			<ExperiencesSectionForm cv={twoExperiencesCv()} onPersisted={vi.fn()} />,
+		);
+
+		expect(
+			screen.getAllByLabelText("cvEditor.experiences.field.jobTitle"),
+		).toHaveLength(1);
+		expect(screen.getByDisplayValue("Designer")).toBeTruthy();
+		expect(screen.queryByDisplayValue("Engineer")).toBeNull();
 	});
 
 	it("debounces experience persistence by 1s", async () => {

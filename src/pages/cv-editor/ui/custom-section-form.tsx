@@ -72,7 +72,7 @@ export function CustomSectionForm({
 					event.preventDefault();
 				}}
 			>
-				<Card size="sm">
+				<Card id={sectionId} size="sm">
 					<CardHeader className="flex flex-row items-center justify-between gap-2">
 						<CardTitle className="flex min-w-0 items-center gap-2">
 							<LayoutListIcon aria-hidden className="size-4 shrink-0" />

@@ -171,6 +171,24 @@ describe("CvEditorPage", () => {
 		).toBeNull();
 	});
 
+	it("opens the Go to command palette from the sidebar header", () => {
+		const { host } = renderEditor(sampleCv());
+
+		fireEvent.click(
+			within(host).getByRole("button", { name: /cvEditor\.goTo\.open/ }),
+		);
+
+		expect(
+			screen.getByPlaceholderText("cvEditor.goTo.placeholder"),
+		).toBeTruthy();
+		expect(
+			screen.getByRole("option", { name: "cvEditor.section.identity" }),
+		).toBeTruthy();
+		expect(
+			screen.getByRole("option", { name: "cvEditor.section.experiences" }),
+		).toBeTruthy();
+	});
+
 	it("exports the current CV as JSON via the download helper", () => {
 		const downloadFile = vi.fn();
 		const { host } = renderEditor(sampleCv(), { downloadFile });

@@ -20,6 +20,17 @@ export function useEntryCollapse() {
 		});
 	}
 
+	function expand(id: string) {
+		setExpandedIds((prev) => {
+			if (prev.has(id)) {
+				return prev;
+			}
+			const next = new Set(prev);
+			next.add(id);
+			return next;
+		});
+	}
+
 	function toggleAll(ids: readonly string[]) {
 		setExpandedIds((prev) => {
 			const anyExpanded = ids.some((id) => prev.has(id));
@@ -38,5 +49,5 @@ export function useEntryCollapse() {
 		});
 	}
 
-	return { isExpanded, toggle, toggleAll };
+	return { isExpanded, toggle, expand, toggleAll };
 }

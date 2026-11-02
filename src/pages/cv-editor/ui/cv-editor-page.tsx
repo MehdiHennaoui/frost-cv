@@ -36,9 +36,14 @@ import {
 	useWithCvSavePending,
 } from "../model/cv-save-pending";
 import { moveSection } from "../model/section-order";
+import {
+	scrollToHashTarget,
+	useLocationHash,
+} from "../model/use-location-hash";
 import { CustomSectionForm } from "./custom-section-form";
 import { EducationSectionForm } from "./education-section-form";
 import { ExperiencesSectionForm } from "./experiences-section-form";
+import { GoToCommand } from "./go-to-command";
 import { IconTooltipButton } from "./icon-tooltip-button";
 import { IconTooltipLink } from "./icon-tooltip-link";
 import { IdentityHeaderForm } from "./identity-header-form";
@@ -244,6 +249,14 @@ function EditorSidebarContent({
 	const { t } = useAppTranslation();
 	const isCvSavePending = useIsCvSavePending();
 	const isLocked = isCvSavePending || isImportOpen;
+	const hash = useLocationHash();
+
+	useEffect(() => {
+		if (!hash) {
+			return;
+		}
+		scrollToHashTarget(hash);
+	}, [hash]);
 
 	return (
 		<div className="flex h-full flex-col gap-3 p-2">
@@ -262,6 +275,7 @@ function EditorSidebarContent({
 					</div>
 				</div>
 				<div className="flex shrink-0 items-center gap-1">
+					<GoToCommand content={cv.content} disabled={isLocked} />
 					<IconTooltipLink label={t("cvEditor.backToList")} to="/cvs">
 						<ArrowLeftIcon />
 					</IconTooltipLink>

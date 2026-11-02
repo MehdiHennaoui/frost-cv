@@ -32,6 +32,20 @@ describe("useEntryCollapse", () => {
 		expect(result.current.isExpanded("a")).toBe(false);
 	});
 
+	it("expand opens one id without collapsing others", () => {
+		const { result } = renderHook(() => useEntryCollapse());
+
+		act(() => {
+			result.current.toggle("a");
+		});
+		act(() => {
+			result.current.expand("b");
+		});
+
+		expect(result.current.isExpanded("a")).toBe(true);
+		expect(result.current.isExpanded("b")).toBe(true);
+	});
+
 	it("toggleAll expands every id when all are collapsed", () => {
 		const { result } = renderHook(() => useEntryCollapse());
 

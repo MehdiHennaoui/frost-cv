@@ -142,6 +142,14 @@ export const en = {
 				link: "Link",
 			},
 		},
+		goTo: {
+			open: "Go to section",
+			shortcut: "⌘K",
+			title: "Go to section or entry",
+			description: "Jump to a section or entry in the editor",
+			placeholder: "Search sections and entries…",
+			empty: "No matches.",
+		},
 		entry: {
 			expand: "Expand entry",
 			collapse: "Collapse entry",

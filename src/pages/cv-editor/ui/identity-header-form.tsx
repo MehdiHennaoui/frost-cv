@@ -56,7 +56,7 @@ export function IdentityHeaderForm({
 				event.preventDefault();
 			}}
 		>
-			<Card size="sm">
+			<Card id="identity" size="sm">
 				<CardHeader>
 					<CardTitle className="flex items-center gap-2">
 						<UserIcon aria-hidden className="size-4 shrink-0" />

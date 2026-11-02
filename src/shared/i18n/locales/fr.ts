@@ -146,6 +146,14 @@ export const fr = {
 				link: "Lien",
 			},
 		},
+		goTo: {
+			open: "Aller à une section",
+			shortcut: "⌘K",
+			title: "Aller à une section ou une entrée",
+			description: "Aller à une section ou une entrée de l’éditeur",
+			placeholder: "Rechercher sections et entrées…",
+			empty: "Aucun résultat.",
+		},
 		entry: {
 			expand: "Développer l’entrée",
 			collapse: "Réduire l’entrée",

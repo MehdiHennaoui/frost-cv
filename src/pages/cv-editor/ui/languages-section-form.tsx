@@ -24,6 +24,8 @@ import {
 import { flushOnFormLeave } from "../model/use-cv-autosave";
 import { useCvEntryList } from "../model/use-cv-entry-list";
 import { useEntryCollapse } from "../model/use-entry-collapse";
+import { useExpandEntryForHash } from "../model/use-expand-entry-for-hash";
+import { useLocationHash } from "../model/use-location-hash";
 import { CollapsibleEntryChrome } from "./collapsible-entry-chrome";
 import { CvDeleteConfirmDialog } from "./cv-delete-confirm-dialog";
 import { IconTooltipButton } from "./icon-tooltip-button";
@@ -64,7 +66,13 @@ export function LanguagesSectionForm({
 		apply: withLanguages,
 		createEmpty: createEmptyLanguage,
 	});
-	const { isExpanded, toggle, toggleAll } = useEntryCollapse();
+	const { isExpanded, toggle, expand, toggleAll } = useEntryCollapse();
+	const hash = useLocationHash();
+	useExpandEntryForHash(
+		hash,
+		(id) => entries.some((entry) => entry.id === id),
+		expand,
+	);
 	const sectionName = t("cvEditor.section.languages");
 	const anyExpanded = entries.some((entry) => isExpanded(entry.id));
 
@@ -75,7 +83,7 @@ export function LanguagesSectionForm({
 					event.preventDefault();
 				}}
 			>
-				<Card size="sm">
+				<Card id="languages" size="sm">
 					<CardHeader className="flex flex-row items-center justify-between gap-2">
 						<CardTitle className="flex min-w-0 items-center gap-2">
 							<LanguagesIcon aria-hidden className="size-4 shrink-0" />
@@ -113,6 +121,7 @@ export function LanguagesSectionForm({
 								onMove={moveEntry}
 								renderItem={(entry, index, drag) => (
 									<CollapsibleEntryChrome
+										id={entry.id}
 										expanded={isExpanded(entry.id)}
 										onToggle={() => toggle(entry.id)}
 										scanLabel={entryScanLabel(
