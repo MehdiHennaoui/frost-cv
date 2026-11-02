@@ -11,6 +11,7 @@ import { useAppTranslation } from "@/shared/i18n";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Field, FieldGroup, FieldLabel } from "@/shared/ui/field";
 import { Input } from "@/shared/ui/input";
+import { entryScanLabel } from "../model/entry-scan-label";
 import {
 	createEmptyLanguage,
 	type LanguageEntry,
@@ -20,6 +21,8 @@ import {
 } from "../model/language-fields";
 import { flushOnFormLeave } from "../model/use-cv-autosave";
 import { useCvEntryList } from "../model/use-cv-entry-list";
+import { useEntryCollapse } from "../model/use-entry-collapse";
+import { CollapsibleEntryChrome } from "./collapsible-entry-chrome";
 import { CvDeleteConfirmDialog } from "./cv-delete-confirm-dialog";
 import { IconTooltipButton } from "./icon-tooltip-button";
 import { PositionMenu } from "./position-menu";
@@ -59,6 +62,8 @@ export function LanguagesSectionForm({
 		apply: withLanguages,
 		createEmpty: createEmptyLanguage,
 	});
+	const { isExpanded, toggle } = useEntryCollapse();
+	const sectionName = t("cvEditor.section.languages");
 
 	return (
 		<>
@@ -94,34 +99,45 @@ export function LanguagesSectionForm({
 								items={entries}
 								onMove={moveEntry}
 								renderItem={(entry, index, drag) => (
-									<div className="space-y-3 rounded-lg border border-border bg-muted p-3">
-										<div className="flex items-center justify-end gap-1">
-											<IconTooltipButton
-												label={t("cvEditor.languages.delete")}
-												onClick={() => requestDelete(entry.id)}
-											>
-												<Trash2Icon />
-											</IconTooltipButton>
-											<PositionMenu
-												label={t("cvEditor.languages.position")}
-												index={index}
-												count={entries.length}
-												onMove={(toIndex) => moveEntry(entry.id, toIndex)}
-												optionLabel={(position) =>
-													t("cvEditor.languages.positionOption", {
-														n: position + 1,
-													})
-												}
-											/>
-											<IconTooltipButton
-												label={t("cvEditor.languages.drag")}
-												{...drag.attributes}
-												{...drag.listeners}
-											>
-												<GripVerticalIcon />
-											</IconTooltipButton>
-										</div>
-
+									<CollapsibleEntryChrome
+										expanded={isExpanded(entry.id)}
+										onToggle={() => toggle(entry.id)}
+										scanLabel={entryScanLabel(
+											index + 1,
+											[entry.language],
+											sectionName,
+										)}
+										expandLabel={t("cvEditor.entry.expand")}
+										collapseLabel={t("cvEditor.entry.collapse")}
+										actions={
+											<>
+												<IconTooltipButton
+													label={t("cvEditor.languages.delete")}
+													onClick={() => requestDelete(entry.id)}
+												>
+													<Trash2Icon />
+												</IconTooltipButton>
+												<PositionMenu
+													label={t("cvEditor.languages.position")}
+													index={index}
+													count={entries.length}
+													onMove={(toIndex) => moveEntry(entry.id, toIndex)}
+													optionLabel={(position) =>
+														t("cvEditor.languages.positionOption", {
+															n: position + 1,
+														})
+													}
+												/>
+												<IconTooltipButton
+													label={t("cvEditor.languages.drag")}
+													{...drag.attributes}
+													{...drag.listeners}
+												>
+													<GripVerticalIcon />
+												</IconTooltipButton>
+											</>
+										}
+									>
 										<FieldGroup className="gap-3">
 											{TEXT_FIELDS.map((name) => (
 												<Field key={name}>
@@ -141,7 +157,7 @@ export function LanguagesSectionForm({
 												</Field>
 											))}
 										</FieldGroup>
-									</div>
+									</CollapsibleEntryChrome>
 								)}
 							/>
 						)}

@@ -8,6 +8,11 @@ export async function expectReactPdfPreview(page: Page) {
 	await expect(preview.locator("iframe")).toBeVisible({ timeout: 15_000 });
 }
 
+/** Expand the last collapsed list entry in the sidebar (or a section scope). */
+export async function expandLastEntry(scope: Page | Locator) {
+	await scope.getByRole("button", { name: "Expand entry" }).last().click();
+}
+
 /** Leave the focused field so form-leave flush runs, then wait for IndexedDB persist. */
 export async function flushEditorPersist(page: Page) {
 	await page.evaluate(() => {

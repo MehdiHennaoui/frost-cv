@@ -1,6 +1,7 @@
 import { expect, type Locator, type Page, test } from "@playwright/test";
 
 import {
+	expandLastEntry,
 	expectReactPdfPreview,
 	flushEditorPersist,
 	reloadEditor,
@@ -19,6 +20,7 @@ test.describe("languages section", () => {
 
 		const sidebar = page.getByTestId("app-sidebar-portal");
 		await sidebar.getByRole("button", { name: "Add language" }).click();
+		await expandLastEntry(sidebar);
 
 		await sidebar.getByLabel("Language").last().fill("French");
 		await sidebar.getByLabel("Level").last().fill("Fluent");
@@ -28,6 +30,7 @@ test.describe("languages section", () => {
 
 		await reloadEditor(page);
 		const after = page.getByTestId("app-sidebar-portal");
+		await expandLastEntry(after);
 		await expect(after.getByLabel("Language").last()).toHaveValue("French");
 		await expect(after.getByLabel("Level").last()).toHaveValue("Fluent");
 	});
@@ -46,9 +49,11 @@ test.describe("languages section", () => {
 		});
 		const level = sidebar.getByRole("textbox", { name: "Level", exact: true });
 		await sidebar.getByRole("button", { name: "Add language" }).click();
+		await expandLastEntry(sidebar);
 		await language.fill("French");
 		await level.fill("Fluent");
 		await sidebar.getByRole("button", { name: "Add language" }).click();
+		await expandLastEntry(sidebar);
 		await language.last().fill("English");
 		await level.last().fill("Native");
 		await flushEditorPersist(page);
@@ -58,16 +63,20 @@ test.describe("languages section", () => {
 			.filter({ hasText: "Languages" })
 			.locator(".rounded-lg.border");
 		const firstEntryButtons = languageEntries.first().getByRole("button");
-		await expect(firstEntryButtons).toHaveCount(3);
+		await expect(firstEntryButtons).toHaveCount(4);
 		await expect(firstEntryButtons.nth(0)).toHaveAttribute(
 			"aria-label",
-			"Delete this language",
+			"Collapse entry",
 		);
 		await expect(firstEntryButtons.nth(1)).toHaveAttribute(
 			"aria-label",
-			"Choose a position",
+			"Delete this language",
 		);
 		await expect(firstEntryButtons.nth(2)).toHaveAttribute(
+			"aria-label",
+			"Choose a position",
+		);
+		await expect(firstEntryButtons.nth(3)).toHaveAttribute(
 			"aria-label",
 			"Drag to reorder",
 		);
@@ -84,6 +93,17 @@ test.describe("languages section", () => {
 
 		await reloadEditor(page);
 		const after = page.getByTestId("app-sidebar-portal");
+		const languagesCard = after
+			.locator("[data-slot=card]")
+			.filter({ hasText: "Languages" });
+		await languagesCard
+			.getByRole("button", { name: "Expand entry" })
+			.nth(0)
+			.click();
+		await languagesCard
+			.getByRole("button", { name: "Expand entry" })
+			.nth(0)
+			.click();
 		const languageAfter = after.getByRole("textbox", {
 			name: "Language",
 			exact: true,

@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 import {
+	expandLastEntry,
 	expectReactPdfPreview,
 	flushEditorPersist,
 	reloadEditor,
@@ -17,6 +18,7 @@ test.describe("experiences section", () => {
 
 		const sidebar = page.getByTestId("app-sidebar-portal");
 		await sidebar.getByRole("button", { name: "Add experience" }).click();
+		await expandLastEntry(sidebar);
 
 		await sidebar.getByLabel("Job title").last().fill("Software Engineer");
 		await sidebar.getByLabel("Company").last().fill("Acme Corp");
@@ -33,6 +35,7 @@ test.describe("experiences section", () => {
 
 		await reloadEditor(page);
 		const after = page.getByTestId("app-sidebar-portal");
+		await expandLastEntry(after);
 		await expect(after.getByLabel("Job title").last()).toHaveValue(
 			"Software Engineer",
 		);
@@ -50,6 +53,7 @@ test.describe("experiences section", () => {
 
 		const sidebar = page.getByTestId("app-sidebar-portal");
 		await sidebar.getByRole("button", { name: "Add experience" }).click();
+		await expandLastEntry(sidebar);
 
 		await sidebar.getByLabel("Start month").fill("2022-06");
 		await sidebar.getByLabel("End month").fill("2021-01");

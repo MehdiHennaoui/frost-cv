@@ -52,6 +52,12 @@ function sampleCv(): Cv {
 	};
 }
 
+function expandFirstEntry() {
+	fireEvent.click(
+		screen.getByRole("button", { name: "cvEditor.entry.expand" }),
+	);
+}
+
 describe("EducationSectionForm", () => {
 	it("debounces education persistence by 1s", async () => {
 		const cv = sampleCv();
@@ -65,6 +71,7 @@ describe("EducationSectionForm", () => {
 		});
 
 		render(<EducationSectionForm cv={cv} onPersisted={onPersisted} />);
+		expandFirstEntry();
 
 		fireEvent.change(screen.getByLabelText("cvEditor.education.field.school"), {
 			target: { value: "Concordia" },
@@ -94,6 +101,7 @@ describe("EducationSectionForm", () => {
 		});
 
 		render(<EducationSectionForm cv={cv} onPersisted={onPersisted} />);
+		expandFirstEntry();
 
 		const school = screen.getByLabelText("cvEditor.education.field.school");
 		fireEvent.change(school, { target: { value: "UdeM" } });
@@ -160,6 +168,7 @@ describe("EducationSectionForm", () => {
 		});
 
 		render(<EducationSectionForm cv={cv} onPersisted={vi.fn()} />);
+		expandFirstEntry();
 
 		fireEvent.change(
 			screen.getByLabelText("cvEditor.education.field.endMonth"),

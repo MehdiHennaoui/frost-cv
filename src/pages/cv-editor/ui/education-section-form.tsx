@@ -20,8 +20,11 @@ import {
 	educationOf,
 	withEducation,
 } from "../model/education-fields";
+import { entryScanLabel } from "../model/entry-scan-label";
 import { flushOnFormLeave } from "../model/use-cv-autosave";
 import { useCvEntryList } from "../model/use-cv-entry-list";
+import { useEntryCollapse } from "../model/use-entry-collapse";
+import { CollapsibleEntryChrome } from "./collapsible-entry-chrome";
 import { CvDeleteConfirmDialog } from "./cv-delete-confirm-dialog";
 import { IconTooltipButton } from "./icon-tooltip-button";
 import { MonthInput } from "./month-input";
@@ -65,6 +68,8 @@ export function EducationSectionForm({
 		canSave: educationHaveValidDateRanges,
 		createEmpty: createEmptyEducation,
 	});
+	const { isExpanded, toggle } = useEntryCollapse();
+	const sectionName = t("cvEditor.section.education");
 
 	return (
 		<>
@@ -101,35 +106,47 @@ export function EducationSectionForm({
 								onMove={moveEntry}
 								renderItem={(entry, index, drag) => {
 									const dateError = educationDateRangeError(entry);
+									const expanded = isExpanded(entry.id);
 									return (
-										<div className="space-y-3 rounded-lg border border-border bg-muted p-3">
-											<div className="flex items-center justify-end gap-1">
-												<IconTooltipButton
-													label={t("cvEditor.education.delete")}
-													onClick={() => requestDelete(entry.id)}
-												>
-													<Trash2Icon />
-												</IconTooltipButton>
-												<PositionMenu
-													label={t("cvEditor.education.position")}
-													index={index}
-													count={entries.length}
-													onMove={(toIndex) => moveEntry(entry.id, toIndex)}
-													optionLabel={(position) =>
-														t("cvEditor.education.positionOption", {
-															n: position + 1,
-														})
-													}
-												/>
-												<IconTooltipButton
-													label={t("cvEditor.education.drag")}
-													{...drag.attributes}
-													{...drag.listeners}
-												>
-													<GripVerticalIcon />
-												</IconTooltipButton>
-											</div>
-
+										<CollapsibleEntryChrome
+											expanded={expanded}
+											onToggle={() => toggle(entry.id)}
+											scanLabel={entryScanLabel(
+												index + 1,
+												[entry.degree, entry.school],
+												sectionName,
+											)}
+											expandLabel={t("cvEditor.entry.expand")}
+											collapseLabel={t("cvEditor.entry.collapse")}
+											actions={
+												<>
+													<IconTooltipButton
+														label={t("cvEditor.education.delete")}
+														onClick={() => requestDelete(entry.id)}
+													>
+														<Trash2Icon />
+													</IconTooltipButton>
+													<PositionMenu
+														label={t("cvEditor.education.position")}
+														index={index}
+														count={entries.length}
+														onMove={(toIndex) => moveEntry(entry.id, toIndex)}
+														optionLabel={(position) =>
+															t("cvEditor.education.positionOption", {
+																n: position + 1,
+															})
+														}
+													/>
+													<IconTooltipButton
+														label={t("cvEditor.education.drag")}
+														{...drag.attributes}
+														{...drag.listeners}
+													>
+														<GripVerticalIcon />
+													</IconTooltipButton>
+												</>
+											}
+										>
 											<FieldGroup className="gap-3">
 												{TEXT_FIELDS.map((name) => (
 													<Field key={name}>
@@ -195,7 +212,7 @@ export function EducationSectionForm({
 													)}
 												</Field>
 											</FieldGroup>
-										</div>
+										</CollapsibleEntryChrome>
 									);
 								}}
 							/>

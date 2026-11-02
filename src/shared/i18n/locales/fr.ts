@@ -117,6 +117,10 @@ export const fr = {
 				link: "Lien",
 			},
 		},
+		entry: {
+			expand: "Développer l’entrée",
+			collapse: "Réduire l’entrée",
+		},
 		experiences: {
 			add: "Ajouter une expérience",
 			empty: "Aucune expérience pour le moment.",

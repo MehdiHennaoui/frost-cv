@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Checkbox } from "@/shared/ui/checkbox";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/shared/ui/field";
 import { Input } from "@/shared/ui/input";
+import { entryScanLabel } from "../model/entry-scan-label";
 import {
 	createEmptyExperience,
 	type ExperienceEntry,
@@ -23,6 +24,8 @@ import {
 } from "../model/experience-fields";
 import { flushOnFormLeave } from "../model/use-cv-autosave";
 import { useCvEntryList } from "../model/use-cv-entry-list";
+import { useEntryCollapse } from "../model/use-entry-collapse";
+import { CollapsibleEntryChrome } from "./collapsible-entry-chrome";
 import { CvDeleteConfirmDialog } from "./cv-delete-confirm-dialog";
 import { IconTooltipButton } from "./icon-tooltip-button";
 import { MonthInput } from "./month-input";
@@ -67,6 +70,8 @@ export function ExperiencesSectionForm({
 		canSave: experiencesHaveValidDateRanges,
 		createEmpty: createEmptyExperience,
 	});
+	const { isExpanded, toggle } = useEntryCollapse();
+	const sectionName = t("cvEditor.section.experiences");
 
 	return (
 		<>
@@ -103,35 +108,47 @@ export function ExperiencesSectionForm({
 								onMove={moveEntry}
 								renderItem={(entry, index, drag) => {
 									const dateError = experienceDateRangeError(entry);
+									const expanded = isExpanded(entry.id);
 									return (
-										<div className="space-y-3 rounded-lg border border-border bg-muted p-3">
-											<div className="flex items-center justify-end gap-1">
-												<IconTooltipButton
-													label={t("cvEditor.experiences.delete")}
-													onClick={() => requestDelete(entry.id)}
-												>
-													<Trash2Icon />
-												</IconTooltipButton>
-												<PositionMenu
-													label={t("cvEditor.experiences.position")}
-													index={index}
-													count={entries.length}
-													onMove={(toIndex) => moveEntry(entry.id, toIndex)}
-													optionLabel={(position) =>
-														t("cvEditor.experiences.positionOption", {
-															n: position + 1,
-														})
-													}
-												/>
-												<IconTooltipButton
-													label={t("cvEditor.experiences.drag")}
-													{...drag.attributes}
-													{...drag.listeners}
-												>
-													<GripVerticalIcon />
-												</IconTooltipButton>
-											</div>
-
+										<CollapsibleEntryChrome
+											expanded={expanded}
+											onToggle={() => toggle(entry.id)}
+											scanLabel={entryScanLabel(
+												index + 1,
+												[entry.jobTitle, entry.company],
+												sectionName,
+											)}
+											expandLabel={t("cvEditor.entry.expand")}
+											collapseLabel={t("cvEditor.entry.collapse")}
+											actions={
+												<>
+													<IconTooltipButton
+														label={t("cvEditor.experiences.delete")}
+														onClick={() => requestDelete(entry.id)}
+													>
+														<Trash2Icon />
+													</IconTooltipButton>
+													<PositionMenu
+														label={t("cvEditor.experiences.position")}
+														index={index}
+														count={entries.length}
+														onMove={(toIndex) => moveEntry(entry.id, toIndex)}
+														optionLabel={(position) =>
+															t("cvEditor.experiences.positionOption", {
+																n: position + 1,
+															})
+														}
+													/>
+													<IconTooltipButton
+														label={t("cvEditor.experiences.drag")}
+														{...drag.attributes}
+														{...drag.listeners}
+													>
+														<GripVerticalIcon />
+													</IconTooltipButton>
+												</>
+											}
+										>
 											<FieldGroup className="gap-3">
 												{TEXT_FIELDS.map((name) => (
 													<Field key={name}>
@@ -238,7 +255,7 @@ export function ExperiencesSectionForm({
 													/>
 												</Field>
 											</FieldGroup>
-										</div>
+										</CollapsibleEntryChrome>
 									);
 								}}
 							/>

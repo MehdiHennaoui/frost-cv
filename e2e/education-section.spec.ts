@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 import {
+	expandLastEntry,
 	expectReactPdfPreview,
 	flushEditorPersist,
 	reloadEditor,
@@ -19,6 +20,7 @@ test.describe("education section", () => {
 
 		const sidebar = page.getByTestId("app-sidebar-portal");
 		await sidebar.getByRole("button", { name: "Add education" }).click();
+		await expandLastEntry(sidebar);
 
 		await sidebar.getByLabel("School name").last().fill("McGill University");
 		await sidebar
@@ -34,6 +36,7 @@ test.describe("education section", () => {
 
 		await reloadEditor(page);
 		const after = page.getByTestId("app-sidebar-portal");
+		await expandLastEntry(after);
 		await expect(after.getByLabel("School name").last()).toHaveValue(
 			"McGill University",
 		);

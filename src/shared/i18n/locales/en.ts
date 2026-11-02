@@ -114,6 +114,10 @@ export const en = {
 				link: "Link",
 			},
 		},
+		entry: {
+			expand: "Expand entry",
+			collapse: "Collapse entry",
+		},
 		experiences: {
 			add: "Add experience",
 			empty: "No experiences yet.",

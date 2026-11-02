@@ -1,6 +1,7 @@
 import { expect, type Locator, type Page, test } from "@playwright/test";
 
 import {
+	expandLastEntry,
 	expectReactPdfPreview,
 	reloadEditor,
 	sidebarSectionTitles,
@@ -77,7 +78,9 @@ test.describe("section reorder", () => {
 
 		const sidebar = page.getByTestId("app-sidebar-portal");
 		await sidebar.getByRole("button", { name: "Add experience" }).click();
+		await expandLastEntry(sidebar);
 		await sidebar.getByRole("button", { name: "Add education" }).click();
+		await expandLastEntry(sidebar);
 
 		const experiences = sectionDrag(sidebar, "Experiences");
 		const education = sectionDrag(sidebar, "Education");
@@ -108,7 +111,9 @@ test.describe("section reorder", () => {
 
 		const sidebar = page.getByTestId("app-sidebar-portal");
 		await sidebar.getByRole("button", { name: "Add experience" }).click();
+		await expandLastEntry(sidebar);
 		await sidebar.getByRole("button", { name: "Add experience" }).click();
+		await expandLastEntry(sidebar);
 		const experiencesCard = sidebar
 			.locator("[data-slot=card]")
 			.filter({ hasText: "Experiences" });

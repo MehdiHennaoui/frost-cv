@@ -76,7 +76,39 @@ function sampleCv(): Cv {
 	};
 }
 
+function expandFirstEntry() {
+	fireEvent.click(
+		screen.getByRole("button", { name: "cvEditor.entry.expand" }),
+	);
+}
+
 describe("ExperiencesSectionForm", () => {
+	it("starts collapsed with a live scan label and expands the form body", () => {
+		render(<ExperiencesSectionForm cv={sampleCv()} onPersisted={vi.fn()} />);
+
+		expect(screen.getByText("1 · Engineer · Acme")).toBeTruthy();
+		expect(
+			screen.queryByLabelText("cvEditor.experiences.field.jobTitle"),
+		).toBeNull();
+
+		expandFirstEntry();
+
+		expect(
+			screen.getByLabelText("cvEditor.experiences.field.jobTitle"),
+		).toBeTruthy();
+		expect(screen.queryByText("1 · Engineer · Acme")).toBeNull();
+
+		fireEvent.change(
+			screen.getByLabelText("cvEditor.experiences.field.jobTitle"),
+			{ target: { value: "Senior Engineer" } },
+		);
+		fireEvent.click(
+			screen.getByRole("button", { name: "cvEditor.entry.collapse" }),
+		);
+
+		expect(screen.getByText("1 · Senior Engineer · Acme")).toBeTruthy();
+	});
+
 	it("debounces experience persistence by 1s", async () => {
 		const cv = sampleCv();
 		const onPersisted = vi.fn();
@@ -89,6 +121,7 @@ describe("ExperiencesSectionForm", () => {
 		});
 
 		render(<ExperiencesSectionForm cv={cv} onPersisted={onPersisted} />);
+		expandFirstEntry();
 
 		fireEvent.change(
 			screen.getByLabelText("cvEditor.experiences.field.jobTitle"),
@@ -121,6 +154,7 @@ describe("ExperiencesSectionForm", () => {
 		});
 
 		render(<ExperiencesSectionForm cv={cv} onPersisted={onPersisted} />);
+		expandFirstEntry();
 
 		const jobTitle = screen.getByLabelText(
 			"cvEditor.experiences.field.jobTitle",
@@ -136,6 +170,7 @@ describe("ExperiencesSectionForm", () => {
 
 	it("hides end month when current position is checked", () => {
 		render(<ExperiencesSectionForm cv={sampleCv()} onPersisted={vi.fn()} />);
+		expandFirstEntry();
 
 		expect(
 			screen.getByLabelText("cvEditor.experiences.field.endMonth"),
@@ -207,6 +242,7 @@ describe("ExperiencesSectionForm", () => {
 		});
 
 		render(<ExperiencesSectionForm cv={cv} onPersisted={vi.fn()} />);
+		expandFirstEntry();
 
 		fireEvent.change(
 			screen.getByLabelText("cvEditor.experiences.field.endMonth"),

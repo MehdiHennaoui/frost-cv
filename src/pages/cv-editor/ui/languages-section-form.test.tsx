@@ -49,6 +49,12 @@ function sampleCv(): Cv {
 	};
 }
 
+function expandFirstEntry() {
+	fireEvent.click(
+		screen.getByRole("button", { name: "cvEditor.entry.expand" }),
+	);
+}
+
 describe("LanguagesSectionForm", () => {
 	it("debounces language persistence by 1s", async () => {
 		const cv = sampleCv();
@@ -62,6 +68,7 @@ describe("LanguagesSectionForm", () => {
 		});
 
 		render(<LanguagesSectionForm cv={cv} onPersisted={onPersisted} />);
+		expandFirstEntry();
 
 		fireEvent.change(
 			screen.getByLabelText("cvEditor.languages.field.language"),
@@ -94,6 +101,7 @@ describe("LanguagesSectionForm", () => {
 		});
 
 		render(<LanguagesSectionForm cv={cv} onPersisted={onPersisted} />);
+		expandFirstEntry();
 
 		const language = screen.getByLabelText("cvEditor.languages.field.language");
 		fireEvent.change(language, { target: { value: "Spanish" } });
