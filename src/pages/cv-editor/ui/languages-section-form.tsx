@@ -94,7 +94,7 @@ export function LanguagesSectionForm({
 								items={entries}
 								onMove={moveEntry}
 								renderItem={(entry, index, drag) => (
-									<div className="space-y-3 rounded-lg border border-border p-3">
+									<div className="space-y-3 rounded-lg border border-border bg-muted p-3">
 										<div className="flex items-center justify-end gap-1">
 											<IconTooltipButton
 												label={t("cvEditor.languages.delete")}

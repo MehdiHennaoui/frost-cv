@@ -102,7 +102,7 @@ export function EducationSectionForm({
 								renderItem={(entry, index, drag) => {
 									const dateError = educationDateRangeError(entry);
 									return (
-										<div className="space-y-3 rounded-lg border border-border p-3">
+										<div className="space-y-3 rounded-lg border border-border bg-muted p-3">
 											<div className="flex items-center justify-end gap-1">
 												<IconTooltipButton
 													label={t("cvEditor.education.delete")}
