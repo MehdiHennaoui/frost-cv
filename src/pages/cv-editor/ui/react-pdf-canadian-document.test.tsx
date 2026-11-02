@@ -186,4 +186,76 @@ describe("ReactPdfCanadianDocument", () => {
 		expect(texts).toContain("Rust");
 		expect(texts.join("")).not.toContain("alert");
 	});
+
+	it("keeps section order after an in-place preview update", () => {
+		const initial = sampleCv();
+		const reordered = sampleCv({
+			content: {
+				...createEmptyCvContent(),
+				sectionOrder: ["identity", "languages", "experiences", "education"],
+			},
+		});
+		const instance = pdf(documentOf(initial));
+		instance.updateContainer(documentOf(reordered));
+
+		const titles = pdfNodeTexts(instance.container.document).filter((text) =>
+			["Experiences", "Education", "Languages"].includes(text),
+		);
+		expect(titles).toEqual(["Languages", "Experiences", "Education"]);
+	});
+
+	it("keeps entry order after an in-place preview update", () => {
+		const experiences = [
+			{
+				id: "exp-1",
+				jobTitle: "First",
+				company: "",
+				location: "",
+				startMonth: "",
+				endMonth: "",
+				isCurrent: false,
+				description: "",
+			},
+			{
+				id: "exp-2",
+				jobTitle: "Second",
+				company: "",
+				location: "",
+				startMonth: "",
+				endMonth: "",
+				isCurrent: false,
+				description: "",
+			},
+		];
+		const content = { ...createEmptyCvContent(), experiences };
+		const swapped = {
+			...content,
+			experiences: [experiences[1], experiences[0]],
+		};
+		const instance = pdf(documentOf(sampleCv({ content })));
+		instance.updateContainer(documentOf(sampleCv({ content: swapped })));
+
+		const titles = pdfNodeTexts(instance.container.document).filter(
+			(text) => text === "First" || text === "Second",
+		);
+		expect(titles).toEqual(["Second", "First"]);
+	});
 });
+
+function pdfNodeTexts(node: {
+	value?: string;
+	children?: Array<{ value?: string; children?: unknown[] }>;
+}): string[] {
+	if (!node) {
+		return [];
+	}
+	if (typeof node.value === "string") {
+		return [node.value];
+	}
+	if (!Array.isArray(node.children)) {
+		return [];
+	}
+	return node.children.flatMap((child) =>
+		pdfNodeTexts(child as { value?: string; children?: never[] }),
+	);
+}

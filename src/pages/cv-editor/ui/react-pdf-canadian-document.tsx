@@ -120,6 +120,13 @@ export function ReactPdfCanadianDocument({
 		.filter(Boolean)
 		.join(" ");
 	const order = sectionOrderOf(cv.content);
+	// react-pdf's update keeps a moved child in its old slot. A new key rebuilds the tree.
+	const documentKey = [
+		order.join(","),
+		experiences.map((entry) => entry.id).join(","),
+		education.map((entry) => entry.id).join(","),
+		languages.map((entry) => entry.id).join(","),
+	].join("|");
 	const contacts = [
 		identity.email,
 		identity.phone,
@@ -131,7 +138,11 @@ export function ReactPdfCanadianDocument({
 	const description = tipTapHtmlToReactPdf(identity.description);
 
 	return (
-		<Document title={fullName || "CV"} author={fullName || undefined}>
+		<Document
+			key={documentKey}
+			title={fullName || "CV"}
+			author={fullName || undefined}
+		>
 			<Page size="LETTER" style={styles.page}>
 				<View style={styles.header}>
 					<Text style={styles.name}>
