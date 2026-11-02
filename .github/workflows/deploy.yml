@@ -3,14 +3,6 @@ name: Deploy to GitHub Pages
 
 on:
   workflow_dispatch:
-    inputs:
-      branch:
-        description: >
-          Branch to deploy. Leave empty to use the branch chosen in
-          "Use workflow from" (that dropdown lists every branch in the repo).
-        required: false
-        type: string
-        default: ""
 
 permissions:
   contents: read
@@ -29,8 +21,6 @@ jobs:
     runs-on: *runner
     steps:
       - uses: actions/checkout@v7
-        with:
-          ref: ${{ inputs.branch || github.ref_name }}
       - uses: ./.github/actions/setup
       - run: pnpm test
 
@@ -38,8 +28,6 @@ jobs:
     runs-on: *runner
     steps:
       - uses: actions/checkout@v7
-        with:
-          ref: ${{ inputs.branch || github.ref_name }}
       - uses: ./.github/actions/setup
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test:e2e
@@ -48,8 +36,6 @@ jobs:
     runs-on: *runner
     steps:
       - uses: actions/checkout@v7
-        with:
-          ref: ${{ inputs.branch || github.ref_name }}
       - uses: ./.github/actions/setup
       - run: pnpm lint
 
@@ -57,8 +43,6 @@ jobs:
     runs-on: *runner
     steps:
       - uses: actions/checkout@v7
-        with:
-          ref: ${{ inputs.branch || github.ref_name }}
       - uses: ./.github/actions/setup
       - run: pnpm lint:fsd
 
@@ -66,13 +50,18 @@ jobs:
     runs-on: *runner
     steps:
       - uses: actions/checkout@v7
-        with:
-          ref: ${{ inputs.branch || github.ref_name }}
       - uses: ./.github/actions/setup
       - run: pnpm build
+        env:
+          BASE_PATH: /frost-cv
+      # SPA shell is _shell.html; Pages needs index.html + 404.html for deep links.
+      - run: |
+          cp dist/client/_shell.html dist/client/index.html
+          cp dist/client/_shell.html dist/client/404.html
+          touch dist/client/.nojekyll
       - uses: actions/upload-pages-artifact@v5
         with:
-          path: dist
+          path: dist/client
 
   deploy:
     needs: [test, e2e, lint, lint-fsd, build]

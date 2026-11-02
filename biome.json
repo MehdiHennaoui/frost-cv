@@ -16,6 +16,7 @@
 			"**/playwright.config.ts",
 			"**/steiger.config.js",
 			"**/e2e/**/*",
+			"!**/dist",
 			"!**/src/app/routeTree.gen.ts",
 			"!**/src/app/styles.css"
 		]
