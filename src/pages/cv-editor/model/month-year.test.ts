@@ -23,13 +23,13 @@ describe("formatMonthYear / monthDateRangeLabel", () => {
 				{ startMonth: "2020-01", endMonth: "2021-06" },
 				{ locale: "en" },
 			),
-		).toBe("Jan 2020 – Jun 2021");
+		).toBe("From Jan 2020 to Jun 2021");
 		expect(
 			monthDateRangeLabel(
 				{ startMonth: "2020-01", endMonth: "", isCurrent: true },
 				{ locale: "fr", presentLabel: "Présent" },
 			),
-		).toBe("janv. 2020 – Présent");
+		).toBe("De janv. 2020 à Présent");
 		expect(
 			monthDateRangeLabel(
 				{ startMonth: "2016-09", endMonth: "" },

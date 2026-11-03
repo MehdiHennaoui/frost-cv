@@ -88,7 +88,7 @@ export function monthDateRangeLabel(
 				? formatMonthYear(entry.endMonth, locale)
 				: "";
 	if (start && end) {
-		return `${start} – ${end}`;
+		return locale === "fr" ? `De ${start} à ${end}` : `From ${start} to ${end}`;
 	}
 	return start || end;
 }

@@ -116,9 +116,8 @@ describe("ReactPdfCanadianDocument", () => {
 		expect(texts).toContain("Ada Lovelace");
 		expect(texts).toContain("Analyst");
 		expect(texts).toContain("engines");
-		expect(texts).toContain("Engineer · Acme");
-		expect(texts).toContain("Jan 2020 – Present");
-		expect(texts).toContain("Montreal");
+		expect(texts).toContain("Engineer, Acme — Montreal");
+		expect(texts).toContain("From Jan 2020 to Present");
 		expect(texts).toContain("Shipped features");
 	});
 
@@ -145,7 +144,7 @@ describe("ReactPdfCanadianDocument", () => {
 		);
 
 		const texts = reactPdfTexts(tree);
-		expect(texts).toContain("janv. 2020 – Présent");
+		expect(texts).toContain("De janv. 2020 à Présent");
 		expect(texts).toContain("Expériences");
 		expect(texts).toContain("Formation");
 		expect(texts).toContain("Langues");

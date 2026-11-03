@@ -88,7 +88,7 @@ describe("educationEqual / dates", () => {
 				},
 				"en",
 			),
-		).toBe("Sep 2016 – May 2020");
+		).toBe("From Sep 2016 to May 2020");
 		expect(
 			educationDateRangeLabel(
 				{
@@ -98,7 +98,7 @@ describe("educationEqual / dates", () => {
 				},
 				"fr",
 			),
-		).toBe("sept. 2016 – mai 2020");
+		).toBe("De sept. 2016 à mai 2020");
 
 		const bad = {
 			...createEmptyEducation(),

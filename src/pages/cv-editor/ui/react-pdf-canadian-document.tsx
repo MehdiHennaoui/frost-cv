@@ -33,47 +33,48 @@ const space = {
 const styles = StyleSheet.create({
 	page: {
 		...text("sm"),
-		paddingTop: 43,
-		paddingBottom: 43,
-		paddingHorizontal: 43,
+		paddingTop: 18,
+		paddingBottom: 18,
+		paddingHorizontal: 18,
 		fontFamily: "Helvetica",
 		color: "#000",
 	},
 	header: {
-		borderBottomWidth: 1,
-		borderBottomColor: "#000",
-		paddingBottom: space[2],
 		marginBottom: space[4],
+	},
+	headerCentered: {
+		alignItems: "center",
+		marginBottom: space[2],
 	},
 	name: {
 		...text("2xl"),
 		fontFamily: "Helvetica-Bold",
 		letterSpacing: -0.3,
 		marginBottom: space[1],
+		textAlign: "center",
 	},
 	jobTitle: {
 		...text("base"),
 		marginBottom: space[1],
+		textAlign: "center",
 	},
 	contacts: {
 		...text("xs"),
 		color: "#404040",
-		marginBottom: space[1],
+		textAlign: "center",
 	},
 	description: {
 		marginTop: 0,
 		marginBottom: 0,
 	},
 	section: {
-		marginBottom: space[6],
+		marginBottom: space[4],
 	},
 	sectionTitle: {
 		...text("xs"),
 		fontFamily: "Helvetica-Bold",
-		textTransform: "uppercase",
-		letterSpacing: 0.8,
 		borderBottomWidth: 1,
-		borderBottomColor: "#d4d4d4",
+		borderBottomColor: "#000",
 		paddingBottom: space[1],
 		marginBottom: space[3],
 	},
@@ -106,6 +107,21 @@ const styles = StyleSheet.create({
 type ReactPdfCanadianDocumentProps = {
 	cv: Cv;
 };
+
+function entryHeading(
+	primary: string,
+	secondary: string,
+	location: string,
+	fallback: string,
+): string {
+	const left = [primary, secondary].filter(Boolean).join(", ");
+	const withLocation = location
+		? left
+			? `${left} — ${location}`
+			: location
+		: left;
+	return withLocation || fallback;
+}
 
 export function ReactPdfCanadianDocument({
 	cv,
@@ -145,18 +161,18 @@ export function ReactPdfCanadianDocument({
 		>
 			<Page size="LETTER" style={styles.page}>
 				<View style={styles.header}>
-					<Text style={styles.name}>
-						{fullName || cvT("cvEditor.preview.unnamed")}
-					</Text>
-					{identity.jobTitle ? (
-						<Text style={styles.jobTitle}>{identity.jobTitle}</Text>
-					) : null}
-					{contacts.length > 0 ? (
-						<Text style={styles.contacts}>{contacts.join("  ·  ")}</Text>
-					) : null}
-					{description ? (
-						<View style={styles.description}>{description}</View>
-					) : null}
+					<View style={styles.headerCentered}>
+						<Text style={styles.name}>
+							{fullName || cvT("cvEditor.preview.unnamed")}
+						</Text>
+						{identity.jobTitle && (
+							<Text style={styles.jobTitle}>{identity.jobTitle}</Text>
+						)}
+						{contacts.length > 0 && (
+							<Text style={styles.contacts}>{contacts.join(" | ")}</Text>
+						)}
+					</View>
+					{description && <View style={styles.description}>{description}</View>}
 				</View>
 
 				{order
@@ -179,21 +195,18 @@ export function ReactPdfCanadianDocument({
 												cv.locale,
 												presentLabel,
 											);
-											const title =
-												[entry.jobTitle, entry.company]
-													.filter(Boolean)
-													.join(" · ") || cvT("cvEditor.experiences.untitled");
+											const title = entryHeading(
+												entry.jobTitle,
+												entry.company,
+												entry.location,
+												cvT("cvEditor.experiences.untitled"),
+											);
 											return (
 												<View key={entry.id} style={styles.entry}>
 													<View style={styles.entryRow}>
 														<Text style={styles.entryTitle}>{title}</Text>
-														{range ? (
-															<Text style={styles.muted}>{range}</Text>
-														) : null}
+														{range && <Text style={styles.muted}>{range}</Text>}
 													</View>
-													{entry.location ? (
-														<Text style={styles.muted}>{entry.location}</Text>
-													) : null}
 													{tipTapHtmlToReactPdf(entry.description)}
 												</View>
 											);
@@ -216,21 +229,18 @@ export function ReactPdfCanadianDocument({
 									) : (
 										education.map((entry) => {
 											const range = educationDateRangeLabel(entry, cv.locale);
-											const title =
-												[entry.degree, entry.school]
-													.filter(Boolean)
-													.join(" · ") || cvT("cvEditor.education.untitled");
+											const title = entryHeading(
+												entry.degree,
+												entry.school,
+												entry.location,
+												cvT("cvEditor.education.untitled"),
+											);
 											return (
 												<View key={entry.id} style={styles.entry}>
 													<View style={styles.entryRow}>
 														<Text style={styles.entryTitle}>{title}</Text>
-														{range ? (
-															<Text style={styles.muted}>{range}</Text>
-														) : null}
+														{range && <Text style={styles.muted}>{range}</Text>}
 													</View>
-													{entry.location ? (
-														<Text style={styles.muted}>{entry.location}</Text>
-													) : null}
 												</View>
 											);
 										})

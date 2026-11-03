@@ -97,7 +97,7 @@ describe("experiencesEqual / dates", () => {
 				"en",
 				"Present",
 			),
-		).toBe("Jan 2020 – Jun 2021");
+		).toBe("From Jan 2020 to Jun 2021");
 
 		expect(
 			experienceDateRangeLabel(
@@ -109,7 +109,7 @@ describe("experiencesEqual / dates", () => {
 				"fr",
 				"Présent",
 			),
-		).toBe("janv. 2020 – Présent");
+		).toBe("De janv. 2020 à Présent");
 	});
 
 	it("rejects end before start unless current", () => {
