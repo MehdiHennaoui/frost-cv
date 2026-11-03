@@ -5,6 +5,9 @@ pre-commit:
       run: bash scripts/refuse-ticket-commit-on-main.sh
     refuse-scratch-wizard:
       run: bash scripts/refuse-scratch-wizard-commit.sh
+    cv-editor-layout:
+      glob: "src/pages/cv-editor/**/*"
+      run: pnpm lint:cv-editor-layout
     biome:
       glob: "*.{js,jsx,ts,tsx,json}"
       run: pnpm exec biome check --write --files-ignore-unknown=true --no-errors-on-unmatched {staged_files}

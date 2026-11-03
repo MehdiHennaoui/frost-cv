@@ -33,7 +33,7 @@ Read during **code review**, not as always-on implementation context. Mechanical
 
 ## Editor sections
 
-- Section editors live under `src/pages/cv-editor/` (forms in `ui/sections/`, field helpers in `model/sections/`).
-- Debounced persist: `src/shared/lib/autosave.ts` (`createAutosave`). TipTap body height: `useResizableContentHeight` in `pages/cv-editor/model/helpers/`.
+- Slice `pages/cv-editor`: FSD segments stay `ui/` and `model/`. Page shell only at `ui/cv-editor-page.tsx`; group other files in concern subfolders under those segments (`ui/<concern>/`, `model/<concern>/`). New concerns are fine; do not name them `shared` or `lib`, and do not add barrels inside segments (public API is `pages/cv-editor/index.ts` only). Enforced by `pnpm lint:cv-editor-layout`.
+- Debounced persist: `src/shared/lib/autosave.ts` (`createAutosave`). TipTap body height: `useResizableContentHeight` under `pages/cv-editor/model/` (concern folder via Glob).
 - Autosave / flush tests: follow [docs/agents/testing-autosave.md](docs/agents/testing-autosave.md).
 - Section e2e tracers: follow [docs/agents/testing-e2e.md](docs/agents/testing-e2e.md) (retire skips in `e2e/sections-pending.spec.ts` when the real spec ships).
