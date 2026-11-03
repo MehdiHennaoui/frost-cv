@@ -14,7 +14,7 @@ type PdfTextStyle = {
 };
 
 const BODY: PdfTextStyle = {
-	...text("sm"),
+	...text("xs"),
 	fontFamily: "Helvetica",
 };
 const LINK: PdfTextStyle = {

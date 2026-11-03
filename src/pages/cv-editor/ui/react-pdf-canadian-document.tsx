@@ -89,14 +89,14 @@ const styles = StyleSheet.create({
 		marginBottom: 2,
 	},
 	entryTitle: {
-		...text("xs"),
+		...text("sm"),
 		fontFamily: "Helvetica-Bold",
 		flexGrow: 1,
 		flexShrink: 1,
 		paddingRight: space[3],
 	},
 	muted: {
-		...text("xs"),
+		...text("sm"),
 		color: "#525252",
 	},
 	empty: {
