@@ -22,4 +22,13 @@ Judgement-call standards for review (not always loaded into implementation): [CO
 
 ## Navigation
 
-- CV editor section pattern (forms, TipTap, autosave): [CODING_STANDARDS.md — Editor sections](CODING_STANDARDS.md#editor-sections) and [docs/agents/testing-autosave.md](docs/agents/testing-autosave.md).
+Where code lives (open these first; do not re-scan the whole tree):
+
+- Domain terms: [GLOSSARY.md](GLOSSARY.md). Decisions: [docs/adr/](docs/adr/).
+- Persist / import / export / CV types: `src/entities/cv` (public API `@/entities/cv`).
+- Library (list, create, delete, library import/export): `src/pages/cv-list`.
+- Editor page shell: `src/pages/cv-editor/ui/cv-editor-page.tsx`.
+  - Section forms: `ui/sections/` · entry chrome / reorder: `ui/entries/` · TipTap / month: `ui/editors/` · PDF preview: `ui/preview/` · go-to / import dialog / icon tooltips: `ui/shell/`.
+  - Field mappers: `model/sections/` · entry list / collapse / hash expand: `model/entries/` · autosave / draft / pending: `model/save/` · go-to targets / hash: `model/nav/` · month-year / TipTap height: `model/helpers/`.
+- Routes: `src/app/routes`. shadcn: `src/shared/ui`. Cross-cutting helpers (`createAutosave`, sidebar portal): `src/shared/lib`. UI locale strings: `src/shared/i18n`.
+- Editor patterns (forms, TipTap, autosave) + review judgement: [CODING_STANDARDS.md — Editor sections](CODING_STANDARDS.md#editor-sections). Autosave tests: [docs/agents/testing-autosave.md](docs/agents/testing-autosave.md). Section e2e: [docs/agents/testing-e2e.md](docs/agents/testing-e2e.md).
