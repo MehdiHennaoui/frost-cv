@@ -13,7 +13,7 @@ import { useLayoutEffect } from "react";
 import { useAppTranslation } from "@/shared/i18n";
 import { cn } from "@/shared/lib/cn";
 import { Button } from "@/shared/ui/button";
-import { useResizableContentHeight } from "../model/use-resizable-content-height";
+import { useResizableContentHeight } from "../../model/helpers/use-resizable-content-height";
 
 type RichTextEditorProps = {
 	id?: string;

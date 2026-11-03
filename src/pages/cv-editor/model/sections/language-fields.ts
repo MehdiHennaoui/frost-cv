@@ -4,7 +4,7 @@ import {
 	entriesOf,
 	readString,
 	withContentEntries,
-} from "./entry-list";
+} from "../entries/entry-list";
 
 export type LanguageEntry = {
 	id: string;

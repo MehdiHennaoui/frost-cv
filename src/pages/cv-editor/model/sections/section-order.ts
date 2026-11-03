@@ -1,5 +1,5 @@
 import { type CvContent, type SectionKey, sectionOrderOf } from "@/entities/cv";
-import { moveEntryTo } from "./entry-list";
+import { moveEntryTo } from "../entries/entry-list";
 
 export function moveSection(
 	content: CvContent,

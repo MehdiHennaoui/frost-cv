@@ -22,7 +22,7 @@ vi.mock("@/entities/cv", async (importOriginal) => {
 	};
 });
 
-vi.mock("./rich-text-editor", () => ({
+vi.mock("../editors/rich-text-editor", () => ({
 	RichTextEditor: ({
 		id,
 		value,

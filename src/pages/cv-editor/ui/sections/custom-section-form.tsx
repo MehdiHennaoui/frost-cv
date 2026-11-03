@@ -6,19 +6,19 @@ import { useAppTranslation } from "@/shared/i18n";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Field, FieldGroup, FieldLabel } from "@/shared/ui/field";
 import { Input } from "@/shared/ui/input";
+import { useWithCvSavePending } from "../../model/save/cv-save-pending";
+import { flushOnFormLeave } from "../../model/save/use-cv-autosave";
+import { useCvSectionDraft } from "../../model/save/use-cv-section-draft";
 import {
 	type CustomSection,
 	customSectionEqual,
 	customSectionOf,
 	removeCustomSection,
 	withCustomSection,
-} from "../model/custom-section-fields";
-import { useWithCvSavePending } from "../model/cv-save-pending";
-import { flushOnFormLeave } from "../model/use-cv-autosave";
-import { useCvSectionDraft } from "../model/use-cv-section-draft";
-import { CvDeleteConfirmDialog } from "./cv-delete-confirm-dialog";
-import { IconTooltipButton } from "./icon-tooltip-button";
-import { RichTextEditor } from "./rich-text-editor";
+} from "../../model/sections/custom-section-fields";
+import { RichTextEditor } from "../editors/rich-text-editor";
+import { CvDeleteConfirmDialog } from "../entries/cv-delete-confirm-dialog";
+import { IconTooltipButton } from "../shell/icon-tooltip-button";
 
 type CustomSectionFormProps = {
 	cv: Cv;

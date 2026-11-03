@@ -2,7 +2,7 @@ import type * as React from "react";
 
 import { cn } from "@/shared/lib/cn";
 import { Input } from "@/shared/ui/input";
-import { currentMonthValue } from "../model/month-year";
+import { currentMonthValue } from "../../model/helpers/month-year";
 
 type MonthInputProps = Omit<React.ComponentProps<"input">, "type" | "max">;
 

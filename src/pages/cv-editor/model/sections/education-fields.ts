@@ -4,12 +4,12 @@ import {
 	entriesOf,
 	readString,
 	withContentEntries,
-} from "./entry-list";
+} from "../entries/entry-list";
 import {
 	entriesHaveValidMonthRanges,
 	monthDateRangeLabel,
 	monthRangeError,
-} from "./month-year";
+} from "../helpers/month-year";
 
 export type EducationEntry = {
 	id: string;

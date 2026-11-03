@@ -6,15 +6,15 @@ import { useAppTranslation } from "@/shared/i18n";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Field, FieldGroup, FieldLabel } from "@/shared/ui/field";
 import { Input } from "@/shared/ui/input";
+import { flushOnFormLeave } from "../../model/save/use-cv-autosave";
+import { useCvSectionDraft } from "../../model/save/use-cv-section-draft";
 import {
 	type IdentityFields,
 	identityFieldsEqual,
 	identityFieldsOf,
 	withIdentity,
-} from "../model/identity-fields";
-import { flushOnFormLeave } from "../model/use-cv-autosave";
-import { useCvSectionDraft } from "../model/use-cv-section-draft";
-import { RichTextEditor } from "./rich-text-editor";
+} from "../../model/sections/identity-fields";
+import { RichTextEditor } from "../editors/rich-text-editor";
 
 type IdentityHeaderFormProps = {
 	cv: Cv;

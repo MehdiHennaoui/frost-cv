@@ -8,17 +8,17 @@ import {
 	sectionOrderOf,
 } from "@/entities/cv";
 import { i18n } from "@/shared/i18n";
-import { customSectionOf } from "../model/custom-section-fields";
+import { customSectionOf } from "../../model/sections/custom-section-fields";
 import {
 	educationDateRangeLabel,
 	educationOf,
-} from "../model/education-fields";
+} from "../../model/sections/education-fields";
 import {
 	experienceDateRangeLabel,
 	experiencesOf,
-} from "../model/experience-fields";
-import { identityFieldsOf } from "../model/identity-fields";
-import { languagesOf } from "../model/language-fields";
+} from "../../model/sections/experience-fields";
+import { identityFieldsOf } from "../../model/sections/identity-fields";
+import { languagesOf } from "../../model/sections/language-fields";
 import { space, text } from "./pdf-text";
 import { tipTapHtmlToReactPdf } from "./tiptap-html-to-react-pdf";
 

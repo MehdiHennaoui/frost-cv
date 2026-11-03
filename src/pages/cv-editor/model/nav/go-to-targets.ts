@@ -4,11 +4,11 @@ import {
 	isCustomSectionKey,
 	sectionOrderOf,
 } from "@/entities/cv";
-import { customSectionOf } from "./custom-section-fields";
-import { educationOf } from "./education-fields";
-import { entryScanLabel } from "./entry-scan-label";
-import { experiencesOf } from "./experience-fields";
-import { languagesOf } from "./language-fields";
+import { entryScanLabel } from "../entries/entry-scan-label";
+import { customSectionOf } from "../sections/custom-section-fields";
+import { educationOf } from "../sections/education-fields";
+import { experiencesOf } from "../sections/experience-fields";
+import { languagesOf } from "../sections/language-fields";
 
 export type GoToTarget = {
 	id: string;

@@ -13,6 +13,12 @@ import { useAppTranslation } from "@/shared/i18n";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/shared/ui/field";
 import { Input } from "@/shared/ui/input";
+import { entryScanLabel } from "../../model/entries/entry-scan-label";
+import { useCvEntryList } from "../../model/entries/use-cv-entry-list";
+import { useEntryCollapse } from "../../model/entries/use-entry-collapse";
+import { useExpandEntryForHash } from "../../model/entries/use-expand-entry-for-hash";
+import { useLocationHash } from "../../model/nav/use-location-hash";
+import { flushOnFormLeave } from "../../model/save/use-cv-autosave";
 import {
 	createEmptyEducation,
 	type EducationEntry,
@@ -21,19 +27,13 @@ import {
 	educationHaveValidDateRanges,
 	educationOf,
 	withEducation,
-} from "../model/education-fields";
-import { entryScanLabel } from "../model/entry-scan-label";
-import { flushOnFormLeave } from "../model/use-cv-autosave";
-import { useCvEntryList } from "../model/use-cv-entry-list";
-import { useEntryCollapse } from "../model/use-entry-collapse";
-import { useExpandEntryForHash } from "../model/use-expand-entry-for-hash";
-import { useLocationHash } from "../model/use-location-hash";
-import { CollapsibleEntryChrome } from "./collapsible-entry-chrome";
-import { CvDeleteConfirmDialog } from "./cv-delete-confirm-dialog";
-import { IconTooltipButton } from "./icon-tooltip-button";
-import { MonthInput } from "./month-input";
-import { PositionMenu } from "./position-menu";
-import { ReorderList } from "./reorder-list";
+} from "../../model/sections/education-fields";
+import { MonthInput } from "../editors/month-input";
+import { CollapsibleEntryChrome } from "../entries/collapsible-entry-chrome";
+import { CvDeleteConfirmDialog } from "../entries/cv-delete-confirm-dialog";
+import { PositionMenu } from "../entries/position-menu";
+import { ReorderList } from "../entries/reorder-list";
+import { IconTooltipButton } from "../shell/icon-tooltip-button";
 
 type EducationSectionFormProps = {
 	cv: Cv;

@@ -14,7 +14,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Checkbox } from "@/shared/ui/checkbox";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/shared/ui/field";
 import { Input } from "@/shared/ui/input";
-import { entryScanLabel } from "../model/entry-scan-label";
+import { entryScanLabel } from "../../model/entries/entry-scan-label";
+import { useCvEntryList } from "../../model/entries/use-cv-entry-list";
+import { useEntryCollapse } from "../../model/entries/use-entry-collapse";
+import { useExpandEntryForHash } from "../../model/entries/use-expand-entry-for-hash";
+import { useLocationHash } from "../../model/nav/use-location-hash";
+import { flushOnFormLeave } from "../../model/save/use-cv-autosave";
 import {
 	createEmptyExperience,
 	type ExperienceEntry,
@@ -23,19 +28,14 @@ import {
 	experiencesHaveValidDateRanges,
 	experiencesOf,
 	withExperiences,
-} from "../model/experience-fields";
-import { flushOnFormLeave } from "../model/use-cv-autosave";
-import { useCvEntryList } from "../model/use-cv-entry-list";
-import { useEntryCollapse } from "../model/use-entry-collapse";
-import { useExpandEntryForHash } from "../model/use-expand-entry-for-hash";
-import { useLocationHash } from "../model/use-location-hash";
-import { CollapsibleEntryChrome } from "./collapsible-entry-chrome";
-import { CvDeleteConfirmDialog } from "./cv-delete-confirm-dialog";
-import { IconTooltipButton } from "./icon-tooltip-button";
-import { MonthInput } from "./month-input";
-import { PositionMenu } from "./position-menu";
-import { ReorderList } from "./reorder-list";
-import { RichTextEditor } from "./rich-text-editor";
+} from "../../model/sections/experience-fields";
+import { MonthInput } from "../editors/month-input";
+import { RichTextEditor } from "../editors/rich-text-editor";
+import { CollapsibleEntryChrome } from "../entries/collapsible-entry-chrome";
+import { CvDeleteConfirmDialog } from "../entries/cv-delete-confirm-dialog";
+import { PositionMenu } from "../entries/position-menu";
+import { ReorderList } from "../entries/reorder-list";
+import { IconTooltipButton } from "../shell/icon-tooltip-button";
 
 type ExperiencesSectionFormProps = {
 	cv: Cv;

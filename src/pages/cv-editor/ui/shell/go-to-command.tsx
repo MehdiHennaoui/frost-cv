@@ -23,9 +23,12 @@ import {
 	CommandList,
 	CommandSeparator,
 } from "@/shared/ui/command";
-import { splitEntryScanLabel } from "../model/entry-scan-label";
-import { buildGoToTargets, type GoToTarget } from "../model/go-to-targets";
-import { setLocationHash } from "../model/use-location-hash";
+import { splitEntryScanLabel } from "../../model/entries/entry-scan-label";
+import {
+	buildGoToTargets,
+	type GoToTarget,
+} from "../../model/nav/go-to-targets";
+import { setLocationHash } from "../../model/nav/use-location-hash";
 
 type GoToCommandProps = {
 	content: CvContent;

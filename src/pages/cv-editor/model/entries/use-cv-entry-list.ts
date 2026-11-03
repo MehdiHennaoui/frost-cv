@@ -1,8 +1,8 @@
 import { useRef, useState } from "react";
 
 import type { Cv, CvContent } from "@/entities/cv";
+import { useCvAutosave } from "../save/use-cv-autosave";
 import { moveEntryTo, removeEntry } from "./entry-list";
-import { useCvAutosave } from "./use-cv-autosave";
 
 type UseCvEntryListOptions<T extends { id: string }> = {
 	cv: Cv;

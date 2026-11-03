@@ -8,7 +8,7 @@ import {
 	readString,
 	removeEntry,
 	withContentEntries,
-} from "./entry-list";
+} from "../entries/entry-list";
 
 export type CustomSection = {
 	id: string;
