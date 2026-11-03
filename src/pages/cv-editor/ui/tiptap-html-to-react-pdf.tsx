@@ -1,8 +1,8 @@
-import { Link, Text } from "@react-pdf/renderer";
+import { Link, Text, View } from "@react-pdf/renderer";
 import type { ReactNode } from "react";
 
 import { sanitizeCvHtml } from "@/shared/lib/sanitize-html";
-import { text } from "./pdf-text";
+import { space, text } from "./pdf-text";
 
 type PdfTextStyle = {
 	fontFamily?: string;
@@ -107,15 +107,11 @@ function mapNode(node: ChildNode, style: PdfTextStyle, key: number): ReactNode {
 		}
 		case "P": {
 			const children = mapChildren(el, style);
-			// TipTap blank lines are <p></p> / <p><br></p>; empty Text collapses in react-pdf.
+			// TipTap blank lines are <p></p> / <p><br></p>.
 			const isBlank =
 				(el.textContent ?? "").replace(/\u00a0/g, "").trim() === "";
 			if (children == null || isBlank) {
-				return (
-					<Text key={key} style={{ ...style, marginBottom: 2 }} {...flowText}>
-						{"\u00A0"}
-					</Text>
-				);
+				return <View key={key} style={{ height: space[1] }} />;
 			}
 			return (
 				<Text key={key} style={{ ...style, marginBottom: 2 }} {...flowText}>

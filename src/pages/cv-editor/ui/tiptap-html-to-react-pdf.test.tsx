@@ -1,9 +1,10 @@
 /** @vitest-environment jsdom */
 
-import { Link, Text } from "@react-pdf/renderer";
+import { Link, Text, View } from "@react-pdf/renderer";
 import { isValidElement, type ReactElement, type ReactNode } from "react";
 import { describe, expect, it } from "vitest";
 
+import { space } from "./pdf-text";
 import { tipTapHtmlToReactPdf } from "./tiptap-html-to-react-pdf";
 
 function walk(
@@ -75,16 +76,17 @@ describe("tipTapHtmlToReactPdf", () => {
 		expect(tipTapHtmlToReactPdf("")).toBeNull();
 	});
 
-	it("keeps TipTap blank paragraphs as visible line breaks", () => {
+	it("maps TipTap blank paragraphs to space-1 height Views", () => {
 		const nodes = tipTapHtmlToReactPdf(
 			"<p>first</p><p></p><p><br></p><p>second</p>",
 		);
 		expect(Array.isArray(nodes)).toBe(true);
-		const paragraphs = (
-			nodes as ReactElement<{ children?: ReactNode }>[]
-		).filter((el) => el.type === Text);
-		expect(paragraphs).toHaveLength(4);
-		expect(paragraphs[1]?.props.children).toBe("\u00A0");
-		expect(paragraphs[2]?.props.children).toBe("\u00A0");
+		const list = nodes as ReactElement<{
+			style?: { height?: number };
+			children?: ReactNode;
+		}>[];
+		expect(list.map((el) => el.type)).toEqual([Text, View, View, Text]);
+		expect(list[1]?.props.style).toEqual({ height: space[1] });
+		expect(list[2]?.props.style).toEqual({ height: space[1] });
 	});
 });

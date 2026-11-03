@@ -50,7 +50,7 @@ export const fr = {
 		unsupportedVersion:
 			"Ce fichier n’est pas une sauvegarde de bibliothèque prise en charge (forme ou version incorrecte).",
 		invalidSchema:
-			"Impossible d’importer « {{cvLabel}} » — il ne correspond pas au schéma CV.",
+			"Impossible d’importer « {{cvLabel}} ». Il ne correspond pas au schéma CV.",
 		empty: "Ce fichier de bibliothèque ne contient aucun CV.",
 	},
 	libraryImport: {

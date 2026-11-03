@@ -116,7 +116,7 @@ describe("ReactPdfCanadianDocument", () => {
 		expect(texts).toContain("Ada Lovelace");
 		expect(texts).toContain("Analyst");
 		expect(texts).toContain("engines");
-		expect(texts).toContain("Engineer, Acme — Montreal");
+		expect(texts).toContain("Engineer, Acme, Montreal");
 		expect(texts).toContain("From Jan 2020 to Present");
 		expect(texts).toContain("Shipped features");
 	});

@@ -11,6 +11,7 @@ These rules apply on every task, for any agent. Source of truth: `.agents/rules/
 - [FSD CLI scaffolding](.agents/rules/fsd-cli.md)
 - [Git branch naming](.agents/rules/git-branch-naming.md)
 - [Lint after edits](.agents/rules/lint-after-edits.md)
+- [No em dash in product UI](.agents/rules/no-em-dash.md)
 - [No legacy CV before prod](.agents/rules/no-legacy-cv-pre-prod.md)
 - [React conditional render](.agents/rules/react-conditional-render.md)
 - [shadcn UI only](.agents/rules/shadcn-ui-only.md)

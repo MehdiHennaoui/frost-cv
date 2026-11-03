@@ -48,7 +48,7 @@ export const en = {
 		unsupportedVersion:
 			"This file is not a supported library backup (wrong shape or version).",
 		invalidSchema:
-			"Could not import “{{cvLabel}}” — it does not match the CV schema.",
+			"Could not import “{{cvLabel}}”. It does not match the CV schema.",
 		empty: "That library file has no CVs.",
 	},
 	libraryImport: {

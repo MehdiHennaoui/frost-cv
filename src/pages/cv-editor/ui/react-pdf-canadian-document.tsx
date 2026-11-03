@@ -19,17 +19,8 @@ import {
 } from "../model/experience-fields";
 import { identityFieldsOf } from "../model/identity-fields";
 import { languagesOf } from "../model/language-fields";
-import { text } from "./pdf-text";
+import { space, text } from "./pdf-text";
 import { tipTapHtmlToReactPdf } from "./tiptap-html-to-react-pdf";
-
-const space = {
-	1: 4,
-	2: 8,
-	3: 12,
-	4: 16,
-	5: 20,
-	6: 24,
-} as const;
 
 const styles = StyleSheet.create({
 	page: {
@@ -88,16 +79,20 @@ const styles = StyleSheet.create({
 		alignItems: "flex-start",
 		marginBottom: 2,
 	},
+	entryTitleWrap: {
+		flexGrow: 1,
+		flexShrink: 1,
+		flexBasis: 0,
+		paddingRight: space[3],
+	},
 	entryTitle: {
 		...text("sm"),
 		fontFamily: "Helvetica-Bold",
-		flexGrow: 1,
-		flexShrink: 1,
-		paddingRight: space[3],
 	},
 	muted: {
 		...text("sm"),
 		color: "#525252",
+		flexShrink: 0,
 	},
 	empty: {
 		...text("xs"),
@@ -121,10 +116,28 @@ function entryHeading(
 	const left = [primary, secondary].filter(Boolean).join(", ");
 	const withLocation = location
 		? left
-			? `${left} — ${location}`
+			? `${left}, ${location}`
 			: location
 		: left;
 	return withLocation || fallback;
+}
+
+/** Plain function (not a component) so react-pdf / tests see View/Text in the tree. */
+function entryHeadingRow(title: string, range: string) {
+	return (
+		<View style={styles.entryRow} wrap={false}>
+			<View style={styles.entryTitleWrap}>
+				<Text style={styles.entryTitle} {...flowText}>
+					{title}
+				</Text>
+			</View>
+			{range ? (
+				<Text style={styles.muted} {...flowText}>
+					{range}
+				</Text>
+			) : null}
+		</View>
+	);
 }
 
 export function ReactPdfCanadianDocument({
@@ -207,17 +220,7 @@ export function ReactPdfCanadianDocument({
 											);
 											return (
 												<Fragment key={entry.id}>
-													{/* wrap={false}: only the one-line header is atomic; body can fill the page. */}
-													<View style={styles.entryRow} wrap={false}>
-														<Text style={styles.entryTitle} {...flowText}>
-															{title}
-														</Text>
-														{range && (
-															<Text style={styles.muted} {...flowText}>
-																{range}
-															</Text>
-														)}
-													</View>
+													{entryHeadingRow(title, range)}
 													{tipTapHtmlToReactPdf(entry.description)}
 													<View style={styles.entryGap} />
 												</Fragment>
@@ -249,16 +252,7 @@ export function ReactPdfCanadianDocument({
 											);
 											return (
 												<Fragment key={entry.id}>
-													<View style={styles.entryRow} wrap={false}>
-														<Text style={styles.entryTitle} {...flowText}>
-															{title}
-														</Text>
-														{range && (
-															<Text style={styles.muted} {...flowText}>
-																{range}
-															</Text>
-														)}
-													</View>
+													{entryHeadingRow(title, range)}
 													<View style={styles.entryGap} />
 												</Fragment>
 											);
@@ -283,7 +277,7 @@ export function ReactPdfCanadianDocument({
 											<Text key={entry.id} style={{ marginBottom: 2 }}>
 												{[entry.language, entry.level]
 													.filter(Boolean)
-													.join(" — ") || cvT("cvEditor.languages.untitled")}
+													.join(", ") || cvT("cvEditor.languages.untitled")}
 											</Text>
 										))
 									)}

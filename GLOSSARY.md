@@ -13,7 +13,7 @@ The language of the application chrome (`en` or `fr`). Independent of any CV’s
 _Avoid_: Language (alone), app language (prefer this term)
 
 **CV locale**:
-The language used for that CV’s content labels and React PDF document wording (for example Present / Présent). Independent of the UI locale.
+The language used for that CV’s content labels and CV preview wording (for example Present / Présent). Independent of the UI locale.
 _Avoid_: Language (alone), CV language (prefer this term)
 
 **Language entry**:
@@ -57,7 +57,7 @@ Creating a new independent CV from an existing Library CV: full content copy, us
 _Avoid_: Clone, copy (when naming the action), fork, template instance
 
 **Library export**:
-Downloading one JSON backup file of the chosen CVs from the library — either every CV or a user selection.
+Downloading one JSON backup file of the chosen CVs from the library, either every CV or a user selection.
 _Avoid_: Bulk export, batch export (prefer Library export; UI may say “Export all” or “Export selected”)
 
 **Library import**:
@@ -65,13 +65,13 @@ Loading a library JSON file into local storage. Two modes: **add** (create new C
 _Avoid_: Bulk import, restore (say replace when the library is wiped), merge import
 
 **Letter page**:
-The page size for a Canadian CV preview and PDF: US Letter, 8.5 × 11 inches. Not A4. Applies to the React PDF document (and historically to Print PDF).
+The page size for a CV preview and PDF: US Letter, 8.5 × 11 inches. Not A4. Applies to the CV preview (and historically to Print PDF).
 _Avoid_: A4 (unless a future export mode targets international applications)
 
 **Print PDF**:
-Legacy export path: printing the on-screen Tailwind preview in the browser (print CSS / system print dialog) to produce a PDF. Superseded by the React PDF document (ADR-0003; was ADR-0002).
+Legacy export path: printing the on-screen Tailwind preview in the browser (print CSS / system print dialog) to produce a PDF. Superseded by the CV preview (ADR-0003; was ADR-0002).
 _Avoid_: Browser PDF, print export (prefer this term), “the PDF” when the engine matters
 
-**React PDF document**:
-A PDF (and its on-screen editor preview) built with `@react-pdf/renderer` from the same CV model, sized to Letter page. Production preview and export path (ADR-0003). Page numbers belong only in viewer chrome, not in the document content.
-_Avoid_: react-pdf export (alone), generated PDF (prefer this term when contrasting engines), Print PDF (legacy)
+**CV preview**:
+The Letter-sized CV the user sees while editing and downloads as a PDF. Same layout engine for on-screen preview and file export (`@react-pdf/renderer`, ADR-0003). Page numbers belong only in viewer chrome, not in the downloaded file. Layout copy does not use em dashes; use commas.
+_Avoid_: Template, Canadian preview, React PDF document (technical alias only), react-pdf export (alone), generated PDF, Print PDF (legacy)

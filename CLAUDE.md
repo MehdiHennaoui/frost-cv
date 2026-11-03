@@ -7,6 +7,7 @@ Always apply the project rules (same source as Cursor / other agents):
 @.agents/rules/fsd-cli.md
 @.agents/rules/git-branch-naming.md
 @.agents/rules/lint-after-edits.md
+@.agents/rules/no-em-dash.md
 @.agents/rules/no-legacy-cv-pre-prod.md
 @.agents/rules/react-conditional-render.md
 @.agents/rules/shadcn-ui-only.md
