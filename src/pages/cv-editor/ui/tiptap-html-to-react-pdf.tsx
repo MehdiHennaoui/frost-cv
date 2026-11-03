@@ -1,4 +1,4 @@
-import { Link, Text, View } from "@react-pdf/renderer";
+import { Link, Text } from "@react-pdf/renderer";
 import type { ReactNode } from "react";
 
 import { sanitizeCvHtml } from "@/shared/lib/sanitize-html";
@@ -22,6 +22,9 @@ const LINK: PdfTextStyle = {
 	color: "#000",
 	textDecoration: "underline",
 };
+/** Prefer filling leftover page space over moving a whole block (react-pdf default is 2). */
+const flowText = { orphans: 1, widows: 1 } as const;
+const listItemStyle = { ...BODY, marginBottom: 2, paddingLeft: 12 };
 
 /** Maps sanitized TipTap HTML into React PDF Text/Link/View trees. */
 export function tipTapHtmlToReactPdf(html: string): ReactNode {
@@ -53,7 +56,7 @@ function mapNode(node: ChildNode, style: PdfTextStyle, key: number): ReactNode {
 			return null;
 		}
 		return (
-			<Text key={key} style={style}>
+			<Text key={key} style={style} {...flowText}>
 				{value}
 			</Text>
 		);
@@ -65,7 +68,7 @@ function mapNode(node: ChildNode, style: PdfTextStyle, key: number): ReactNode {
 	switch (el.tagName) {
 		case "BR":
 			return (
-				<Text key={key} style={style}>
+				<Text key={key} style={style} {...flowText}>
 					{"\n"}
 				</Text>
 			);
@@ -73,7 +76,7 @@ function mapNode(node: ChildNode, style: PdfTextStyle, key: number): ReactNode {
 		case "B": {
 			const next = { ...style, fontFamily: "Helvetica-Bold" };
 			return (
-				<Text key={key} style={next}>
+				<Text key={key} style={next} {...flowText}>
 					{mapChildren(el, next)}
 				</Text>
 			);
@@ -82,7 +85,7 @@ function mapNode(node: ChildNode, style: PdfTextStyle, key: number): ReactNode {
 		case "I": {
 			const next = { ...style, fontFamily: "Helvetica-Oblique" };
 			return (
-				<Text key={key} style={next}>
+				<Text key={key} style={next} {...flowText}>
 					{mapChildren(el, next)}
 				</Text>
 			);
@@ -91,53 +94,53 @@ function mapNode(node: ChildNode, style: PdfTextStyle, key: number): ReactNode {
 			const href = el.getAttribute("href") ?? "";
 			if (!href) {
 				return (
-					<Text key={key} style={style}>
+					<Text key={key} style={style} {...flowText}>
 						{mapChildren(el, style)}
 					</Text>
 				);
 			}
 			return (
-				<Link key={key} src={href} style={LINK}>
+				<Link key={key} src={href} style={LINK} {...flowText}>
 					{mapChildren(el, LINK) ?? href}
 				</Link>
 			);
 		}
 		case "P": {
 			const children = mapChildren(el, style);
-			if (children == null) {
-				return null;
+			// TipTap blank lines are <p></p> / <p><br></p>; empty Text collapses in react-pdf.
+			const isBlank =
+				(el.textContent ?? "").replace(/\u00a0/g, "").trim() === "";
+			if (children == null || isBlank) {
+				return (
+					<Text key={key} style={{ ...style, marginBottom: 2 }} {...flowText}>
+						{"\u00A0"}
+					</Text>
+				);
 			}
 			return (
-				<Text key={key} style={{ ...style, marginBottom: 2 }}>
+				<Text key={key} style={{ ...style, marginBottom: 2 }} {...flowText}>
 					{children}
 				</Text>
 			);
 		}
 		case "UL":
-			return (
-				<View key={key} style={{ marginBottom: 4, paddingLeft: 12 }}>
-					{Array.from(el.children).map((li, index) => (
-						// biome-ignore lint/suspicious/noArrayIndexKey: static TipTap snapshot, no stable li id
-						<Text key={index} style={{ ...style, marginBottom: 2 }}>
-							• {mapChildren(li, style)}
-						</Text>
-					))}
-				</View>
-			);
+			// Flat items (no wrapping View) so bullets can fill leftover page space one by one.
+			return Array.from(el.children).map((li, index) => (
+				// biome-ignore lint/suspicious/noArrayIndexKey: static TipTap snapshot, no stable li id
+				<Text key={`${key}-${index}`} style={listItemStyle} {...flowText}>
+					• {mapChildren(li, style)}
+				</Text>
+			));
 		case "OL":
-			return (
-				<View key={key} style={{ marginBottom: 4, paddingLeft: 12 }}>
-					{Array.from(el.children).map((li, index) => (
-						// biome-ignore lint/suspicious/noArrayIndexKey: static TipTap snapshot, no stable li id
-						<Text key={index} style={{ ...style, marginBottom: 2 }}>
-							{index + 1}. {mapChildren(li, style)}
-						</Text>
-					))}
-				</View>
-			);
+			return Array.from(el.children).map((li, index) => (
+				// biome-ignore lint/suspicious/noArrayIndexKey: static TipTap snapshot, no stable li id
+				<Text key={`${key}-${index}`} style={listItemStyle} {...flowText}>
+					{index + 1}. {mapChildren(li, style)}
+				</Text>
+			));
 		case "LI":
 			return (
-				<Text key={key} style={style}>
+				<Text key={key} style={style} {...flowText}>
 					{mapChildren(el, style)}
 				</Text>
 			);

@@ -1,4 +1,5 @@
 import { Document, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
+import { Fragment } from "react";
 
 import type { Cv } from "@/entities/cv";
 import {
@@ -33,9 +34,9 @@ const space = {
 const styles = StyleSheet.create({
 	page: {
 		...text("sm"),
-		paddingTop: 18,
-		paddingBottom: 18,
-		paddingHorizontal: 18,
+		paddingTop: space[4],
+		paddingBottom: space[4],
+		paddingHorizontal: space[4],
 		fontFamily: "Helvetica",
 		color: "#000",
 	},
@@ -68,18 +69,18 @@ const styles = StyleSheet.create({
 		marginBottom: 0,
 	},
 	section: {
-		marginBottom: space[4],
+		marginBottom: space[2],
 	},
 	sectionTitle: {
-		...text("xs"),
+		...text("sm"),
 		fontFamily: "Helvetica-Bold",
 		borderBottomWidth: 1,
 		borderBottomColor: "#000",
 		paddingBottom: space[1],
 		marginBottom: space[3],
 	},
-	entry: {
-		marginBottom: space[3],
+	entryGap: {
+		height: space[3],
 	},
 	entryRow: {
 		flexDirection: "row",
@@ -88,7 +89,7 @@ const styles = StyleSheet.create({
 		marginBottom: 2,
 	},
 	entryTitle: {
-		...text("sm"),
+		...text("xs"),
 		fontFamily: "Helvetica-Bold",
 		flexGrow: 1,
 		flexShrink: 1,
@@ -103,6 +104,9 @@ const styles = StyleSheet.create({
 		color: "#737373",
 	},
 });
+
+/** Prefer filling leftover page space over moving a whole block (react-pdf default is 2). */
+const flowText = { orphans: 1, widows: 1 } as const;
 
 type ReactPdfCanadianDocumentProps = {
 	cv: Cv;
@@ -202,13 +206,21 @@ export function ReactPdfCanadianDocument({
 												cvT("cvEditor.experiences.untitled"),
 											);
 											return (
-												<View key={entry.id} style={styles.entry}>
-													<View style={styles.entryRow}>
-														<Text style={styles.entryTitle}>{title}</Text>
-														{range && <Text style={styles.muted}>{range}</Text>}
+												<Fragment key={entry.id}>
+													{/* wrap={false}: only the one-line header is atomic; body can fill the page. */}
+													<View style={styles.entryRow} wrap={false}>
+														<Text style={styles.entryTitle} {...flowText}>
+															{title}
+														</Text>
+														{range && (
+															<Text style={styles.muted} {...flowText}>
+																{range}
+															</Text>
+														)}
 													</View>
 													{tipTapHtmlToReactPdf(entry.description)}
-												</View>
+													<View style={styles.entryGap} />
+												</Fragment>
 											);
 										})
 									)}
@@ -236,12 +248,19 @@ export function ReactPdfCanadianDocument({
 												cvT("cvEditor.education.untitled"),
 											);
 											return (
-												<View key={entry.id} style={styles.entry}>
-													<View style={styles.entryRow}>
-														<Text style={styles.entryTitle}>{title}</Text>
-														{range && <Text style={styles.muted}>{range}</Text>}
+												<Fragment key={entry.id}>
+													<View style={styles.entryRow} wrap={false}>
+														<Text style={styles.entryTitle} {...flowText}>
+															{title}
+														</Text>
+														{range && (
+															<Text style={styles.muted} {...flowText}>
+																{range}
+															</Text>
+														)}
 													</View>
-												</View>
+													<View style={styles.entryGap} />
+												</Fragment>
 											);
 										})
 									)}

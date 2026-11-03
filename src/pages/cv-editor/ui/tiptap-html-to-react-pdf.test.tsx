@@ -74,4 +74,17 @@ describe("tipTapHtmlToReactPdf", () => {
 	it("returns null for empty HTML", () => {
 		expect(tipTapHtmlToReactPdf("")).toBeNull();
 	});
+
+	it("keeps TipTap blank paragraphs as visible line breaks", () => {
+		const nodes = tipTapHtmlToReactPdf(
+			"<p>first</p><p></p><p><br></p><p>second</p>",
+		);
+		expect(Array.isArray(nodes)).toBe(true);
+		const paragraphs = (
+			nodes as ReactElement<{ children?: ReactNode }>[]
+		).filter((el) => el.type === Text);
+		expect(paragraphs).toHaveLength(4);
+		expect(paragraphs[1]?.props.children).toBe("\u00A0");
+		expect(paragraphs[2]?.props.children).toBe("\u00A0");
+	});
 });
