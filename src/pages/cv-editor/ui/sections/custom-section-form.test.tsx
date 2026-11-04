@@ -10,7 +10,16 @@ import {
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { type Cv, createEmptyCvContent } from "@/entities/cv";
+import { EditorFormProvider } from "../../model/form/editor-form-context";
 import { CustomSectionForm } from "./custom-section-form";
+
+function renderCustom(cv: Cv, onPersisted = vi.fn()) {
+	return render(
+		<EditorFormProvider cv={cv} onPersisted={onPersisted}>
+			<CustomSectionForm sectionId="c1" />
+		</EditorFormProvider>,
+	);
+}
 
 const saveCvMock = vi.fn();
 
@@ -89,9 +98,7 @@ describe("CustomSectionForm", () => {
 			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
 		});
 
-		render(
-			<CustomSectionForm cv={cv} sectionId="c1" onPersisted={onPersisted} />,
-		);
+		renderCustom(cv, onPersisted);
 
 		fireEvent.change(screen.getByLabelText("cvEditor.customs.field.title"), {
 			target: { value: "Technical skills" },
@@ -118,9 +125,7 @@ describe("CustomSectionForm", () => {
 			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
 		});
 
-		render(
-			<CustomSectionForm cv={cv} sectionId="c1" onPersisted={onPersisted} />,
-		);
+		renderCustom(cv, onPersisted);
 
 		const title = screen.getByLabelText("cvEditor.customs.field.title");
 		fireEvent.change(title, { target: { value: "Awards" } });
@@ -142,9 +147,7 @@ describe("CustomSectionForm", () => {
 			updatedAt: 2,
 		}));
 
-		render(
-			<CustomSectionForm cv={cv} sectionId="c1" onPersisted={onPersisted} />,
-		);
+		renderCustom(cv, onPersisted);
 
 		fireEvent.click(
 			screen.getByRole("button", { name: "cvEditor.customs.delete" }),
@@ -181,7 +184,7 @@ describe("CustomSectionForm", () => {
 			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
 		});
 
-		render(<CustomSectionForm cv={cv} sectionId="c1" onPersisted={vi.fn()} />);
+		renderCustom(cv);
 
 		fireEvent.change(
 			screen.getByLabelText("cvEditor.customs.field.description"),

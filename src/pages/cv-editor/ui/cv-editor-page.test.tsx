@@ -16,6 +16,7 @@ import {
 	SidebarPortalProvider,
 	useSidebarPortalHost,
 } from "@/shared/lib/sidebar-portal";
+import { toast } from "@/shared/ui/toast";
 import { CvEditorPage } from "./cv-editor-page";
 
 const saveCvMock = vi.fn();
@@ -28,10 +29,39 @@ vi.mock("@/entities/cv", async (importOriginal) => {
 	};
 });
 
+vi.mock("@/shared/ui/toast", () => ({
+	toast: {
+		add: vi.fn(),
+	},
+}));
+
+vi.mock("./editors/rich-text-editor", () => ({
+	RichTextEditor: ({
+		id,
+		value,
+		onChange,
+		onBlur,
+	}: {
+		id?: string;
+		value: string;
+		onChange: (html: string) => void;
+		onBlur?: () => void;
+	}) => (
+		<textarea
+			id={id}
+			aria-label={id}
+			value={value}
+			onBlur={onBlur}
+			onChange={(event) => onChange(event.target.value)}
+		/>
+	),
+}));
+
 afterEach(() => {
 	cleanup();
 	vi.useRealTimers();
 	saveCvMock.mockReset();
+	vi.mocked(toast.add).mockClear();
 });
 
 function HostBinder({ host }: { host: HTMLElement }) {
@@ -337,5 +367,565 @@ describe("CvEditorPage", () => {
 			screen.queryByRole("heading", { name: "cvExport.replaceTitle" }),
 		).toBeNull();
 		expect(firstName.closest("[inert]")).toBeNull();
+	});
+
+	it("writes the latest field value once after 1s idle", async () => {
+		saveCvMock.mockImplementation(async (next: Cv) => ({
+			...next,
+			updatedAt: 2,
+		}));
+		vi.useFakeTimers({
+			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
+		});
+		const { host } = renderEditor(sampleCv());
+		const firstName = within(host).getByLabelText(
+			"cvEditor.identity.field.firstName",
+		);
+
+		fireEvent.change(firstName, { target: { value: "Augusta" } });
+		fireEvent.change(firstName, { target: { value: "Grace" } });
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(999);
+		});
+		expect(saveCvMock).not.toHaveBeenCalled();
+
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(1);
+		});
+		expect(saveCvMock).toHaveBeenCalledTimes(1);
+		expect(saveCvMock.mock.calls[0]?.[0].content.identity.firstName).toBe(
+			"Grace",
+		);
+		expect(
+			screen
+				.getByLabelText("cvEditor.preview.label")
+				.getAttribute("data-updated-at"),
+		).toBe("2");
+	});
+
+	it("keeps focus hops inside the editor on the debounce", async () => {
+		saveCvMock.mockImplementation(async (next: Cv) => ({
+			...next,
+			updatedAt: 2,
+		}));
+		vi.useFakeTimers({
+			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
+		});
+		const { host } = renderEditor(sampleCv());
+		const firstName = within(host).getByLabelText(
+			"cvEditor.identity.field.firstName",
+		);
+		const lastName = within(host).getByLabelText(
+			"cvEditor.identity.field.lastName",
+		);
+
+		fireEvent.change(firstName, { target: { value: "Grace" } });
+		await act(async () => {
+			fireEvent.blur(firstName, { relatedTarget: lastName });
+		});
+		expect(saveCvMock).not.toHaveBeenCalled();
+
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(1000);
+		});
+		expect(saveCvMock).toHaveBeenCalledTimes(1);
+	});
+
+	it("keeps a move to editor chrome on the debounce", async () => {
+		saveCvMock.mockImplementation(async (next: Cv) => ({
+			...next,
+			updatedAt: 2,
+		}));
+		vi.useFakeTimers({
+			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
+		});
+		const { host } = renderEditor(sampleCv());
+		const firstName = within(host).getByLabelText(
+			"cvEditor.identity.field.firstName",
+		);
+		const exportButton = within(host).getByRole("button", {
+			name: "cvExport.export",
+		});
+
+		fireEvent.change(firstName, { target: { value: "Grace" } });
+		await act(async () => {
+			fireEvent.blur(firstName, { relatedTarget: exportButton });
+		});
+		expect(saveCvMock).not.toHaveBeenCalled();
+
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(1000);
+		});
+		expect(saveCvMock).toHaveBeenCalledTimes(1);
+	});
+
+	it("saves a new experience immediately", async () => {
+		saveCvMock.mockImplementation(async (next: Cv) => ({
+			...next,
+			updatedAt: 2,
+		}));
+		const { host } = renderEditor(sampleCv());
+
+		await act(async () => {
+			fireEvent.click(
+				within(host).getByRole("button", {
+					name: "cvEditor.experiences.add",
+				}),
+			);
+		});
+
+		expect(saveCvMock).toHaveBeenCalledTimes(1);
+		expect(saveCvMock.mock.calls[0]?.[0].content.experiences).toHaveLength(1);
+	});
+
+	it("deletes an experience immediately after confirmation", async () => {
+		saveCvMock.mockImplementation(async (next: Cv) => ({
+			...next,
+			updatedAt: 2,
+		}));
+		const cv = sampleCv();
+		cv.content.experiences = [
+			{
+				id: "exp-1",
+				jobTitle: "Engineer",
+				company: "Acme",
+				location: "",
+				startMonth: "2020-01",
+				endMonth: "2021-06",
+				isCurrent: false,
+				description: "",
+			},
+		];
+		const { host } = renderEditor(cv);
+
+		fireEvent.click(
+			within(host).getByRole("button", { name: "cvEditor.experiences.delete" }),
+		);
+		const dialog = screen.getByRole("dialog");
+		await act(async () => {
+			fireEvent.click(
+				within(dialog).getByRole("button", {
+					name: "cvEditor.experiences.deleteConfirm",
+				}),
+			);
+		});
+
+		expect(saveCvMock).toHaveBeenCalledTimes(1);
+		expect(saveCvMock.mock.calls[0]?.[0].content.experiences).toEqual([]);
+	});
+
+	it("flushes a pending draft when focus leaves the editor", async () => {
+		saveCvMock.mockImplementation(async (next: Cv) => ({
+			...next,
+			updatedAt: 2,
+		}));
+		vi.useFakeTimers({
+			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
+		});
+		const { host } = renderEditor(sampleCv());
+		const firstName = within(host).getByLabelText(
+			"cvEditor.identity.field.firstName",
+		);
+
+		fireEvent.change(firstName, { target: { value: "Grace" } });
+		await act(async () => {
+			fireEvent.blur(firstName);
+		});
+
+		expect(saveCvMock).toHaveBeenCalledTimes(1);
+		expect(saveCvMock.mock.calls[0]?.[0].content.identity.firstName).toBe(
+			"Grace",
+		);
+	});
+
+	it("flushes a pending draft when the editor unmounts", async () => {
+		saveCvMock.mockImplementation(async (next: Cv) => ({
+			...next,
+			updatedAt: 2,
+		}));
+		vi.useFakeTimers({
+			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
+		});
+		const { host, unmount } = renderEditor(sampleCv());
+		fireEvent.change(
+			within(host).getByLabelText("cvEditor.identity.field.firstName"),
+			{ target: { value: "Grace" } },
+		);
+
+		await act(async () => {
+			unmount();
+		});
+
+		expect(saveCvMock).toHaveBeenCalledTimes(1);
+		expect(saveCvMock.mock.calls[0]?.[0].content.identity.firstName).toBe(
+			"Grace",
+		);
+	});
+
+	it("skips an invalid month, toasts once per episode, and logs every skip", async () => {
+		const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+		saveCvMock.mockImplementation(async (next: Cv) => ({
+			...next,
+			updatedAt: 2,
+		}));
+		vi.useFakeTimers({
+			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
+		});
+		const cv = sampleCv({
+			content: {
+				...createEmptyCvContent(),
+				experiences: [
+					{
+						id: "exp-1",
+						jobTitle: "Engineer",
+						company: "Acme",
+						location: "",
+						startMonth: "March 2020",
+						endMonth: "2021-01",
+						isCurrent: false,
+						description: "",
+					},
+				],
+			},
+		});
+		const { host } = renderEditor(cv);
+		fireEvent.click(
+			within(host).getByRole("button", { name: "cvEditor.entry.expand" }),
+		);
+		const jobTitle = within(host).getByLabelText(
+			"cvEditor.experiences.field.jobTitle",
+		);
+
+		fireEvent.change(jobTitle, { target: { value: "Lead" } });
+		expect(within(host).getByText("cvEditor.month.invalid")).toBeTruthy();
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(1000);
+		});
+		fireEvent.change(jobTitle, { target: { value: "Staff" } });
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(1000);
+		});
+
+		expect(saveCvMock).not.toHaveBeenCalled();
+		expect(toast.add).toHaveBeenCalledTimes(1);
+		expect(toast.add).toHaveBeenCalledWith({
+			type: "error",
+			title: "cvEditor.save.invalid",
+		});
+		expect(errorSpy).toHaveBeenCalledTimes(2);
+		expect(
+			screen
+				.getByLabelText("cvEditor.preview.label")
+				.getAttribute("data-updated-at"),
+		).toBe("1");
+
+		fireEvent.change(
+			within(host).getByLabelText("cvEditor.experiences.field.startMonth"),
+			{ target: { value: "2020-01" } },
+		);
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(1000);
+		});
+		expect(saveCvMock).toHaveBeenCalledTimes(1);
+
+		fireEvent.change(
+			within(host).getByLabelText("cvEditor.experiences.field.endMonth"),
+			{ target: { value: "2019-01" } },
+		);
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(1000);
+		});
+		expect(toast.add).toHaveBeenCalledTimes(2);
+		errorSpy.mockRestore();
+	});
+
+	it("keeps structure edits in the form until the next valid save", async () => {
+		saveCvMock.mockImplementation(async (next: Cv) => ({
+			...next,
+			updatedAt: 4,
+		}));
+		vi.useFakeTimers({
+			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
+		});
+		const cv = sampleCv({
+			content: {
+				...createEmptyCvContent(),
+				experiences: [
+					{
+						id: "exp-1",
+						jobTitle: "Engineer",
+						company: "Acme",
+						location: "",
+						startMonth: "2020-01",
+						endMonth: "2021-06",
+						isCurrent: false,
+						description: "",
+					},
+				],
+			},
+		});
+		const { host } = renderEditor(cv);
+		fireEvent.click(
+			within(host).getByRole("button", { name: "cvEditor.entry.expand" }),
+		);
+		fireEvent.change(
+			within(host).getByLabelText("cvEditor.experiences.field.endMonth"),
+			{ target: { value: "2019-01" } },
+		);
+		await act(async () => {
+			fireEvent.click(
+				within(host).getByRole("button", { name: "cvEditor.experiences.add" }),
+			);
+		});
+
+		expect(saveCvMock).not.toHaveBeenCalled();
+		expect(
+			within(host).getAllByRole("button", { name: "cvEditor.entry.expand" }),
+		).toHaveLength(1);
+		expect(
+			within(host).getAllByRole("button", { name: "cvEditor.entry.collapse" }),
+		).toHaveLength(1);
+		expect(
+			screen
+				.getByLabelText("cvEditor.preview.label")
+				.getAttribute("data-updated-at"),
+		).toBe("1");
+
+		fireEvent.change(
+			within(host).getByLabelText("cvEditor.experiences.field.endMonth"),
+			{ target: { value: "2021-06" } },
+		);
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(1000);
+		});
+
+		expect(saveCvMock).toHaveBeenCalledTimes(1);
+		expect(saveCvMock.mock.calls[0]?.[0].content.experiences).toHaveLength(2);
+		expect(saveCvMock.mock.calls[0]?.[0].content.experiences[0].endMonth).toBe(
+			"2021-06",
+		);
+	});
+
+	it("serializes overlapping saves so the latest valid values win", async () => {
+		let releaseFirst: (() => void) | undefined;
+		saveCvMock.mockImplementation(
+			(next: Cv) =>
+				new Promise<Cv>((resolve) => {
+					if (!releaseFirst) {
+						releaseFirst = () => resolve({ ...next, updatedAt: 2 });
+						return;
+					}
+					resolve({ ...next, updatedAt: 3 });
+				}),
+		);
+		vi.useFakeTimers({
+			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
+		});
+		const { host } = renderEditor(sampleCv());
+		const firstName = within(host).getByLabelText(
+			"cvEditor.identity.field.firstName",
+		);
+
+		fireEvent.change(firstName, { target: { value: "Augusta" } });
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(1000);
+		});
+		expect(saveCvMock).toHaveBeenCalledTimes(1);
+		expect(saveCvMock.mock.calls[0]?.[0].content.identity.firstName).toBe(
+			"Augusta",
+		);
+
+		fireEvent.change(firstName, { target: { value: "Grace" } });
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(1000);
+		});
+		expect(saveCvMock).toHaveBeenCalledTimes(1);
+
+		await act(async () => {
+			releaseFirst?.();
+		});
+
+		expect(saveCvMock).toHaveBeenCalledTimes(2);
+		expect(saveCvMock.mock.calls[1]?.[0].content.identity.firstName).toBe(
+			"Grace",
+		);
+	});
+
+	it("keeps form values and the preview when saveCv rejects", async () => {
+		const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+		saveCvMock.mockRejectedValue(new Error("disk full"));
+		vi.useFakeTimers({
+			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
+		});
+		const { host } = renderEditor(sampleCv());
+		const firstName = within(host).getByLabelText(
+			"cvEditor.identity.field.firstName",
+		);
+
+		fireEvent.change(firstName, { target: { value: "Grace" } });
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(1000);
+		});
+
+		expect(toast.add).toHaveBeenCalledWith({
+			type: "error",
+			title: "cvEditor.save.failed",
+		});
+		expect(errorSpy).toHaveBeenCalled();
+		expect((firstName as HTMLInputElement).value).toBe("Grace");
+		expect(
+			screen
+				.getByLabelText("cvEditor.preview.label")
+				.getAttribute("data-updated-at"),
+		).toBe("1");
+		errorSpy.mockRestore();
+	});
+
+	it("remounts the form from a replace-import and drops the previous draft", async () => {
+		saveCvMock.mockImplementation(async (next: Cv) => ({
+			...next,
+			updatedAt: 2,
+		}));
+		const replaceCvFromImport = vi.fn(
+			async (
+				_id: string,
+				payload: { title: string; locale: "en" | "fr"; content: Cv["content"] },
+			) => ({
+				id: "cv-1",
+				title: payload.title,
+				locale: payload.locale,
+				content: payload.content,
+				createdAt: 1,
+				updatedAt: 9,
+			}),
+		);
+		vi.useFakeTimers({
+			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
+		});
+		const { host } = renderEditor(sampleCv(), { replaceCvFromImport });
+		const firstName = within(host).getByLabelText(
+			"cvEditor.identity.field.firstName",
+		);
+		fireEvent.change(firstName, { target: { value: "Drafty" } });
+
+		fireEvent.click(
+			within(host).getByRole("button", { name: "cvExport.replace" }),
+		);
+		const input = document.querySelector(
+			'input[type="file"]',
+		) as HTMLInputElement;
+		const text = JSON.stringify({
+			schemaVersion: 1,
+			title: "Replacement",
+			locale: "fr",
+			content: {
+				...createEmptyCvContent(),
+				identity: {
+					...(createEmptyCvContent().identity as object),
+					firstName: "Grace",
+					lastName: "Hopper",
+				},
+			},
+		});
+		fireEvent.change(input, {
+			target: {
+				files: [new File([text], "cv.json", { type: "application/json" })],
+			},
+		});
+		await act(async () => {
+			await Promise.resolve();
+			await Promise.resolve();
+		});
+		fireEvent.click(
+			screen.getByRole("button", { name: "cvExport.replaceConfirm" }),
+		);
+		await act(async () => {
+			await Promise.resolve();
+		});
+
+		expect(replaceCvFromImport).toHaveBeenCalledTimes(1);
+		expect(
+			(
+				within(host).getByLabelText(
+					"cvEditor.identity.field.firstName",
+				) as HTMLInputElement
+			).value,
+		).toBe("Grace");
+		expect(
+			screen
+				.getByLabelText("cvEditor.preview.label")
+				.getAttribute("data-updated-at"),
+		).toBe("9");
+	});
+
+	it("keeps a description on its experience when that entry is reordered", async () => {
+		saveCvMock.mockImplementation(async (next: Cv) => ({
+			...next,
+			updatedAt: 2,
+		}));
+		const cv = sampleCv({
+			content: {
+				...createEmptyCvContent(),
+				experiences: [
+					{
+						id: "exp-1",
+						jobTitle: "Engineer",
+						company: "Acme",
+						location: "",
+						startMonth: "2020-01",
+						endMonth: "2021-06",
+						isCurrent: false,
+						description: "<p>First</p>",
+					},
+					{
+						id: "exp-2",
+						jobTitle: "Intern",
+						company: "Beta",
+						location: "",
+						startMonth: "2019-01",
+						endMonth: "2019-12",
+						isCurrent: false,
+						description: "<p>Second</p>",
+					},
+				],
+			},
+		});
+		const { host } = renderEditor(cv);
+		fireEvent.click(
+			within(host).getAllByRole("button", {
+				name: "cvEditor.entry.expandAll",
+			})[0],
+		);
+		const firstDescription = within(host).getByLabelText(
+			"experience-exp-1-description",
+		);
+		fireEvent.change(firstDescription, {
+			target: { value: "<p>Still first</p>" },
+		});
+		fireEvent.click(
+			within(host).getAllByRole("button", {
+				name: "cvEditor.experiences.position",
+			})[0],
+		);
+		await act(async () => {
+			fireEvent.click(screen.getAllByRole("menuitem")[1]);
+		});
+
+		expect(
+			(
+				within(host).getByLabelText(
+					"experience-exp-1-description",
+				) as HTMLTextAreaElement
+			).value,
+		).toBe("<p>Still first</p>");
+		expect(saveCvMock).toHaveBeenCalledTimes(1);
+		const saved = saveCvMock.mock.calls[0]?.[0].content.experiences as Array<{
+			id: string;
+			description: string;
+		}>;
+		expect(saved.map((entry) => entry.id)).toEqual(["exp-2", "exp-1"]);
+		expect(saved.find((entry) => entry.id === "exp-1")?.description).toBe(
+			"<p>Still first</p>",
+		);
 	});
 });

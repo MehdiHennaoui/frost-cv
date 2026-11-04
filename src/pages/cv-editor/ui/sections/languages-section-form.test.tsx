@@ -11,7 +11,16 @@ import {
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { type Cv, createEmptyCvContent } from "@/entities/cv";
+import { EditorFormProvider } from "../../model/form/editor-form-context";
 import { LanguagesSectionForm } from "./languages-section-form";
+
+function renderLanguages(cv: Cv, onPersisted = vi.fn()) {
+	return render(
+		<EditorFormProvider cv={cv} onPersisted={onPersisted}>
+			<LanguagesSectionForm />
+		</EditorFormProvider>,
+	);
+}
 
 const saveCvMock = vi.fn();
 
@@ -67,7 +76,7 @@ describe("LanguagesSectionForm", () => {
 			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
 		});
 
-		render(<LanguagesSectionForm cv={cv} onPersisted={onPersisted} />);
+		renderLanguages(cv, onPersisted);
 		expandFirstEntry();
 
 		fireEvent.change(
@@ -100,7 +109,7 @@ describe("LanguagesSectionForm", () => {
 			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
 		});
 
-		render(<LanguagesSectionForm cv={cv} onPersisted={onPersisted} />);
+		renderLanguages(cv, onPersisted);
 		expandFirstEntry();
 
 		const language = screen.getByLabelText("cvEditor.languages.field.language");
@@ -120,7 +129,7 @@ describe("LanguagesSectionForm", () => {
 			updatedAt: 2,
 		}));
 
-		render(<LanguagesSectionForm cv={cv} onPersisted={vi.fn()} />);
+		renderLanguages(cv);
 
 		await act(async () => {
 			fireEvent.click(
@@ -139,7 +148,7 @@ describe("LanguagesSectionForm", () => {
 			updatedAt: 2,
 		}));
 
-		render(<LanguagesSectionForm cv={cv} onPersisted={vi.fn()} />);
+		renderLanguages(cv);
 
 		fireEvent.click(
 			screen.getByRole("button", { name: "cvEditor.languages.delete" }),
@@ -172,7 +181,7 @@ describe("LanguagesSectionForm", () => {
 			updatedAt: 2,
 		}));
 
-		render(<LanguagesSectionForm cv={cv} onPersisted={vi.fn()} />);
+		renderLanguages(cv);
 
 		fireEvent.click(
 			screen.getAllByRole("button", { name: "cvEditor.languages.position" })[0],

@@ -11,7 +11,16 @@ import {
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { type Cv, createEmptyCvContent } from "@/entities/cv";
+import { EditorFormProvider } from "../../model/form/editor-form-context";
 import { ExperiencesSectionForm } from "./experiences-section-form";
+
+function renderExperiences(cv: Cv, onPersisted = vi.fn()) {
+	return render(
+		<EditorFormProvider cv={cv} onPersisted={onPersisted}>
+			<ExperiencesSectionForm />
+		</EditorFormProvider>,
+	);
+}
 
 const saveCvMock = vi.fn();
 
@@ -120,7 +129,7 @@ function twoExperiencesCv(): Cv {
 
 describe("ExperiencesSectionForm", () => {
 	it("starts collapsed with a live scan label and expands the form body", () => {
-		render(<ExperiencesSectionForm cv={sampleCv()} onPersisted={vi.fn()} />);
+		renderExperiences(sampleCv());
 
 		expect(screen.getByText("1 · Engineer · Acme")).toBeTruthy();
 		expect(
@@ -148,9 +157,7 @@ describe("ExperiencesSectionForm", () => {
 	});
 
 	it("header control expands all entries, then collapses all when any is open", () => {
-		render(
-			<ExperiencesSectionForm cv={twoExperiencesCv()} onPersisted={vi.fn()} />,
-		);
+		renderExperiences(twoExperiencesCv());
 
 		expect(
 			screen.queryByLabelText("cvEditor.experiences.field.jobTitle"),
@@ -175,9 +182,7 @@ describe("ExperiencesSectionForm", () => {
 
 	it("expands only the entry matching the location hash", () => {
 		window.location.hash = "exp-2";
-		render(
-			<ExperiencesSectionForm cv={twoExperiencesCv()} onPersisted={vi.fn()} />,
-		);
+		renderExperiences(twoExperiencesCv());
 
 		expect(
 			screen.getAllByLabelText("cvEditor.experiences.field.jobTitle"),
@@ -197,7 +202,7 @@ describe("ExperiencesSectionForm", () => {
 			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
 		});
 
-		render(<ExperiencesSectionForm cv={cv} onPersisted={onPersisted} />);
+		renderExperiences(cv, onPersisted);
 		expandFirstEntry();
 
 		fireEvent.change(
@@ -230,7 +235,7 @@ describe("ExperiencesSectionForm", () => {
 			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
 		});
 
-		render(<ExperiencesSectionForm cv={cv} onPersisted={onPersisted} />);
+		renderExperiences(cv, onPersisted);
 		expandFirstEntry();
 
 		const jobTitle = screen.getByLabelText(
@@ -245,8 +250,8 @@ describe("ExperiencesSectionForm", () => {
 		expect(onPersisted).toHaveBeenCalled();
 	});
 
-	it("hides end month when current position is checked", () => {
-		render(<ExperiencesSectionForm cv={sampleCv()} onPersisted={vi.fn()} />);
+	it("hides end month when current position is checked", async () => {
+		renderExperiences(sampleCv());
 		expandFirstEntry();
 
 		expect(
@@ -262,6 +267,13 @@ describe("ExperiencesSectionForm", () => {
 		expect(
 			screen.queryByLabelText("cvEditor.experiences.field.endMonth"),
 		).toBeNull();
+		await act(async () => {
+			await Promise.resolve();
+		});
+		expect(saveCvMock.mock.calls[0]?.[0].content.experiences[0]).toMatchObject({
+			isCurrent: true,
+			endMonth: "",
+		});
 	});
 
 	it("adds an experience and persists immediately", async () => {
@@ -271,7 +283,7 @@ describe("ExperiencesSectionForm", () => {
 			updatedAt: 2,
 		}));
 
-		render(<ExperiencesSectionForm cv={cv} onPersisted={vi.fn()} />);
+		renderExperiences(cv);
 
 		await act(async () => {
 			fireEvent.click(
@@ -290,7 +302,7 @@ describe("ExperiencesSectionForm", () => {
 			updatedAt: 2,
 		}));
 
-		render(<ExperiencesSectionForm cv={cv} onPersisted={vi.fn()} />);
+		renderExperiences(cv);
 
 		fireEvent.click(
 			screen.getByRole("button", { name: "cvEditor.experiences.delete" }),
@@ -318,7 +330,7 @@ describe("ExperiencesSectionForm", () => {
 			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
 		});
 
-		render(<ExperiencesSectionForm cv={cv} onPersisted={vi.fn()} />);
+		renderExperiences(cv);
 		expandFirstEntry();
 
 		fireEvent.change(
@@ -361,7 +373,7 @@ describe("ExperiencesSectionForm", () => {
 			updatedAt: 2,
 		}));
 
-		render(<ExperiencesSectionForm cv={cv} onPersisted={vi.fn()} />);
+		renderExperiences(cv);
 
 		fireEvent.click(
 			screen.getAllByRole("button", {
@@ -381,7 +393,7 @@ describe("ExperiencesSectionForm", () => {
 	});
 
 	it("shows an explicit delete label on the delete control", () => {
-		render(<ExperiencesSectionForm cv={sampleCv()} onPersisted={vi.fn()} />);
+		renderExperiences(sampleCv());
 
 		expect(
 			screen.getByRole("button", { name: "cvEditor.experiences.delete" }),

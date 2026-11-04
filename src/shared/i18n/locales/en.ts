@@ -113,6 +113,13 @@ export const en = {
 	cvEditor: {
 		loading: "Loading CV…",
 		saving: "Saving CV…",
+		save: {
+			invalid: "Could not save this CV. Fix the highlighted fields.",
+			failed: "Could not save this CV. Try again.",
+		},
+		month: {
+			invalid: "Use an empty month or YYYY-MM.",
+		},
 		notFound: "CV not found",
 		notFoundHint: "This CV is missing or was deleted.",
 		backToList: "Back to CV list",

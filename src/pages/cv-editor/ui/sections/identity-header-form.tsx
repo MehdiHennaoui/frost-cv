@@ -1,25 +1,9 @@
-import { useForm } from "@tanstack/react-form";
 import { UserIcon } from "lucide-react";
 
-import type { Cv } from "@/entities/cv";
 import { useAppTranslation } from "@/shared/i18n";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
-import { Field, FieldGroup, FieldLabel } from "@/shared/ui/field";
-import { Input } from "@/shared/ui/input";
-import { flushOnFormLeave } from "../../model/save/use-cv-autosave";
-import { useCvSectionDraft } from "../../model/save/use-cv-section-draft";
-import {
-	type IdentityFields,
-	identityFieldsEqual,
-	identityFieldsOf,
-	withIdentity,
-} from "../../model/sections/identity-fields";
-import { RichTextEditor } from "../editors/rich-text-editor";
-
-type IdentityHeaderFormProps = {
-	cv: Cv;
-	onPersisted: (cv: Cv) => void;
-};
+import { FieldGroup } from "@/shared/ui/field";
+import { EditorBoundField } from "../editors/editor-bound-field";
 
 const TEXT_FIELDS = [
 	"firstName",
@@ -31,91 +15,37 @@ const TEXT_FIELDS = [
 	"linkedin",
 	"github",
 	"website",
-] as const satisfies ReadonlyArray<keyof IdentityFields>;
+] as const;
 
-export function IdentityHeaderForm({
-	cv,
-	onPersisted,
-}: IdentityHeaderFormProps) {
+export function IdentityHeaderForm() {
 	const { t } = useAppTranslation();
-	const initial = identityFieldsOf(cv.content);
-	const { schedule, flush } = useCvSectionDraft({
-		cv,
-		onPersisted,
-		initial,
-		isEqual: identityFieldsEqual,
-		apply: withIdentity,
-	});
-	const form = useForm({
-		defaultValues: initial,
-	});
 
 	return (
-		<form
-			onSubmit={(event) => {
-				event.preventDefault();
-			}}
-		>
-			<Card id="identity" size="sm">
-				<CardHeader>
-					<CardTitle className="flex items-center gap-2">
-						<UserIcon aria-hidden className="size-4 shrink-0" />
-						{t("cvEditor.section.identity")}
-					</CardTitle>
-				</CardHeader>
-				<CardContent>
-					<FieldGroup className="gap-3">
-						{TEXT_FIELDS.map((name) => (
-							<form.Field key={name} name={name}>
-								{(field) => (
-									<Field>
-										<FieldLabel htmlFor={`identity-${name}`}>
-											{t(`cvEditor.identity.field.${name}`)}
-										</FieldLabel>
-										<Input
-											id={`identity-${name}`}
-											name={field.name}
-											variant="surface"
-											value={field.state.value}
-											onBlur={(event) => {
-												field.handleBlur();
-												flushOnFormLeave(event, flush);
-											}}
-											onChange={(event) => {
-												const value = event.target.value;
-												field.handleChange(value);
-												schedule({ [name]: value });
-											}}
-										/>
-									</Field>
-								)}
-							</form.Field>
-						))}
-
-						<form.Field name="description">
-							{(field) => (
-								<Field>
-									<FieldLabel htmlFor="identity-description">
-										{t("cvEditor.identity.field.description")}
-									</FieldLabel>
-									<RichTextEditor
-										id="identity-description"
-										value={field.state.value}
-										onBlur={() => {
-											field.handleBlur();
-											flushOnFormLeave(undefined, flush);
-										}}
-										onChange={(html) => {
-											field.handleChange(html);
-											schedule({ description: html });
-										}}
-									/>
-								</Field>
-							)}
-						</form.Field>
-					</FieldGroup>
-				</CardContent>
-			</Card>
-		</form>
+		<Card id="identity" size="sm">
+			<CardHeader>
+				<CardTitle className="flex items-center gap-2">
+					<UserIcon aria-hidden className="size-4 shrink-0" />
+					{t("cvEditor.section.identity")}
+				</CardTitle>
+			</CardHeader>
+			<CardContent>
+				<FieldGroup className="gap-3">
+					{TEXT_FIELDS.map((name) => (
+						<EditorBoundField
+							key={name}
+							name={`identity.${name}`}
+							id={`identity-${name}`}
+							label={t(`cvEditor.identity.field.${name}`)}
+						/>
+					))}
+					<EditorBoundField
+						name="identity.description"
+						id="identity-description"
+						label={t("cvEditor.identity.field.description")}
+						control="richtext"
+					/>
+				</FieldGroup>
+			</CardContent>
+		</Card>
 	);
 }

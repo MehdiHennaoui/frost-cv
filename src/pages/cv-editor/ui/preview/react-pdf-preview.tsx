@@ -30,6 +30,7 @@ export function ReactPdfPreview({ cv }: ReactPdfPreviewProps) {
 			className="mx-auto flex h-full w-full max-w-[8.5in] flex-col"
 			data-cv-preview
 			data-react-pdf-preview
+			data-updated-at={cv.updatedAt}
 		>
 			{showViewer ? (
 				<PDFViewer

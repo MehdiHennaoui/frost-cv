@@ -41,7 +41,7 @@ The section for school and degree history. UI copy may say “Formation” in Fr
 _Avoid_: Certification (distinct, out of v1), Formation (UI-only synonym)
 
 **Draft**:
-Form values that have changed since the last successful persist. They flush to local storage after 1s of idle typing, or immediately on blur / leaving the editor route. Not a separate CV.
+Edits in the open editor that are not part of the last successful save. Not a separate CV.
 _Avoid_: Explicit save, temporary CV, scratch CV
 
 **Library**:
@@ -73,5 +73,5 @@ Legacy export path: printing the on-screen Tailwind preview in the browser (prin
 _Avoid_: Browser PDF, print export (prefer this term), “the PDF” when the engine matters
 
 **CV preview**:
-The Letter-sized CV the user sees while editing and downloads as a PDF. Same layout engine for on-screen preview and file export (`@react-pdf/renderer`, ADR-0003). Page numbers belong only in viewer chrome, not in the downloaded file. Layout copy does not use em dashes; use commas.
+The Letter-sized rendering of the last successfully saved CV, on screen and as a downloaded PDF. Same layout engine for both (`@react-pdf/renderer`, ADR-0003). Page numbers belong only in viewer chrome, not in the downloaded file. Layout copy does not use em dashes; use commas.
 _Avoid_: Template, Canadian preview, React PDF document (technical alias only), react-pdf export (alone), generated PDF, Print PDF (legacy)

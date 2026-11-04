@@ -11,7 +11,16 @@ import {
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { type Cv, createEmptyCvContent } from "@/entities/cv";
+import { EditorFormProvider } from "../../model/form/editor-form-context";
 import { EducationSectionForm } from "./education-section-form";
+
+function renderEducation(cv: Cv, onPersisted = vi.fn()) {
+	return render(
+		<EditorFormProvider cv={cv} onPersisted={onPersisted}>
+			<EducationSectionForm />
+		</EditorFormProvider>,
+	);
+}
 
 const saveCvMock = vi.fn();
 
@@ -70,7 +79,7 @@ describe("EducationSectionForm", () => {
 			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
 		});
 
-		render(<EducationSectionForm cv={cv} onPersisted={onPersisted} />);
+		renderEducation(cv, onPersisted);
 		expandFirstEntry();
 
 		fireEvent.change(screen.getByLabelText("cvEditor.education.field.school"), {
@@ -100,7 +109,7 @@ describe("EducationSectionForm", () => {
 			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
 		});
 
-		render(<EducationSectionForm cv={cv} onPersisted={onPersisted} />);
+		renderEducation(cv, onPersisted);
 		expandFirstEntry();
 
 		const school = screen.getByLabelText("cvEditor.education.field.school");
@@ -120,7 +129,7 @@ describe("EducationSectionForm", () => {
 			updatedAt: 2,
 		}));
 
-		render(<EducationSectionForm cv={cv} onPersisted={vi.fn()} />);
+		renderEducation(cv);
 
 		await act(async () => {
 			fireEvent.click(
@@ -139,7 +148,7 @@ describe("EducationSectionForm", () => {
 			updatedAt: 2,
 		}));
 
-		render(<EducationSectionForm cv={cv} onPersisted={vi.fn()} />);
+		renderEducation(cv);
 
 		fireEvent.click(
 			screen.getByRole("button", { name: "cvEditor.education.delete" }),
@@ -167,7 +176,7 @@ describe("EducationSectionForm", () => {
 			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
 		});
 
-		render(<EducationSectionForm cv={cv} onPersisted={vi.fn()} />);
+		renderEducation(cv);
 		expandFirstEntry();
 
 		fireEvent.change(
@@ -208,7 +217,7 @@ describe("EducationSectionForm", () => {
 			updatedAt: 2,
 		}));
 
-		render(<EducationSectionForm cv={cv} onPersisted={vi.fn()} />);
+		renderEducation(cv);
 
 		fireEvent.click(
 			screen.getAllByRole("button", { name: "cvEditor.education.position" })[0],

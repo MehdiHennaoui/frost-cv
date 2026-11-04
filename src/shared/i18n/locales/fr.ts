@@ -117,6 +117,13 @@ export const fr = {
 	cvEditor: {
 		loading: "Chargement du CV…",
 		saving: "Enregistrement du CV…",
+		save: {
+			invalid: "Impossible d'enregistrer ce CV. Corrigez les champs indiqués.",
+			failed: "Impossible d'enregistrer ce CV. Réessayez.",
+		},
+		month: {
+			invalid: "Utilisez un mois vide ou au format AAAA-MM.",
+		},
 		notFound: "CV introuvable",
 		notFoundHint: "Ce CV est absent ou a été supprimé.",
 		backToList: "Retour à la liste des CV",

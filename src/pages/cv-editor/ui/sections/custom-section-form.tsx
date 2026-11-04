@@ -1,123 +1,93 @@
 import { LayoutListIcon, Trash2Icon } from "lucide-react";
 import { type ReactNode, useState } from "react";
 
-import { type Cv, saveCv } from "@/entities/cv";
+import { customSectionKey } from "@/entities/cv";
 import { useAppTranslation } from "@/shared/i18n";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
-import { Field, FieldGroup, FieldLabel } from "@/shared/ui/field";
-import { Input } from "@/shared/ui/input";
-import { useWithCvSavePending } from "../../model/save/cv-save-pending";
-import { flushOnFormLeave } from "../../model/save/use-cv-autosave";
-import { useCvSectionDraft } from "../../model/save/use-cv-section-draft";
+import { FieldGroup } from "@/shared/ui/field";
 import {
-	type CustomSection,
-	customSectionEqual,
-	customSectionOf,
-	removeCustomSection,
-	withCustomSection,
-} from "../../model/sections/custom-section-fields";
-import { RichTextEditor } from "../editors/rich-text-editor";
+	useEditorForm,
+	useEditorValues,
+} from "../../model/form/editor-form-context";
+import { EditorBoundField } from "../editors/editor-bound-field";
 import { CvDeleteConfirmDialog } from "../entries/cv-delete-confirm-dialog";
 import { IconTooltipButton } from "../shell/icon-tooltip-button";
 
 type CustomSectionFormProps = {
-	cv: Cv;
 	sectionId: string;
-	onPersisted: (cv: Cv) => void;
 	reorder?: ReactNode;
 };
 
 export function CustomSectionForm({
-	cv,
 	sectionId,
-	onPersisted,
 	reorder,
 }: CustomSectionFormProps) {
 	const { t } = useAppTranslation();
-	const withCvSavePending = useWithCvSavePending();
-	const initial =
-		customSectionOf(cv.content, sectionId) ??
-		({
-			id: sectionId,
-			title: "",
-			description: "",
-		} satisfies CustomSection);
+	const { form, flush } = useEditorForm();
+	const sections = useEditorValues().customSections;
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-	const { draft, schedule, flush, cancel } = useCvSectionDraft({
-		cv,
-		onPersisted,
-		initial,
-		isEqual: customSectionEqual,
-		apply: withCustomSection,
-	});
+	const index = sections.findIndex((section) => section.id === sectionId);
+	const section = index >= 0 ? sections[index] : undefined;
+	const heading = section?.title.trim() || t("cvEditor.customs.untitled");
 
-	async function confirmDelete() {
-		cancel();
+	if (!section) {
+		return null;
+	}
+
+	function confirmDelete() {
+		const values = form.state.values;
+		const sectionIndex = values.customSections.findIndex(
+			(item) => item.id === sectionId,
+		);
 		setDeleteDialogOpen(false);
-		await withCvSavePending(async () => {
-			const next = await saveCv({
-				...cv,
-				content: removeCustomSection(cv.content, sectionId),
-			});
-			onPersisted(next);
+		if (sectionIndex < 0) {
+			return;
+		}
+		void form.removeFieldValue("customSections", sectionIndex).then(() => {
+			form.setFieldValue(
+				"sectionOrder",
+				form.state.values.sectionOrder.filter(
+					(key) => key !== customSectionKey(sectionId),
+				),
+			);
+			flush();
 		});
 	}
 
-	const heading = draft.title.trim() || t("cvEditor.customs.untitled");
-
 	return (
 		<>
-			<form
-				onSubmit={(event) => {
-					event.preventDefault();
-				}}
-			>
-				<Card id={sectionId} size="sm">
-					<CardHeader className="flex flex-row items-center justify-between gap-2">
-						<CardTitle className="flex min-w-0 items-center gap-2">
-							<LayoutListIcon aria-hidden className="size-4 shrink-0" />
-							<span className="truncate">{heading}</span>
-						</CardTitle>
-						<div className="flex shrink-0 items-center gap-1">
-							<IconTooltipButton
-								label={t("cvEditor.customs.delete")}
-								onClick={() => setDeleteDialogOpen(true)}
-							>
-								<Trash2Icon />
-							</IconTooltipButton>
-							{reorder}
-						</div>
-					</CardHeader>
-					<CardContent>
-						<FieldGroup className="gap-3">
-							<Field>
-								<FieldLabel htmlFor={`custom-${sectionId}-title`}>
-									{t("cvEditor.customs.field.title")}
-								</FieldLabel>
-								<Input
-									id={`custom-${sectionId}-title`}
-									variant="surface"
-									value={draft.title}
-									onBlur={(event) => flushOnFormLeave(event, flush)}
-									onChange={(event) => schedule({ title: event.target.value })}
-								/>
-							</Field>
-							<Field>
-								<FieldLabel htmlFor={`custom-${sectionId}-description`}>
-									{t("cvEditor.customs.field.description")}
-								</FieldLabel>
-								<RichTextEditor
-									id={`custom-${sectionId}-description`}
-									value={draft.description}
-									onBlur={() => flushOnFormLeave(undefined, flush)}
-									onChange={(html) => schedule({ description: html })}
-								/>
-							</Field>
-						</FieldGroup>
-					</CardContent>
-				</Card>
-			</form>
-
+			<Card id={sectionId} size="sm">
+				<CardHeader className="flex flex-row items-center justify-between gap-2">
+					<CardTitle className="flex min-w-0 items-center gap-2">
+						<LayoutListIcon aria-hidden className="size-4 shrink-0" />
+						<span className="truncate">{heading}</span>
+					</CardTitle>
+					<div className="flex shrink-0 items-center gap-1">
+						<IconTooltipButton
+							label={t("cvEditor.customs.delete")}
+							onClick={() => setDeleteDialogOpen(true)}
+						>
+							<Trash2Icon />
+						</IconTooltipButton>
+						{reorder}
+					</div>
+				</CardHeader>
+				<CardContent>
+					<FieldGroup className="gap-3">
+						<EditorBoundField
+							name={`customSections[${index}].title`}
+							id={`custom-${sectionId}-title`}
+							label={t("cvEditor.customs.field.title")}
+						/>
+						<EditorBoundField
+							name={`customSections[${index}].description`}
+							id={`custom-${sectionId}-description`}
+							label={t("cvEditor.customs.field.description")}
+							control="richtext"
+						/>
+					</FieldGroup>
+				</CardContent>
+			</Card>
 			{deleteDialogOpen && (
 				<CvDeleteConfirmDialog
 					title={t("cvEditor.customs.deleteTitle")}
@@ -127,9 +97,7 @@ export function CustomSectionForm({
 					cancelLabel={t("cvEditor.customs.deleteCancel")}
 					confirmLabel={t("cvEditor.customs.deleteConfirm")}
 					onCancel={() => setDeleteDialogOpen(false)}
-					onConfirm={() => {
-						void confirmDelete();
-					}}
+					onConfirm={confirmDelete}
 				/>
 			)}
 		</>

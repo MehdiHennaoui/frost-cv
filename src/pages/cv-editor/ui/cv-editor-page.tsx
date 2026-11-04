@@ -8,7 +8,13 @@ import {
 	GripVerticalIcon,
 	PlusIcon,
 } from "lucide-react";
-import { type ReactNode, useEffect, useState } from "react";
+import {
+	type ReactNode,
+	type RefObject,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 
 import {
 	type Cv,
@@ -18,7 +24,6 @@ import {
 	isCustomSectionKey,
 	replaceCvFromImport as replaceCvFromImportInDb,
 	type SectionKey,
-	saveCv,
 	sectionOrderOf,
 } from "@/entities/cv";
 import { useAppTranslation } from "@/shared/i18n";
@@ -29,6 +34,11 @@ import { Button, buttonVariants } from "@/shared/ui/button";
 import { Link } from "@/shared/ui/link";
 import { Spinner } from "@/shared/ui/spinner";
 import {
+	EditorFormProvider,
+	useEditorForm,
+	useEditorValues,
+} from "../model/form/editor-form-context";
+import {
 	scrollToHashTarget,
 	useLocationHash,
 } from "../model/nav/use-location-hash";
@@ -37,7 +47,10 @@ import {
 	useIsCvSavePending,
 	useWithCvSavePending,
 } from "../model/save/cv-save-pending";
-import { addCustomSection } from "../model/sections/custom-section-fields";
+import {
+	addCustomSection,
+	customSectionsOf,
+} from "../model/sections/custom-section-fields";
 import { moveSection } from "../model/sections/section-order";
 import { PositionMenu } from "./entries/position-menu";
 import { ReorderList } from "./entries/reorder-list";
@@ -103,48 +116,24 @@ function SectionReorderControls({
 
 function SectionBlock({
 	sectionKey,
-	cv,
-	onPersisted,
 	reorder,
 }: {
 	sectionKey: MovableSectionKey;
-	cv: Cv;
-	onPersisted: (cv: Cv) => void;
 	reorder: ReactNode;
 }) {
 	if (sectionKey === "experiences") {
-		return (
-			<ExperiencesSectionForm
-				cv={cv}
-				onPersisted={onPersisted}
-				reorder={reorder}
-			/>
-		);
+		return <ExperiencesSectionForm reorder={reorder} />;
 	}
 	if (sectionKey === "education") {
-		return (
-			<EducationSectionForm
-				cv={cv}
-				onPersisted={onPersisted}
-				reorder={reorder}
-			/>
-		);
+		return <EducationSectionForm reorder={reorder} />;
 	}
 	if (sectionKey === "languages") {
-		return (
-			<LanguagesSectionForm
-				cv={cv}
-				onPersisted={onPersisted}
-				reorder={reorder}
-			/>
-		);
+		return <LanguagesSectionForm reorder={reorder} />;
 	}
 	if (isCustomSectionKey(sectionKey)) {
 		return (
 			<CustomSectionForm
-				cv={cv}
 				sectionId={customSectionIdFromKey(sectionKey)}
-				onPersisted={onPersisted}
 				reorder={reorder}
 			/>
 		);
@@ -152,37 +141,28 @@ function SectionBlock({
 	return null;
 }
 
-function EditorSidebarSections({
-	cv,
-	onPersisted,
-}: {
-	cv: Cv;
-	onPersisted: (cv: Cv) => void;
-}) {
+function EditorSidebarSections() {
 	const { t } = useAppTranslation();
+	const { form, flush } = useEditorForm();
 	const isCvSavePending = useIsCvSavePending();
-	const withCvSavePending = useWithCvSavePending();
-	const order = sectionOrderOf(cv.content).filter(
+	const order = useEditorValues().sectionOrder.filter(
 		(key): key is MovableSectionKey => key !== "identity",
 	);
 
-	async function persistSectionOrder(key: MovableSectionKey, toIndex: number) {
-		const content = moveSection(cv.content, key, toIndex);
-		if (content === cv.content) {
+	function persistSectionOrder(key: MovableSectionKey, toIndex: number) {
+		const content = moveSection(form.state.values, key, toIndex);
+		if (content === form.state.values) {
 			return;
 		}
-		await withCvSavePending(async () => {
-			const next = await saveCv({ ...cv, content });
-			onPersisted(next);
-		});
+		form.setFieldValue("sectionOrder", sectionOrderOf(content));
+		flush();
 	}
 
-	async function handleAddCustomSection() {
-		const { content } = addCustomSection(cv.content);
-		await withCvSavePending(async () => {
-			const next = await saveCv({ ...cv, content });
-			onPersisted(next);
-		});
+	function handleAddCustomSection() {
+		const { content } = addCustomSection(form.state.values);
+		form.setFieldValue("customSections", customSectionsOf(content));
+		form.setFieldValue("sectionOrder", sectionOrderOf(content));
+		flush();
 	}
 
 	return (
@@ -199,8 +179,6 @@ function EditorSidebarSections({
 				renderItem={(item, index, drag) => (
 					<SectionBlock
 						sectionKey={item.id}
-						cv={cv}
-						onPersisted={onPersisted}
 						reorder={
 							<SectionReorderControls
 								index={index}
@@ -238,12 +216,16 @@ function EditorSidebarContent({
 	onExport,
 	onOpenImport,
 	isImportOpen,
+	formEpoch,
+	flushOnUnmountRef,
 }: {
 	cv: Cv;
 	onPersisted: (cv: Cv) => void;
 	onExport: () => void;
 	onOpenImport: () => void;
 	isImportOpen: boolean;
+	formEpoch: number;
+	flushOnUnmountRef: RefObject<boolean>;
 }) {
 	const { t } = useAppTranslation();
 	const isCvSavePending = useIsCvSavePending();
@@ -258,7 +240,7 @@ function EditorSidebarContent({
 	}, [hash]);
 
 	return (
-		<div className="flex h-full flex-col gap-3 p-2">
+		<div data-editor-chrome="" className="flex h-full flex-col gap-3 p-2">
 			<div className="flex items-start justify-between gap-2 px-2">
 				<div className="min-w-0">
 					<p className="text-muted-foreground text-xs">
@@ -300,8 +282,15 @@ function EditorSidebarContent({
 				inert={isImportOpen || undefined}
 			>
 				<p className="font-medium text-xs">{t("cvEditor.edit.label")}</p>
-				<IdentityHeaderForm cv={cv} onPersisted={onPersisted} />
-				<EditorSidebarSections cv={cv} onPersisted={onPersisted} />
+				<EditorFormProvider
+					key={formEpoch}
+					cv={cv}
+					onPersisted={onPersisted}
+					flushOnUnmountRef={flushOnUnmountRef}
+				>
+					<IdentityHeaderForm />
+					<EditorSidebarSections />
+				</EditorFormProvider>
 			</div>
 		</div>
 	);
@@ -318,10 +307,22 @@ function CvEditorLoaded({
 }) {
 	const [persistedCv, setPersistedCv] = useState(cv);
 	const [isImportOpen, setIsImportOpen] = useState(false);
+	const [formEpoch, setFormEpoch] = useState(0);
+	const flushOnUnmountRef = useRef(true);
+	const seenCv = useRef(cv);
 	const withCvSavePending = useWithCvSavePending();
 
 	useEffect(() => {
+		flushOnUnmountRef.current = true;
+	});
+
+	useEffect(() => {
+		if (seenCv.current === cv) {
+			return;
+		}
+		seenCv.current = cv;
 		setPersistedCv(cv);
+		setFormEpoch((epoch) => epoch + 1);
 	}, [cv]);
 
 	function handleExport() {
@@ -342,6 +343,8 @@ function CvEditorLoaded({
 					onExport={handleExport}
 					onOpenImport={handleOpenImport}
 					isImportOpen={isImportOpen}
+					formEpoch={formEpoch}
+					flushOnUnmountRef={flushOnUnmountRef}
 				/>
 			</SidebarPortal>
 			<main className="flex flex-1 justify-center bg-muted/40 p-4 md:p-8">
@@ -354,7 +357,11 @@ function CvEditorLoaded({
 				replaceCvFromImport={(payload) =>
 					withCvSavePending(() => replaceCvFromImport(persistedCv.id, payload))
 				}
-				onReplaced={setPersistedCv}
+				onReplaced={(next) => {
+					flushOnUnmountRef.current = false;
+					setPersistedCv(next);
+					setFormEpoch((epoch) => epoch + 1);
+				}}
 			/>
 		</>
 	);

@@ -10,7 +10,16 @@ import {
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { type Cv, createEmptyCvContent } from "@/entities/cv";
+import { EditorFormProvider } from "../../model/form/editor-form-context";
 import { IdentityHeaderForm } from "./identity-header-form";
+
+function renderIdentity(cv: Cv, onPersisted = vi.fn()) {
+	return render(
+		<EditorFormProvider cv={cv} onPersisted={onPersisted}>
+			<IdentityHeaderForm />
+		</EditorFormProvider>,
+	);
+}
 
 const saveCvMock = vi.fn();
 
@@ -78,7 +87,7 @@ describe("IdentityHeaderForm", () => {
 			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
 		});
 
-		render(<IdentityHeaderForm cv={cv} onPersisted={onPersisted} />);
+		renderIdentity(cv, onPersisted);
 
 		fireEvent.change(
 			screen.getByLabelText("cvEditor.identity.field.firstName"),
@@ -113,7 +122,7 @@ describe("IdentityHeaderForm", () => {
 			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
 		});
 
-		render(<IdentityHeaderForm cv={cv} onPersisted={onPersisted} />);
+		renderIdentity(cv, onPersisted);
 
 		const firstName = screen.getByLabelText(
 			"cvEditor.identity.field.firstName",
