@@ -147,6 +147,9 @@ describe("CustomSectionForm", () => {
 			updatedAt: 2,
 		}));
 
+		vi.useFakeTimers({
+			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
+		});
 		renderCustom(cv, onPersisted);
 
 		fireEvent.click(
@@ -160,6 +163,10 @@ describe("CustomSectionForm", () => {
 
 		await act(async () => {
 			await Promise.resolve();
+		});
+		expect(saveCvMock).not.toHaveBeenCalled();
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(1000);
 		});
 
 		expect(saveCvMock).toHaveBeenCalledTimes(1);

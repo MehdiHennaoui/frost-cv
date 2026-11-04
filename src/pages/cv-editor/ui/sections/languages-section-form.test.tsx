@@ -122,12 +122,15 @@ describe("LanguagesSectionForm", () => {
 		expect(onPersisted).toHaveBeenCalled();
 	});
 
-	it("adds a language entry and persists immediately", async () => {
+	it("adds a language entry and persists after the debounce", async () => {
 		const cv = sampleCv();
 		saveCvMock.mockImplementation(async (next: Cv) => ({
 			...next,
 			updatedAt: 2,
 		}));
+		vi.useFakeTimers({
+			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
+		});
 
 		renderLanguages(cv);
 
@@ -135,6 +138,10 @@ describe("LanguagesSectionForm", () => {
 			fireEvent.click(
 				screen.getByRole("button", { name: "cvEditor.languages.add" }),
 			);
+		});
+		expect(saveCvMock).not.toHaveBeenCalled();
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(1000);
 		});
 
 		expect(saveCvMock).toHaveBeenCalledTimes(1);
@@ -147,6 +154,9 @@ describe("LanguagesSectionForm", () => {
 			...next,
 			updatedAt: 2,
 		}));
+		vi.useFakeTimers({
+			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
+		});
 
 		renderLanguages(cv);
 
@@ -160,6 +170,10 @@ describe("LanguagesSectionForm", () => {
 					name: "cvEditor.languages.deleteConfirm",
 				}),
 			);
+		});
+		expect(saveCvMock).not.toHaveBeenCalled();
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(1000);
 		});
 
 		expect(saveCvMock).toHaveBeenCalledTimes(1);
@@ -181,6 +195,9 @@ describe("LanguagesSectionForm", () => {
 			updatedAt: 2,
 		}));
 
+		vi.useFakeTimers({
+			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
+		});
 		renderLanguages(cv);
 
 		fireEvent.click(
@@ -188,6 +205,10 @@ describe("LanguagesSectionForm", () => {
 		);
 		await act(async () => {
 			fireEvent.click(screen.getAllByRole("menuitem")[1]);
+		});
+		expect(saveCvMock).not.toHaveBeenCalled();
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(1000);
 		});
 
 		expect(saveCvMock).toHaveBeenCalledTimes(1);

@@ -35,7 +35,7 @@ const TEXT_FIELDS = ["language", "level"] as const;
 
 export function LanguagesSectionForm({ reorder }: LanguagesSectionFormProps) {
 	const { t } = useAppTranslation();
-	const { form, flush } = useEditorForm();
+	const { form, schedule } = useEditorForm();
 	const entries = useEditorValues().languages;
 	const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 	const { isExpanded, toggle, expand, toggleAll } = useEntryCollapse();
@@ -66,7 +66,7 @@ export function LanguagesSectionForm({ reorder }: LanguagesSectionFormProps) {
 									label={t("cvEditor.languages.add")}
 									onClick={() => {
 										field.pushValue(createEmptyLanguage());
-										flush();
+										schedule();
 									}}
 								>
 									<PlusIcon />
@@ -101,7 +101,7 @@ export function LanguagesSectionForm({ reorder }: LanguagesSectionFormProps) {
 											return;
 										}
 										field.moveValue(fromIndex, toIndex);
-										flush();
+										schedule();
 									}}
 									renderItem={(entry, index, drag) => (
 										<CollapsibleEntryChrome
@@ -135,7 +135,7 @@ export function LanguagesSectionForm({ reorder }: LanguagesSectionFormProps) {
 																return;
 															}
 															field.moveValue(fromIndex, toIndex);
-															flush();
+															schedule();
 														}}
 														optionLabel={(position) =>
 															t("cvEditor.languages.positionOption", {
@@ -192,7 +192,7 @@ export function LanguagesSectionForm({ reorder }: LanguagesSectionFormProps) {
 							return;
 						}
 						void form.removeFieldValue("languages", index).then(() => {
-							flush();
+							schedule();
 						});
 					}}
 				/>

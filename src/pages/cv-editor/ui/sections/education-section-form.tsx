@@ -35,7 +35,7 @@ const TEXT_FIELDS = ["school", "degree", "location"] as const;
 
 export function EducationSectionForm({ reorder }: EducationSectionFormProps) {
 	const { t } = useAppTranslation();
-	const { form, flush } = useEditorForm();
+	const { form, schedule } = useEditorForm();
 	const entries = useEditorValues().education;
 	const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 	const { isExpanded, toggle, expand, toggleAll } = useEntryCollapse();
@@ -66,7 +66,7 @@ export function EducationSectionForm({ reorder }: EducationSectionFormProps) {
 									label={t("cvEditor.education.add")}
 									onClick={() => {
 										field.pushValue(createEmptyEducation());
-										flush();
+										schedule();
 									}}
 								>
 									<PlusIcon />
@@ -101,7 +101,7 @@ export function EducationSectionForm({ reorder }: EducationSectionFormProps) {
 											return;
 										}
 										field.moveValue(fromIndex, toIndex);
-										flush();
+										schedule();
 									}}
 									renderItem={(entry, index, drag) => (
 										<CollapsibleEntryChrome
@@ -135,7 +135,7 @@ export function EducationSectionForm({ reorder }: EducationSectionFormProps) {
 																return;
 															}
 															field.moveValue(fromIndex, toIndex);
-															flush();
+															schedule();
 														}}
 														optionLabel={(position) =>
 															t("cvEditor.education.positionOption", {
@@ -204,7 +204,7 @@ export function EducationSectionForm({ reorder }: EducationSectionFormProps) {
 							return;
 						}
 						void form.removeFieldValue("education", index).then(() => {
-							flush();
+							schedule();
 						});
 					}}
 				/>

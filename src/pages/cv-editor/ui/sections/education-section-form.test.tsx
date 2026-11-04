@@ -122,12 +122,15 @@ describe("EducationSectionForm", () => {
 		expect(onPersisted).toHaveBeenCalled();
 	});
 
-	it("adds an education entry and persists immediately", async () => {
+	it("adds an education entry and persists after the debounce", async () => {
 		const cv = sampleCv();
 		saveCvMock.mockImplementation(async (next: Cv) => ({
 			...next,
 			updatedAt: 2,
 		}));
+		vi.useFakeTimers({
+			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
+		});
 
 		renderEducation(cv);
 
@@ -135,6 +138,10 @@ describe("EducationSectionForm", () => {
 			fireEvent.click(
 				screen.getByRole("button", { name: "cvEditor.education.add" }),
 			);
+		});
+		expect(saveCvMock).not.toHaveBeenCalled();
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(1000);
 		});
 
 		expect(saveCvMock).toHaveBeenCalledTimes(1);
@@ -147,6 +154,9 @@ describe("EducationSectionForm", () => {
 			...next,
 			updatedAt: 2,
 		}));
+		vi.useFakeTimers({
+			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
+		});
 
 		renderEducation(cv);
 
@@ -160,6 +170,10 @@ describe("EducationSectionForm", () => {
 					name: "cvEditor.education.deleteConfirm",
 				}),
 			);
+		});
+		expect(saveCvMock).not.toHaveBeenCalled();
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(1000);
 		});
 
 		expect(saveCvMock).toHaveBeenCalledTimes(1);
@@ -217,6 +231,9 @@ describe("EducationSectionForm", () => {
 			updatedAt: 2,
 		}));
 
+		vi.useFakeTimers({
+			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
+		});
 		renderEducation(cv);
 
 		fireEvent.click(
@@ -224,6 +241,10 @@ describe("EducationSectionForm", () => {
 		);
 		await act(async () => {
 			fireEvent.click(screen.getAllByRole("menuitem")[1]);
+		});
+		expect(saveCvMock).not.toHaveBeenCalled();
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(1000);
 		});
 
 		expect(saveCvMock).toHaveBeenCalledTimes(1);

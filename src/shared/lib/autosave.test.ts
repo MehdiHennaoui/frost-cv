@@ -52,4 +52,21 @@ describe("createAutosave", () => {
 
 		expect(save).toHaveBeenCalledTimes(1);
 	});
+
+	it("does not treat a false save as persisted", async () => {
+		const save = vi
+			.fn()
+			.mockResolvedValueOnce(false)
+			.mockResolvedValueOnce(undefined);
+		const autosave = createAutosave({ save });
+
+		autosave.schedule("draft");
+		await autosave.flush();
+		autosave.schedule("draft");
+		await autosave.flush();
+
+		expect(save).toHaveBeenCalledTimes(2);
+		expect(save).toHaveBeenNthCalledWith(1, "draft");
+		expect(save).toHaveBeenNthCalledWith(2, "draft");
+	});
 });

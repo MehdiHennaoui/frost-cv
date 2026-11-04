@@ -91,6 +91,9 @@ test.describe("languages section", () => {
 		await expect(level.nth(1)).toHaveValue("Fluent");
 		await expectReactPdfPreview(page);
 
+		await language.nth(0).click();
+		await flushEditorPersist(page);
+
 		await reloadEditor(page);
 		const after = page.getByTestId("app-sidebar-portal");
 		const languagesCard = after

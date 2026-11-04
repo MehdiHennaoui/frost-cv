@@ -143,7 +143,7 @@ function SectionBlock({
 
 function EditorSidebarSections() {
 	const { t } = useAppTranslation();
-	const { form, flush } = useEditorForm();
+	const { form, schedule } = useEditorForm();
 	const isCvSavePending = useIsCvSavePending();
 	const order = useEditorValues().sectionOrder.filter(
 		(key): key is MovableSectionKey => key !== "identity",
@@ -155,14 +155,14 @@ function EditorSidebarSections() {
 			return;
 		}
 		form.setFieldValue("sectionOrder", sectionOrderOf(content));
-		flush();
+		schedule();
 	}
 
 	function handleAddCustomSection() {
 		const { content } = addCustomSection(form.state.values);
 		form.setFieldValue("customSections", customSectionsOf(content));
 		form.setFieldValue("sectionOrder", sectionOrderOf(content));
-		flush();
+		schedule();
 	}
 
 	return (
@@ -240,7 +240,7 @@ function EditorSidebarContent({
 	}, [hash]);
 
 	return (
-		<div data-editor-chrome="" className="flex h-full flex-col gap-3 p-2">
+		<div className="flex h-full flex-col gap-3 p-2">
 			<div className="flex items-start justify-between gap-2 px-2">
 				<div className="min-w-0">
 					<p className="text-muted-foreground text-xs">

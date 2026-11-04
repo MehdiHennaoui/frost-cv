@@ -3,6 +3,7 @@ import { expect, type Locator, type Page, test } from "@playwright/test";
 import {
 	expandLastEntry,
 	expectReactPdfPreview,
+	flushEditorPersist,
 	reloadEditor,
 	sidebarSectionTitles,
 } from "./helpers/preview";
@@ -60,6 +61,9 @@ test.describe("section reorder", () => {
 			"Experiences",
 			"Education",
 		]);
+
+		await sidebar.getByLabel("First name").click();
+		await flushEditorPersist(page);
 
 		await reloadEditor(page);
 		const after = page.getByTestId("app-sidebar-portal");

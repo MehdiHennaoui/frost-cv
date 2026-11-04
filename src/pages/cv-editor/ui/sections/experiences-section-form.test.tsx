@@ -251,6 +251,13 @@ describe("ExperiencesSectionForm", () => {
 	});
 
 	it("hides end month when current position is checked", async () => {
+		saveCvMock.mockImplementation(async (next: Cv) => ({
+			...next,
+			updatedAt: 2,
+		}));
+		vi.useFakeTimers({
+			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
+		});
 		renderExperiences(sampleCv());
 		expandFirstEntry();
 
@@ -268,7 +275,7 @@ describe("ExperiencesSectionForm", () => {
 			screen.queryByLabelText("cvEditor.experiences.field.endMonth"),
 		).toBeNull();
 		await act(async () => {
-			await Promise.resolve();
+			await vi.advanceTimersByTimeAsync(1000);
 		});
 		expect(saveCvMock.mock.calls[0]?.[0].content.experiences[0]).toMatchObject({
 			isCurrent: true,
@@ -276,12 +283,15 @@ describe("ExperiencesSectionForm", () => {
 		});
 	});
 
-	it("adds an experience and persists immediately", async () => {
+	it("adds an experience and persists after the debounce", async () => {
 		const cv = sampleCv();
 		saveCvMock.mockImplementation(async (next: Cv) => ({
 			...next,
 			updatedAt: 2,
 		}));
+		vi.useFakeTimers({
+			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
+		});
 
 		renderExperiences(cv);
 
@@ -289,6 +299,10 @@ describe("ExperiencesSectionForm", () => {
 			fireEvent.click(
 				screen.getByRole("button", { name: "cvEditor.experiences.add" }),
 			);
+		});
+		expect(saveCvMock).not.toHaveBeenCalled();
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(1000);
 		});
 
 		expect(saveCvMock).toHaveBeenCalledTimes(1);
@@ -301,6 +315,9 @@ describe("ExperiencesSectionForm", () => {
 			...next,
 			updatedAt: 2,
 		}));
+		vi.useFakeTimers({
+			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
+		});
 
 		renderExperiences(cv);
 
@@ -314,6 +331,10 @@ describe("ExperiencesSectionForm", () => {
 					name: "cvEditor.experiences.deleteConfirm",
 				}),
 			);
+		});
+		expect(saveCvMock).not.toHaveBeenCalled();
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(1000);
 		});
 
 		expect(saveCvMock).toHaveBeenCalledTimes(1);
@@ -373,6 +394,9 @@ describe("ExperiencesSectionForm", () => {
 			updatedAt: 2,
 		}));
 
+		vi.useFakeTimers({
+			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
+		});
 		renderExperiences(cv);
 
 		fireEvent.click(
@@ -382,6 +406,10 @@ describe("ExperiencesSectionForm", () => {
 		);
 		await act(async () => {
 			fireEvent.click(screen.getAllByRole("menuitem")[1]);
+		});
+		expect(saveCvMock).not.toHaveBeenCalled();
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(1000);
 		});
 
 		expect(saveCvMock).toHaveBeenCalledTimes(1);

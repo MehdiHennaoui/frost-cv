@@ -160,11 +160,14 @@ describe("CvEditorPage", () => {
 		).toBeNull();
 	});
 
-	it("saves a new section order immediately", async () => {
+	it("saves a new section order after the debounce", async () => {
 		saveCvMock.mockImplementation(async (next: Cv) => ({
 			...next,
 			updatedAt: 2,
 		}));
+		vi.useFakeTimers({
+			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
+		});
 
 		const { host } = renderEditor(sampleCv());
 
@@ -179,7 +182,11 @@ describe("CvEditorPage", () => {
 		await act(async () => {
 			fireEvent.click(screen.getAllByRole("menuitem")[2]);
 		});
+		expect(saveCvMock).not.toHaveBeenCalled();
 
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(1000);
+		});
 		expect(saveCvMock).toHaveBeenCalledTimes(1);
 		expect(saveCvMock.mock.calls[0]?.[0].content.sectionOrder).toEqual([
 			"identity",
@@ -431,7 +438,7 @@ describe("CvEditorPage", () => {
 		expect(saveCvMock).toHaveBeenCalledTimes(1);
 	});
 
-	it("keeps a move to editor chrome on the debounce", async () => {
+	it("flushes when focus moves to a control outside the form", async () => {
 		saveCvMock.mockImplementation(async (next: Cv) => ({
 			...next,
 			updatedAt: 2,
@@ -451,19 +458,17 @@ describe("CvEditorPage", () => {
 		await act(async () => {
 			fireEvent.blur(firstName, { relatedTarget: exportButton });
 		});
-		expect(saveCvMock).not.toHaveBeenCalled();
-
-		await act(async () => {
-			await vi.advanceTimersByTimeAsync(1000);
-		});
 		expect(saveCvMock).toHaveBeenCalledTimes(1);
 	});
 
-	it("saves a new experience immediately", async () => {
+	it("saves a new experience after the debounce", async () => {
 		saveCvMock.mockImplementation(async (next: Cv) => ({
 			...next,
 			updatedAt: 2,
 		}));
+		vi.useFakeTimers({
+			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
+		});
 		const { host } = renderEditor(sampleCv());
 
 		await act(async () => {
@@ -473,16 +478,23 @@ describe("CvEditorPage", () => {
 				}),
 			);
 		});
+		expect(saveCvMock).not.toHaveBeenCalled();
 
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(1000);
+		});
 		expect(saveCvMock).toHaveBeenCalledTimes(1);
 		expect(saveCvMock.mock.calls[0]?.[0].content.experiences).toHaveLength(1);
 	});
 
-	it("deletes an experience immediately after confirmation", async () => {
+	it("deletes an experience after the debounce", async () => {
 		saveCvMock.mockImplementation(async (next: Cv) => ({
 			...next,
 			updatedAt: 2,
 		}));
+		vi.useFakeTimers({
+			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
+		});
 		const cv = sampleCv();
 		cv.content.experiences = [
 			{
@@ -509,7 +521,11 @@ describe("CvEditorPage", () => {
 				}),
 			);
 		});
+		expect(saveCvMock).not.toHaveBeenCalled();
 
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(1000);
+		});
 		expect(saveCvMock).toHaveBeenCalledTimes(1);
 		expect(saveCvMock.mock.calls[0]?.[0].content.experiences).toEqual([]);
 	});
@@ -863,6 +879,9 @@ describe("CvEditorPage", () => {
 			...next,
 			updatedAt: 2,
 		}));
+		vi.useFakeTimers({
+			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
+		});
 		const cv = sampleCv({
 			content: {
 				...createEmptyCvContent(),
@@ -918,6 +937,9 @@ describe("CvEditorPage", () => {
 				) as HTMLTextAreaElement
 			).value,
 		).toBe("<p>Still first</p>");
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(1000);
+		});
 		expect(saveCvMock).toHaveBeenCalledTimes(1);
 		const saved = saveCvMock.mock.calls[0]?.[0].content.experiences as Array<{
 			id: string;

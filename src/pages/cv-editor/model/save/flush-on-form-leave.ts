@@ -1,4 +1,4 @@
-/** Focus that stays inside the editor chrome keeps the 1s debounce. */
+/** Focus that stays inside the form keeps the 1s debounce. */
 export function flushOnFormLeave(
 	event:
 		| {
@@ -9,8 +9,8 @@ export function flushOnFormLeave(
 	flush: () => void,
 ) {
 	const next = event?.relatedTarget;
-	const chrome = event?.currentTarget.closest("[data-editor-chrome]");
-	if (next instanceof Node && chrome?.contains(next)) {
+	const form = event?.currentTarget.closest("form");
+	if (next instanceof Node && form?.contains(next)) {
 		return;
 	}
 	flush();

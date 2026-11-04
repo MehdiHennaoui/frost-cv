@@ -38,7 +38,7 @@ export function ExperiencesSectionForm({
 	reorder,
 }: ExperiencesSectionFormProps) {
 	const { t } = useAppTranslation();
-	const { form, flush } = useEditorForm();
+	const { form, schedule } = useEditorForm();
 	const entries = useEditorValues().experiences;
 	const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 	const { isExpanded, toggle, expand, toggleAll } = useEntryCollapse();
@@ -69,7 +69,7 @@ export function ExperiencesSectionForm({
 									label={t("cvEditor.experiences.add")}
 									onClick={() => {
 										field.pushValue(createEmptyExperience());
-										flush();
+										schedule();
 									}}
 								>
 									<PlusIcon />
@@ -104,7 +104,7 @@ export function ExperiencesSectionForm({
 											return;
 										}
 										field.moveValue(fromIndex, toIndex);
-										flush();
+										schedule();
 									}}
 									renderItem={(entry, index, drag) => {
 										const expanded = isExpanded(entry.id);
@@ -140,7 +140,7 @@ export function ExperiencesSectionForm({
 																	return;
 																}
 																field.moveValue(fromIndex, toIndex);
-																flush();
+																schedule();
 															}}
 															optionLabel={(position) =>
 																t("cvEditor.experiences.positionOption", {
@@ -187,7 +187,7 @@ export function ExperiencesSectionForm({
 																	`experiences[${index}].endMonth`,
 																	isCurrent ? "" : entry.endMonth,
 																);
-																flush();
+																schedule();
 															}}
 														/>
 														<FieldLabel
@@ -241,7 +241,7 @@ export function ExperiencesSectionForm({
 							return;
 						}
 						void form.removeFieldValue("experiences", index).then(() => {
-							flush();
+							schedule();
 						});
 					}}
 				/>

@@ -1,5 +1,6 @@
 export type AutosaveOptions<T> = {
-	save: (value: T) => void | Promise<void>;
+	/** Return `false` to leave the last-saved marker unchanged (e.g. skipped invalid draft). */
+	save: (value: T) => boolean | undefined | Promise<boolean | undefined>;
 	delayMs?: number;
 	isEqual?: (a: T, b: T) => boolean;
 	/** Treat as already persisted so flush/schedule skips until a real change. */
@@ -57,7 +58,10 @@ export function createAutosave<T>({
 		}
 
 		chain = chain.then(async () => {
-			await save(value);
+			const result = await save(value);
+			if (result === false) {
+				return;
+			}
 			lastSaved = value;
 			hasLastSaved = true;
 		});
