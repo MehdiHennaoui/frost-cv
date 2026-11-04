@@ -3,7 +3,6 @@ import type {
 	DraggableSyntheticListeners,
 } from "@dnd-kit/core";
 import {
-	ArrowLeftIcon,
 	DownloadIcon,
 	FileUpIcon,
 	GripVerticalIcon,
@@ -48,9 +47,9 @@ import { EducationSectionForm } from "./sections/education-section-form";
 import { ExperiencesSectionForm } from "./sections/experiences-section-form";
 import { IdentityHeaderForm } from "./sections/identity-header-form";
 import { LanguagesSectionForm } from "./sections/languages-section-form";
+import { BackToListLink } from "./shell/back-to-list-link";
 import { GoToCommand } from "./shell/go-to-command";
 import { IconTooltipButton } from "./shell/icon-tooltip-button";
-import { IconTooltipLink } from "./shell/icon-tooltip-link";
 import { ReplaceCvImportDialog } from "./shell/replace-cv-import-dialog";
 
 type MovableSectionKey = Exclude<SectionKey, "identity">;
@@ -275,10 +274,8 @@ function EditorSidebarContent({
 					</div>
 				</div>
 				<div className="flex shrink-0 items-center gap-1">
+					<BackToListLink />
 					<GoToCommand content={cv.content} disabled={isLocked} />
-					<IconTooltipLink label={t("cvEditor.backToList")} to="/cvs">
-						<ArrowLeftIcon />
-					</IconTooltipLink>
 					<IconTooltipButton
 						label={t("cvExport.export")}
 						disabled={isLocked}

@@ -97,6 +97,12 @@ export function EducationSectionForm({
 						</CardTitle>
 						<div className="flex shrink-0 items-center gap-1">
 							<IconTooltipButton
+								label={t("cvEditor.education.add")}
+								onClick={handleAdd}
+							>
+								<PlusIcon />
+							</IconTooltipButton>
+							<IconTooltipButton
 								label={
 									anyExpanded
 										? t("cvEditor.entry.collapseAll")
@@ -105,12 +111,6 @@ export function EducationSectionForm({
 								onClick={() => toggleAll(entries.map((entry) => entry.id))}
 							>
 								{anyExpanded ? <FoldVerticalIcon /> : <UnfoldVerticalIcon />}
-							</IconTooltipButton>
-							<IconTooltipButton
-								label={t("cvEditor.education.add")}
-								onClick={handleAdd}
-							>
-								<PlusIcon />
 							</IconTooltipButton>
 							{reorder}
 						</div>
@@ -179,6 +179,7 @@ export function EducationSectionForm({
 														</FieldLabel>
 														<Input
 															id={`education-${entry.id}-${name}`}
+															variant="surface"
 															value={entry[name]}
 															onBlur={(event) => flushOnFormLeave(event, flush)}
 															onChange={(event) =>

@@ -34,11 +34,11 @@ test.describe("section reorder", () => {
 		await expect(languageActions).toHaveCount(4);
 		await expect(languageActions.nth(0)).toHaveAttribute(
 			"aria-label",
-			"Expand all entries",
+			"Add language",
 		);
 		await expect(languageActions.nth(1)).toHaveAttribute(
 			"aria-label",
-			"Add language",
+			"Expand all entries",
 		);
 		await expect(languageActions.nth(2)).toHaveAttribute(
 			"aria-label",

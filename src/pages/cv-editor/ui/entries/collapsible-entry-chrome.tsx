@@ -1,4 +1,4 @@
-import { ChevronDownIcon, ChevronRightIcon } from "lucide-react";
+import { ChevronRightIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { cn } from "@/shared/lib/cn";
@@ -46,14 +46,15 @@ export function CollapsibleEntryChrome({
 					aria-label={expanded ? collapseLabel : expandLabel}
 					className={cn(
 						buttonVariants({ variant: "outline", size: "sm" }),
-						"h-8 min-w-0 flex-1 justify-start px-2",
+						"h-8 min-w-0 flex-1 justify-start px-2 aria-expanded:bg-background aria-expanded:hover:bg-muted dark:aria-expanded:bg-input/30 dark:aria-expanded:hover:bg-input/50",
 					)}
 				>
-					{expanded ? (
-						<ChevronDownIcon aria-hidden className="size-4 shrink-0" />
-					) : (
-						<ChevronRightIcon aria-hidden className="size-4 shrink-0" />
-					)}
+					<ChevronRightIcon
+						aria-hidden
+						className={cn("size-4 shrink-0 transition-transform duration-200", {
+							"rotate-90": expanded,
+						})}
+					/>
 					<span className="min-w-0 truncate font-medium text-sm">
 						{scanLabel}
 					</span>

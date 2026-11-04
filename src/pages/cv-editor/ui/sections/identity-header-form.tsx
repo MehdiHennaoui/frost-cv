@@ -75,6 +75,7 @@ export function IdentityHeaderForm({
 										<Input
 											id={`identity-${name}`}
 											name={field.name}
+											variant="surface"
 											value={field.state.value}
 											onBlur={(event) => {
 												field.handleBlur();

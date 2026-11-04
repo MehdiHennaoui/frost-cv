@@ -96,6 +96,7 @@ export function CustomSectionForm({
 								</FieldLabel>
 								<Input
 									id={`custom-${sectionId}-title`}
+									variant="surface"
 									value={draft.title}
 									onBlur={(event) => flushOnFormLeave(event, flush)}
 									onChange={(event) => schedule({ title: event.target.value })}
