@@ -160,16 +160,13 @@ describe("CvEditorPage", () => {
 		).toBeNull();
 	});
 
-	it("saves a new section order after the debounce", async () => {
+	it("flushes a new section order when the editor unmounts", async () => {
 		saveCvMock.mockImplementation(async (next: Cv) => ({
 			...next,
 			updatedAt: 2,
 		}));
-		vi.useFakeTimers({
-			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
-		});
 
-		const { host } = renderEditor(sampleCv());
+		const { host, unmount } = renderEditor(sampleCv());
 
 		expect(
 			within(host).getByLabelText("cvEditor.identity.field.firstName"),
@@ -185,7 +182,7 @@ describe("CvEditorPage", () => {
 		expect(saveCvMock).not.toHaveBeenCalled();
 
 		await act(async () => {
-			await vi.advanceTimersByTimeAsync(1000);
+			unmount();
 		});
 		expect(saveCvMock).toHaveBeenCalledTimes(1);
 		expect(saveCvMock.mock.calls[0]?.[0].content.sectionOrder).toEqual([
@@ -797,7 +794,7 @@ describe("CvEditorPage", () => {
 		errorSpy.mockRestore();
 	});
 
-	it("remounts the form from a replace-import and drops the previous draft", async () => {
+	it("resets the form from a replace-import and drops the previous draft", async () => {
 		saveCvMock.mockImplementation(async (next: Cv) => ({
 			...next,
 			updatedAt: 2,

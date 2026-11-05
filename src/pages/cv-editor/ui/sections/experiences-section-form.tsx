@@ -38,7 +38,7 @@ export function ExperiencesSectionForm({
 	reorder,
 }: ExperiencesSectionFormProps) {
 	const { t } = useAppTranslation();
-	const { form, schedule } = useEditorForm();
+	const form = useEditorForm();
 	const entries = useEditorValues().experiences;
 	const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 	const { isExpanded, toggle, expand, toggleAll } = useEntryCollapse();
@@ -69,7 +69,6 @@ export function ExperiencesSectionForm({
 									label={t("cvEditor.experiences.add")}
 									onClick={() => {
 										field.pushValue(createEmptyExperience());
-										schedule();
 									}}
 								>
 									<PlusIcon />
@@ -104,7 +103,6 @@ export function ExperiencesSectionForm({
 											return;
 										}
 										field.moveValue(fromIndex, toIndex);
-										schedule();
 									}}
 									renderItem={(entry, index, drag) => {
 										const expanded = isExpanded(entry.id);
@@ -140,7 +138,6 @@ export function ExperiencesSectionForm({
 																	return;
 																}
 																field.moveValue(fromIndex, toIndex);
-																schedule();
 															}}
 															optionLabel={(position) =>
 																t("cvEditor.experiences.positionOption", {
@@ -179,15 +176,11 @@ export function ExperiencesSectionForm({
 															checked={entry.isCurrent}
 															onCheckedChange={(checked) => {
 																const isCurrent = checked === true;
-																form.setFieldValue(
-																	`experiences[${index}].isCurrent`,
+																field.replaceValue(index, {
+																	...entry,
 																	isCurrent,
-																);
-																form.setFieldValue(
-																	`experiences[${index}].endMonth`,
-																	isCurrent ? "" : entry.endMonth,
-																);
-																schedule();
+																	endMonth: isCurrent ? "" : entry.endMonth,
+																});
 															}}
 														/>
 														<FieldLabel
@@ -240,9 +233,7 @@ export function ExperiencesSectionForm({
 						if (index < 0) {
 							return;
 						}
-						void form.removeFieldValue("experiences", index).then(() => {
-							schedule();
-						});
+						void form.removeFieldValue("experiences", index);
 					}}
 				/>
 			)}

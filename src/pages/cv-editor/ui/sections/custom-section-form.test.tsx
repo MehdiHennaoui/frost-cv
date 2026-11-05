@@ -10,13 +10,18 @@ import {
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { type Cv, createEmptyCvContent } from "@/entities/cv";
-import { EditorFormProvider } from "../../model/form/editor-form-context";
+import {
+	EditorForm,
+	EditorFormProvider,
+} from "../../model/form/editor-form-context";
 import { CustomSectionForm } from "./custom-section-form";
 
 function renderCustom(cv: Cv, onPersisted = vi.fn()) {
 	return render(
 		<EditorFormProvider cv={cv} onPersisted={onPersisted}>
-			<CustomSectionForm sectionId="c1" />
+			<EditorForm>
+				<CustomSectionForm sectionId="c1" />
+			</EditorForm>
 		</EditorFormProvider>,
 	);
 }
@@ -139,7 +144,7 @@ describe("CustomSectionForm", () => {
 		);
 	});
 
-	it("deletes the section and its order slot after confirmation", async () => {
+	it("flushes deleted section and order slot on unmount", async () => {
 		const cv = sampleCv();
 		const onPersisted = vi.fn();
 		saveCvMock.mockImplementation(async (next: Cv) => ({
@@ -147,10 +152,7 @@ describe("CustomSectionForm", () => {
 			updatedAt: 2,
 		}));
 
-		vi.useFakeTimers({
-			toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
-		});
-		renderCustom(cv, onPersisted);
+		const { unmount } = renderCustom(cv, onPersisted);
 
 		fireEvent.click(
 			screen.getByRole("button", { name: "cvEditor.customs.delete" }),
@@ -165,8 +167,9 @@ describe("CustomSectionForm", () => {
 			await Promise.resolve();
 		});
 		expect(saveCvMock).not.toHaveBeenCalled();
+
 		await act(async () => {
-			await vi.advanceTimersByTimeAsync(1000);
+			unmount();
 		});
 
 		expect(saveCvMock).toHaveBeenCalledTimes(1);

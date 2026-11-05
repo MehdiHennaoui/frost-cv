@@ -22,8 +22,14 @@ export async function flushEditorPersist(page: Page) {
 		}
 	});
 	const saving = page.getByText("Saving CV…");
-	await expect(saving).toBeVisible({ timeout: 2000 });
-	await expect(saving).toHaveCount(0);
+	// Debounce may already have persisted before leave-flush runs.
+	const appeared = await saving
+		.waitFor({ state: "visible", timeout: 2000 })
+		.then(() => true)
+		.catch(() => false);
+	if (appeared) {
+		await expect(saving).toHaveCount(0);
+	}
 }
 
 export async function reloadEditor(page: Page) {

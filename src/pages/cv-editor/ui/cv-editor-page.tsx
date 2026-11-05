@@ -8,13 +8,7 @@ import {
 	GripVerticalIcon,
 	PlusIcon,
 } from "lucide-react";
-import {
-	type ReactNode,
-	type RefObject,
-	useEffect,
-	useRef,
-	useState,
-} from "react";
+import { type ReactNode, useEffect, useState } from "react";
 
 import {
 	type Cv,
@@ -34,9 +28,11 @@ import { Button, buttonVariants } from "@/shared/ui/button";
 import { Link } from "@/shared/ui/link";
 import { Spinner } from "@/shared/ui/spinner";
 import {
+	EditorForm,
 	EditorFormProvider,
 	useEditorForm,
 	useEditorValues,
+	useHydrateEditorForm,
 } from "../model/form/editor-form-context";
 import {
 	scrollToHashTarget,
@@ -143,7 +139,7 @@ function SectionBlock({
 
 function EditorSidebarSections() {
 	const { t } = useAppTranslation();
-	const { form, schedule } = useEditorForm();
+	const form = useEditorForm();
 	const isCvSavePending = useIsCvSavePending();
 	const order = useEditorValues().sectionOrder.filter(
 		(key): key is MovableSectionKey => key !== "identity",
@@ -155,14 +151,12 @@ function EditorSidebarSections() {
 			return;
 		}
 		form.setFieldValue("sectionOrder", sectionOrderOf(content));
-		schedule();
 	}
 
 	function handleAddCustomSection() {
 		const { content } = addCustomSection(form.state.values);
 		form.setFieldValue("customSections", customSectionsOf(content));
 		form.setFieldValue("sectionOrder", sectionOrderOf(content));
-		schedule();
 	}
 
 	return (
@@ -212,20 +206,14 @@ function EditorSidebarSections() {
 
 function EditorSidebarContent({
 	cv,
-	onPersisted,
 	onExport,
 	onOpenImport,
 	isImportOpen,
-	formEpoch,
-	flushOnUnmountRef,
 }: {
 	cv: Cv;
-	onPersisted: (cv: Cv) => void;
 	onExport: () => void;
 	onOpenImport: () => void;
 	isImportOpen: boolean;
-	formEpoch: number;
-	flushOnUnmountRef: RefObject<boolean>;
 }) {
 	const { t } = useAppTranslation();
 	const isCvSavePending = useIsCvSavePending();
@@ -282,15 +270,10 @@ function EditorSidebarContent({
 				inert={isImportOpen || undefined}
 			>
 				<p className="font-medium text-xs">{t("cvEditor.edit.label")}</p>
-				<EditorFormProvider
-					key={formEpoch}
-					cv={cv}
-					onPersisted={onPersisted}
-					flushOnUnmountRef={flushOnUnmountRef}
-				>
+				<EditorForm>
 					<IdentityHeaderForm />
 					<EditorSidebarSections />
-				</EditorFormProvider>
+				</EditorForm>
 			</div>
 		</div>
 	);
@@ -307,31 +290,53 @@ function CvEditorLoaded({
 }) {
 	const [persistedCv, setPersistedCv] = useState(cv);
 	const [isImportOpen, setIsImportOpen] = useState(false);
-	const [formEpoch, setFormEpoch] = useState(0);
-	const flushOnUnmountRef = useRef(true);
-	const seenCv = useRef(cv);
 	const withCvSavePending = useWithCvSavePending();
 
-	useEffect(() => {
-		flushOnUnmountRef.current = true;
-	});
-
-	useEffect(() => {
-		if (seenCv.current === cv) {
-			return;
-		}
-		seenCv.current = cv;
+	if (persistedCv.id !== cv.id) {
 		setPersistedCv(cv);
-		setFormEpoch((epoch) => epoch + 1);
-	}, [cv]);
+	}
+
+	return (
+		<EditorFormProvider
+			key={cv.id}
+			cv={persistedCv.id === cv.id ? persistedCv : cv}
+			onPersisted={setPersistedCv}
+		>
+			<CvEditorLoadedForm
+				persistedCv={persistedCv}
+				setPersistedCv={setPersistedCv}
+				isImportOpen={isImportOpen}
+				setIsImportOpen={setIsImportOpen}
+				replaceCvFromImport={replaceCvFromImport}
+				downloadFile={downloadFile}
+				withCvSavePending={withCvSavePending}
+			/>
+		</EditorFormProvider>
+	);
+}
+
+function CvEditorLoadedForm({
+	persistedCv,
+	setPersistedCv,
+	isImportOpen,
+	setIsImportOpen,
+	replaceCvFromImport,
+	downloadFile,
+	withCvSavePending,
+}: {
+	persistedCv: Cv;
+	setPersistedCv: (cv: Cv) => void;
+	isImportOpen: boolean;
+	setIsImportOpen: (open: boolean) => void;
+	replaceCvFromImport: (id: string, payload: CvImportPayload) => Promise<Cv>;
+	downloadFile: (filename: string, text: string) => void;
+	withCvSavePending: <T>(task: () => Promise<T>) => Promise<T>;
+}) {
+	const hydrateFromCv = useHydrateEditorForm();
 
 	function handleExport() {
 		const file = cvExportFile(persistedCv);
 		downloadFile(file.filename, file.text);
-	}
-
-	function handleOpenImport() {
-		setIsImportOpen(true);
 	}
 
 	return (
@@ -339,12 +344,11 @@ function CvEditorLoaded({
 			<SidebarPortal>
 				<EditorSidebarContent
 					cv={persistedCv}
-					onPersisted={setPersistedCv}
 					onExport={handleExport}
-					onOpenImport={handleOpenImport}
+					onOpenImport={() => {
+						setIsImportOpen(true);
+					}}
 					isImportOpen={isImportOpen}
-					formEpoch={formEpoch}
-					flushOnUnmountRef={flushOnUnmountRef}
 				/>
 			</SidebarPortal>
 			<main className="flex flex-1 justify-center bg-muted/40 p-4 md:p-8">
@@ -358,9 +362,8 @@ function CvEditorLoaded({
 					withCvSavePending(() => replaceCvFromImport(persistedCv.id, payload))
 				}
 				onReplaced={(next) => {
-					flushOnUnmountRef.current = false;
+					hydrateFromCv(next);
 					setPersistedCv(next);
-					setFormEpoch((epoch) => epoch + 1);
 				}}
 			/>
 		</>

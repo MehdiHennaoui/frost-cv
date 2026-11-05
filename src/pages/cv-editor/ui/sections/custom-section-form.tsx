@@ -23,7 +23,7 @@ export function CustomSectionForm({
 	reorder,
 }: CustomSectionFormProps) {
 	const { t } = useAppTranslation();
-	const { form, schedule } = useEditorForm();
+	const form = useEditorForm();
 	const sections = useEditorValues().customSections;
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 	const index = sections.findIndex((section) => section.id === sectionId);
@@ -50,7 +50,6 @@ export function CustomSectionForm({
 					(key) => key !== customSectionKey(sectionId),
 				),
 			);
-			schedule();
 		});
 	}
 

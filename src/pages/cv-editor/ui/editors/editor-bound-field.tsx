@@ -19,7 +19,7 @@ export function EditorBoundField({
 	label,
 	control = "text",
 }: EditorBoundFieldProps) {
-	const { form, schedule } = useEditorForm();
+	const form = useEditorForm();
 	const { t } = useAppTranslation();
 
 	return (
@@ -28,11 +28,6 @@ export function EditorBoundField({
 				const message = schemaErrorMessage(field.state.meta.errors);
 				const invalid = message !== undefined;
 				const value = field.state.value;
-
-				function commit(next: string) {
-					field.handleChange(next);
-					schedule();
-				}
 
 				return (
 					<Field data-invalid={invalid || undefined}>
@@ -43,7 +38,7 @@ export function EditorBoundField({
 								value={value}
 								aria-invalid={invalid || undefined}
 								onBlur={field.handleBlur}
-								onChange={(event) => commit(event.target.value)}
+								onChange={(event) => field.handleChange(event.target.value)}
 							/>
 						) : control === "richtext" ? (
 							<RichTextEditor
@@ -51,7 +46,7 @@ export function EditorBoundField({
 								value={value}
 								aria-invalid={invalid || undefined}
 								onBlur={field.handleBlur}
-								onChange={commit}
+								onChange={(html) => field.handleChange(html)}
 							/>
 						) : (
 							<Input
@@ -61,7 +56,7 @@ export function EditorBoundField({
 								value={value}
 								aria-invalid={invalid || undefined}
 								onBlur={field.handleBlur}
-								onChange={(event) => commit(event.target.value)}
+								onChange={(event) => field.handleChange(event.target.value)}
 							/>
 						)}
 						{message && (

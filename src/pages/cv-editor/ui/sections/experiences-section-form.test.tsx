@@ -11,13 +11,18 @@ import {
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { type Cv, createEmptyCvContent } from "@/entities/cv";
-import { EditorFormProvider } from "../../model/form/editor-form-context";
+import {
+	EditorForm,
+	EditorFormProvider,
+} from "../../model/form/editor-form-context";
 import { ExperiencesSectionForm } from "./experiences-section-form";
 
 function renderExperiences(cv: Cv, onPersisted = vi.fn()) {
 	return render(
 		<EditorFormProvider cv={cv} onPersisted={onPersisted}>
-			<ExperiencesSectionForm />
+			<EditorForm>
+				<ExperiencesSectionForm />
+			</EditorForm>
 		</EditorFormProvider>,
 	);
 }
