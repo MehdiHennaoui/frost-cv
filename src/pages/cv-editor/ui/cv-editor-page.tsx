@@ -48,6 +48,7 @@ import {
 	customSectionsOf,
 } from "../model/sections/custom-section-fields";
 import { moveSection } from "../model/sections/section-order";
+import { EntryDeleteConfirmProvider } from "./entries/entry-delete-confirm-context";
 import { PositionMenu } from "./entries/position-menu";
 import { ReorderList } from "./entries/reorder-list";
 import { ReactPdfPreview } from "./preview/react-pdf-preview";
@@ -302,15 +303,17 @@ function CvEditorLoaded({
 			cv={persistedCv.id === cv.id ? persistedCv : cv}
 			onPersisted={setPersistedCv}
 		>
-			<CvEditorLoadedForm
-				persistedCv={persistedCv}
-				setPersistedCv={setPersistedCv}
-				isImportOpen={isImportOpen}
-				setIsImportOpen={setIsImportOpen}
-				replaceCvFromImport={replaceCvFromImport}
-				downloadFile={downloadFile}
-				withCvSavePending={withCvSavePending}
-			/>
+			<EntryDeleteConfirmProvider>
+				<CvEditorLoadedForm
+					persistedCv={persistedCv}
+					setPersistedCv={setPersistedCv}
+					isImportOpen={isImportOpen}
+					setIsImportOpen={setIsImportOpen}
+					replaceCvFromImport={replaceCvFromImport}
+					downloadFile={downloadFile}
+					withCvSavePending={withCvSavePending}
+				/>
+			</EntryDeleteConfirmProvider>
 		</EditorFormProvider>
 	);
 }

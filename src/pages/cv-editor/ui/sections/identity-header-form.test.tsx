@@ -14,14 +14,17 @@ import {
 	EditorForm,
 	EditorFormProvider,
 } from "../../model/form/editor-form-context";
+import { EntryDeleteConfirmProvider } from "../entries/entry-delete-confirm-context";
 import { IdentityHeaderForm } from "./identity-header-form";
 
 function renderIdentity(cv: Cv, onPersisted = vi.fn()) {
 	return render(
 		<EditorFormProvider cv={cv} onPersisted={onPersisted}>
-			<EditorForm>
-				<IdentityHeaderForm />
-			</EditorForm>
+			<EntryDeleteConfirmProvider>
+				<EditorForm>
+					<IdentityHeaderForm />
+				</EditorForm>
+			</EntryDeleteConfirmProvider>
 		</EditorFormProvider>,
 	);
 }

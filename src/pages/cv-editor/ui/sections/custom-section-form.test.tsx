@@ -14,14 +14,17 @@ import {
 	EditorForm,
 	EditorFormProvider,
 } from "../../model/form/editor-form-context";
+import { EntryDeleteConfirmProvider } from "../entries/entry-delete-confirm-context";
 import { CustomSectionForm } from "./custom-section-form";
 
 function renderCustom(cv: Cv, onPersisted = vi.fn()) {
 	return render(
 		<EditorFormProvider cv={cv} onPersisted={onPersisted}>
-			<EditorForm>
-				<CustomSectionForm sectionId="c1" />
-			</EditorForm>
+			<EntryDeleteConfirmProvider>
+				<EditorForm>
+					<CustomSectionForm sectionId="c1" />
+				</EditorForm>
+			</EntryDeleteConfirmProvider>
 		</EditorFormProvider>,
 	);
 }

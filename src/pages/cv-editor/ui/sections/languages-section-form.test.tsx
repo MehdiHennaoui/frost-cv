@@ -15,14 +15,17 @@ import {
 	EditorForm,
 	EditorFormProvider,
 } from "../../model/form/editor-form-context";
+import { EntryDeleteConfirmProvider } from "../entries/entry-delete-confirm-context";
 import { LanguagesSectionForm } from "./languages-section-form";
 
 function renderLanguages(cv: Cv, onPersisted = vi.fn()) {
 	return render(
 		<EditorFormProvider cv={cv} onPersisted={onPersisted}>
-			<EditorForm>
-				<LanguagesSectionForm />
-			</EditorForm>
+			<EntryDeleteConfirmProvider>
+				<EditorForm>
+					<LanguagesSectionForm />
+				</EditorForm>
+			</EntryDeleteConfirmProvider>
 		</EditorFormProvider>,
 	);
 }

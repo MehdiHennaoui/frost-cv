@@ -15,14 +15,17 @@ import {
 	EditorForm,
 	EditorFormProvider,
 } from "../../model/form/editor-form-context";
+import { EntryDeleteConfirmProvider } from "../entries/entry-delete-confirm-context";
 import { ExperiencesSectionForm } from "./experiences-section-form";
 
 function renderExperiences(cv: Cv, onPersisted = vi.fn()) {
 	return render(
 		<EditorFormProvider cv={cv} onPersisted={onPersisted}>
-			<EditorForm>
-				<ExperiencesSectionForm />
-			</EditorForm>
+			<EntryDeleteConfirmProvider>
+				<EditorForm>
+					<ExperiencesSectionForm />
+				</EditorForm>
+			</EntryDeleteConfirmProvider>
 		</EditorFormProvider>,
 	);
 }
