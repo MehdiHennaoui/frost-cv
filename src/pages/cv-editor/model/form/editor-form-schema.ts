@@ -1,146 +1,73 @@
-import { z } from "zod";
+import type { z } from "zod";
 
-import type { SectionKey } from "@/entities/cv";
-import {
-	customSectionIdFromKey,
-	DEFAULT_SECTION_ORDER,
-	isCustomSectionKey,
-} from "@/entities/cv";
+import { cvContentSchema } from "@/entities/cv";
 
-const editorMonthSchema = z.union([
-	z.literal(""),
-	z.string().regex(/^\d{4}-\d{2}$/, { error: "cvEditor.month.invalid" }),
-]);
+const MONTH = /^\d{4}-\d{2}$/;
 
-const identitySchema = z.object({
-	firstName: z.string(),
-	lastName: z.string(),
-	jobTitle: z.string(),
-	email: z.string(),
-	phone: z.string(),
-	postalCode: z.string(),
-	linkedin: z.string(),
-	github: z.string(),
-	website: z.string(),
-	description: z.string(),
-});
+function addMonthFormatIssue(
+	value: string,
+	ctx: z.RefinementCtx,
+	path: (string | number)[],
+) {
+	if (value === "" || MONTH.test(value)) {
+		return;
+	}
+	ctx.addIssue({
+		code: "custom",
+		message: "cvEditor.month.invalid",
+		path,
+	});
+}
 
 function addUnorderedMonthIssues(
 	entry: { startMonth: string; endMonth: string; isCurrent?: boolean },
 	ctx: z.RefinementCtx,
 	message: string,
+	pathPrefix: (string | number)[],
 ) {
 	if (entry.isCurrent) {
 		return;
 	}
-	if (
-		!/^\d{4}-\d{2}$/.test(entry.startMonth) ||
-		!/^\d{4}-\d{2}$/.test(entry.endMonth)
-	) {
+	if (!MONTH.test(entry.startMonth) || !MONTH.test(entry.endMonth)) {
 		return;
 	}
 	if (entry.startMonth <= entry.endMonth) {
 		return;
 	}
-	ctx.addIssue({ code: "custom", message, path: ["startMonth"] });
-	ctx.addIssue({ code: "custom", message, path: ["endMonth"] });
+	ctx.addIssue({
+		code: "custom",
+		message,
+		path: [...pathPrefix, "startMonth"],
+	});
+	ctx.addIssue({
+		code: "custom",
+		message,
+		path: [...pathPrefix, "endMonth"],
+	});
 }
 
-const experienceSchema = z
-	.object({
-		id: z.string().min(1),
-		jobTitle: z.string(),
-		company: z.string(),
-		location: z.string(),
-		startMonth: editorMonthSchema,
-		endMonth: editorMonthSchema,
-		isCurrent: z.boolean(),
-		description: z.string(),
-	})
-	.superRefine((entry, ctx) => {
+/** CV content schema plus editor month format / range messages. */
+export const editorFormSchema = cvContentSchema.superRefine((content, ctx) => {
+	for (const [index, entry] of content.experiences.entries()) {
+		const path = ["experiences", index] as const;
+		addMonthFormatIssue(entry.startMonth, ctx, [...path, "startMonth"]);
+		addMonthFormatIssue(entry.endMonth, ctx, [...path, "endMonth"]);
 		addUnorderedMonthIssues(
 			entry,
 			ctx,
 			"cvEditor.experiences.errors.endBeforeStart",
+			[...path],
 		);
-	});
-
-const educationSchema = z
-	.object({
-		id: z.string().min(1),
-		school: z.string(),
-		degree: z.string(),
-		location: z.string(),
-		startMonth: editorMonthSchema,
-		endMonth: editorMonthSchema,
-	})
-	.superRefine((entry, ctx) => {
+	}
+	for (const [index, entry] of content.education.entries()) {
+		const path = ["education", index] as const;
+		addMonthFormatIssue(entry.startMonth, ctx, [...path, "startMonth"]);
+		addMonthFormatIssue(entry.endMonth, ctx, [...path, "endMonth"]);
 		addUnorderedMonthIssues(
 			entry,
 			ctx,
 			"cvEditor.education.errors.endBeforeStart",
+			[...path],
 		);
-	});
-
-const languageSchema = z.object({
-	id: z.string().min(1),
-	language: z.string(),
-	level: z.string(),
+	}
 });
-
-const customSectionSchema = z.object({
-	id: z.string().min(1),
-	title: z.string(),
-	description: z.string(),
-});
-
-const builtinSectionKeySchema = z.enum(DEFAULT_SECTION_ORDER);
-
-const sectionKeySchema = z.custom<SectionKey>(
-	(value) =>
-		typeof value === "string" &&
-		(builtinSectionKeySchema.safeParse(value).success ||
-			isCustomSectionKey(value)),
-);
-
-export const editorFormSchema = z
-	.object({
-		identity: identitySchema,
-		experiences: z.array(experienceSchema),
-		education: z.array(educationSchema),
-		languages: z.array(languageSchema),
-		customSections: z.array(customSectionSchema),
-		sectionOrder: z.array(sectionKeySchema).min(1),
-	})
-	.superRefine((content, ctx) => {
-		const { sectionOrder, customSections } = content;
-		if (sectionOrder[0] !== "identity") {
-			ctx.addIssue({
-				code: "custom",
-				message: "sectionOrder must start with identity",
-				path: ["sectionOrder"],
-			});
-		}
-		for (const key of DEFAULT_SECTION_ORDER) {
-			if (!sectionOrder.includes(key)) {
-				ctx.addIssue({
-					code: "custom",
-					message: `sectionOrder missing ${key}`,
-					path: ["sectionOrder"],
-				});
-			}
-		}
-		const customIds = new Set(customSections.map((section) => section.id));
-		for (const key of sectionOrder) {
-			if (!isCustomSectionKey(key)) {
-				continue;
-			}
-			if (!customIds.has(customSectionIdFromKey(key))) {
-				ctx.addIssue({
-					code: "custom",
-					message: `sectionOrder references missing custom section ${key}`,
-					path: ["sectionOrder"],
-				});
-			}
-		}
-	});

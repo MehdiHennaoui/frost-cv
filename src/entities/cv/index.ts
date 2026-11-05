@@ -29,6 +29,7 @@ export {
 	type SectionKey,
 	sectionOrderOf,
 } from "./model/cv";
+export { cvContentSchema } from "./model/cv-content-schema";
 export {
 	CV_EXPORT_SCHEMA_VERSION,
 	type CvExportDocument,
