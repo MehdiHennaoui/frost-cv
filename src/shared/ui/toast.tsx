@@ -27,7 +27,7 @@ function ToastViewport({ className, ...props }: ToastPrimitive.Viewport.Props) {
 		<ToastPrimitive.Viewport
 			data-slot="toast-viewport"
 			className={cn(
-				"pointer-events-none fixed inset-x-4 bottom-4 z-50 mx-auto w-auto max-w-sm outline-none sm:right-4 sm:left-auto sm:mx-0 sm:w-full",
+				"pointer-events-none fixed inset-x-4 bottom-4 z-[100] mx-auto w-auto max-w-sm outline-none sm:right-4 sm:left-auto sm:mx-0 sm:w-full",
 				className,
 			)}
 			{...props}
@@ -139,7 +139,7 @@ function ToastIcon({ type }: { type: string | undefined }) {
 	let icon: React.ReactNode = null;
 
 	if (type === "success") {
-		icon = <CircleCheckIcon aria-hidden="true" />;
+		icon = <CircleCheckIcon className="text-success" aria-hidden="true" />;
 	}
 
 	if (type === "info") {
