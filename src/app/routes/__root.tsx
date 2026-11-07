@@ -2,7 +2,7 @@ import { TanStackDevtools } from "@tanstack/react-devtools";
 import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
-import { useAppTranslation } from "@/shared/i18n";
+import { useAppTranslation, useUiLocale } from "@/shared/i18n";
 import { Link } from "@/shared/ui/link";
 import { Toaster } from "@/shared/ui/toast";
 import { AppLayout } from "../app-layout";
@@ -51,8 +51,10 @@ function NotFound() {
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+	const lang = useUiLocale();
+
 	return (
-		<html lang="en" suppressHydrationWarning>
+		<html lang={lang} suppressHydrationWarning>
 			<head>
 				<HeadContent />
 			</head>
