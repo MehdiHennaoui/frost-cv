@@ -11,12 +11,11 @@ import type { UiLocale } from "./ui-locale";
 
 const LOCALE_OPTIONS: {
 	locale: UiLocale;
-	flag: string;
 	/** Native name — not i18n’d so it stays recognizable in every UI locale. */
 	label: string;
 }[] = [
-	{ locale: "en", flag: "🇬🇧", label: "English" },
-	{ locale: "fr", flag: "🇫🇷", label: "Français" },
+	{ locale: "en", label: "English" },
+	{ locale: "fr", label: "Français" },
 ];
 
 export function UiLocaleSwitch() {
@@ -39,18 +38,18 @@ export function UiLocaleSwitch() {
 				render={
 					<Button
 						type="button"
-						variant="ghost"
+						variant="outline"
 						size="icon"
 						aria-label={t("uiLocale.label")}
 					/>
 				}
 			>
-				<span aria-hidden className="text-base leading-none">
-					{selected.flag}
+				<span aria-hidden className="font-semibold text-xs uppercase">
+					{selected.locale}
 				</span>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end">
-				{LOCALE_OPTIONS.map(({ locale, flag, label }) => {
+				{LOCALE_OPTIONS.map(({ locale, label }) => {
 					const isSelected = locale === value;
 					return (
 						<DropdownMenuItem
@@ -58,7 +57,6 @@ export function UiLocaleSwitch() {
 							onClick={() => handleSelect(locale)}
 							data-active={isSelected ? "" : undefined}
 						>
-							<span aria-hidden>{flag}</span>
 							<span className={cn({ "font-bold": isSelected })}>{label}</span>
 						</DropdownMenuItem>
 					);
