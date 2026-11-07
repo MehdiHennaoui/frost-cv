@@ -7,6 +7,7 @@ import { Link } from "@/shared/ui/link";
 import { Toaster } from "@/shared/ui/toast";
 import { AppLayout } from "../app-layout";
 import appCss from "../styles.css?url";
+import { ThemeProvider } from "../theme-provider";
 
 export const Route = createRootRoute({
 	head: () => ({
@@ -51,25 +52,27 @@ function NotFound() {
 
 function RootDocument({ children }: { children: React.ReactNode }) {
 	return (
-		<html lang="en">
+		<html lang="en" suppressHydrationWarning>
 			<head>
 				<HeadContent />
 			</head>
 			<body>
-				<Toaster>
-					<AppLayout>{children}</AppLayout>
-					<TanStackDevtools
-						config={{
-							position: "bottom-right",
-						}}
-						plugins={[
-							{
-								name: "Tanstack Router",
-								render: <TanStackRouterDevtoolsPanel />,
-							},
-						]}
-					/>
-				</Toaster>
+				<ThemeProvider defaultTheme="system" storageKey="theme">
+					<Toaster>
+						<AppLayout>{children}</AppLayout>
+						<TanStackDevtools
+							config={{
+								position: "bottom-right",
+							}}
+							plugins={[
+								{
+									name: "Tanstack Router",
+									render: <TanStackRouterDevtoolsPanel />,
+								},
+							]}
+						/>
+					</Toaster>
+				</ThemeProvider>
 				<Scripts />
 			</body>
 		</html>

@@ -11,6 +11,12 @@ export const fr = {
 		title: "Page introuvable",
 		home: "Retour à vos CV",
 	},
+	theme: {
+		toggle: "Changer le thème",
+		light: "Clair",
+		dark: "Sombre",
+		system: "Système",
+	},
 	uiLocale: {
 		label: "Langue de l’interface",
 		option: {

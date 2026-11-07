@@ -23,6 +23,7 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "@/shared/ui/tooltip";
+import { ModeToggle } from "./mode-toggle";
 import { resolveRoutePageTitle } from "./route-page-titles";
 
 type AppLayoutProps = {
@@ -97,6 +98,7 @@ function AppShell({ children }: { children: React.ReactNode }) {
 						<h1 className="min-w-0 flex-1 truncate font-bold text-lg tracking-tight">
 							{title}
 						</h1>
+						<ModeToggle />
 						<UiLocaleSwitch />
 					</header>
 					<div className="min-h-0 flex-1 overflow-y-auto">{children}</div>

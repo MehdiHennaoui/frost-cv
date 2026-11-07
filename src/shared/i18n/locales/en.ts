@@ -9,6 +9,12 @@ export const en = {
 		title: "Page not found",
 		home: "Back to your CVs",
 	},
+	theme: {
+		toggle: "Toggle theme",
+		light: "Light",
+		dark: "Dark",
+		system: "System",
+	},
 	uiLocale: {
 		label: "UI locale",
 		option: {
