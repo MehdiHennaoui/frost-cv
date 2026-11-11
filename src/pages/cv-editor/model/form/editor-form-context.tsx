@@ -65,6 +65,7 @@ export function EditorForm({ children }: { children: ReactNode }) {
 
 	return (
 		<form
+			className="flex flex-col gap-2"
 			onSubmit={(event) => {
 				event.preventDefault();
 			}}

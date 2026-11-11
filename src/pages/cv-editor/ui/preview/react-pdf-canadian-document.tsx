@@ -89,6 +89,11 @@ const styles = StyleSheet.create({
 		...text("sm"),
 		fontFamily: "Helvetica-Bold",
 	},
+	entrySubtitle: {
+		...text("xs"),
+		fontFamily: "Helvetica",
+		color: "#525252",
+	},
 	muted: {
 		...text("sm"),
 		color: "#525252",
@@ -107,28 +112,19 @@ type ReactPdfCanadianDocumentProps = {
 	cv: Cv;
 };
 
-function entryHeading(
-	primary: string,
-	secondary: string,
-	location: string,
-	fallback: string,
-): string {
-	const left = [primary, secondary].filter(Boolean).join(", ");
-	const withLocation = location
-		? left
-			? `${left}, ${location}`
-			: location
-		: left;
-	return withLocation || fallback;
-}
-
 /** Plain function (not a component) so react-pdf / tests see View/Text in the tree. */
-function entryHeadingRow(title: string, range: string) {
+function entryHeadingRow(title: string, range: string, subtitle = "") {
 	return (
 		<View style={styles.entryRow} wrap={false}>
 			<View style={styles.entryTitleWrap}>
 				<Text style={styles.entryTitle} {...flowText}>
 					{title}
+					{subtitle ? (
+						<>
+							{" "}
+							<Text style={styles.entrySubtitle}>{subtitle}</Text>
+						</>
+					) : null}
 				</Text>
 			</View>
 			{range ? (
@@ -212,17 +208,16 @@ export function ReactPdfCanadianDocument({
 												cv.locale,
 												presentLabel,
 											);
-											const title = entryHeading(
-												entry.jobTitle,
-												entry.company,
-												entry.location,
-												cvT("cvEditor.experiences.untitled"),
-											);
+											const title =
+												entry.jobTitle || cvT("cvEditor.experiences.untitled");
+											const subtitle = [entry.company, entry.location]
+												.filter(Boolean)
+												.join(", ");
 											return (
 												<Fragment key={entry.id}>
-													{entryHeadingRow(title, range)}
+													{entryHeadingRow(title, range, subtitle)}
 													{tipTapHtmlToReactPdf(entry.description)}
-													<View style={styles.entryGap} />
+													<View style={styles.entryGap} break />
 												</Fragment>
 											);
 										})
@@ -244,15 +239,14 @@ export function ReactPdfCanadianDocument({
 									) : (
 										education.map((entry) => {
 											const range = educationDateRangeLabel(entry, cv.locale);
-											const title = entryHeading(
-												entry.degree,
-												entry.school,
-												entry.location,
-												cvT("cvEditor.education.untitled"),
-											);
+											const title =
+												entry.degree || cvT("cvEditor.education.untitled");
+											const subtitle = [entry.school, entry.location]
+												.filter(Boolean)
+												.join(", ");
 											return (
 												<Fragment key={entry.id}>
-													{entryHeadingRow(title, range)}
+													{entryHeadingRow(title, range, subtitle)}
 													<View style={styles.entryGap} />
 												</Fragment>
 											);
@@ -264,7 +258,7 @@ export function ReactPdfCanadianDocument({
 
 						if (key === "languages") {
 							return (
-								<View key={key} style={styles.section}>
+								<View key={key} style={styles.section} break>
 									<Text style={styles.sectionTitle}>
 										{cvT(`cvEditor.section.${key}`)}
 									</Text>
@@ -274,10 +268,10 @@ export function ReactPdfCanadianDocument({
 										</Text>
 									) : (
 										languages.map((entry) => (
-											<Text key={entry.id} style={{ marginBottom: 2 }}>
+											<Text key={entry.id} style={{ marginBottom: 1 }}>
 												{[entry.language, entry.level]
 													.filter(Boolean)
-													.join(", ") || cvT("cvEditor.languages.untitled")}
+													.join(": ") || cvT("cvEditor.languages.untitled")}
 											</Text>
 										))
 									)}

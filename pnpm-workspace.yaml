@@ -2,4 +2,5 @@ packages:
   - "."
 allowBuilds:
   esbuild: true
+  lefthook: set this to true or false
   lightningcss: true

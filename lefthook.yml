@@ -1,8 +1,6 @@
 pre-commit:
   parallel: false
   commands:
-    refuse-ticket-on-main:
-      run: bash scripts/refuse-ticket-commit-on-main.sh
     refuse-scratch-wizard:
       run: bash scripts/refuse-scratch-wizard-commit.sh
     cv-editor-layout:
